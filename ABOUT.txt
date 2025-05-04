@@ -1,0 +1,10 @@
+- DATABASE SERVERS AND CONNECTIONS
+    > SQL Server:
+        Server Name:
+        Login: 
+        Database Name: CEDigital
+    > MongoDB Connection:
+        Connection Name: CEDigital
+        Port: 27018
+        Database Name: People
+-
