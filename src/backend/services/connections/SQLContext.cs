@@ -73,68 +73,57 @@ namespace backend.services.connections{
             }
         }
 
-        public List<T> SELECT<T>(String table, String attributes, String conditions){
-            String query = $"SELECT {attributes} FROM {table} WHERE {conditions};";
+        public List<T> SELECT<T>(String sql_query){
             try{
                 traffic.Wait();
                 using (var connection = new SqlConnection(configs.getConnectionString())){
-                    var results = connection.Query<T>(query).ToList();
-                    Console.WriteLine("SQL Query succesful");
+                    var results = connection.Query<T>(sql_query).ToList();
                     return results;
                 }
             } catch (System.Exception e){
-                Console.WriteLine($"SQL Query failed: {e}");
                 return [];
             } finally  {
                 traffic.Release();
             }
         }
 
-        public int DELETE(String table, String conditions){
-            String query = $"DELETE FROM {table} WHERE {conditions};";
+        public List<T> DELETE<T>(String sql_query){
             try {
                 traffic.Wait();
-                int rowsAffected = 0;
                 using (var connection = new SqlConnection(configs.getConnectionString())){
-                    rowsAffected += connection.Execute(query);
+                    var deleted = connection.Query<T>(sql_query).ToList();
+                    return deleted;
                 }
-                return rowsAffected;
             } catch (System.Exception){
-                return -1;
+                return [];
             } finally {
                 traffic.Release();
             }
         }
 
-        public int INSERT<T>(String table, String attributes, List<T> objs, String format){
-            String query = $"INSERT INTO {table}({attributes}) VALUES {format}";
+        public T? INSERT<T>(String sql_query, T obj){
             try{
                 traffic.Wait();
-                int rowsAffected = 0;
                 using (var connection = new SqlConnection(configs.getConnectionString()) ) {
-                    foreach (var obj in objs){
-                        rowsAffected += connection.Execute(query,obj);
-                    }
+                    var inserted = connection.QuerySingle<T>(sql_query, obj);
+                    return inserted;
                 }
-                return rowsAffected;
             } catch (System.Exception){
-                return -1;
+                return default(T);
             } finally {
                 traffic.Release();
             }
         }
 
-        public int UPDATE(String table, String attributes, String condition){
-            String query = $"UPDATE {table} SET {attributes} WHERE {condition};";
+        public List<T> UPDATE<T>(String sql_query, T obj){
             try{
                 traffic.Wait();
-                int rowsAffected = 0;
                 using (var connection = new SqlConnection(configs.getConnectionString()) ) {
-                    rowsAffected += connection.Execute(query);
+                    var modified = connection.Query<T>(sql_query, obj).ToList();
+                    return modified;
                 }
-                return rowsAffected;
             } catch (System.Exception){
-                return -1;
+                return [];
             } finally {
                 traffic.Release();
             }

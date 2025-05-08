@@ -130,8 +130,7 @@ namespace backend.services.connections {
             }
         }
 
-        internal void update<T>(string v, Func<T, bool> value, UpdateDefinitionBuilder<T> update)
-        {
+        internal void update<T>(string v, Func<T, bool> value, UpdateDefinitionBuilder<T> update){
             throw new NotImplementedException();
         }
     }

@@ -14,6 +14,7 @@ namespace backend.controllers {
         [HttpGet("{id}")]
         public ActionResult<Client> GetClient(int id){
             var results = db.mongo_db.find<Client>("Clients", c => c.Ssn == id);
+            var client = results.FirstOrDefault();
             return Ok(results.FirstOrDefault());
         }
 
