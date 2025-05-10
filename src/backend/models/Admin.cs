@@ -1,10 +1,9 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace backend.models{
 
-    // Entidad Profesor
-    public class Professor {
+namespace backend.models {
+    public class Admin {
 
         [BsonId]
         private ObjectId object_id {get; set;}
@@ -26,6 +25,5 @@ namespace backend.models{
 
         [BsonElement("Password")]
         required public string Password {get; set;}    // Contraseña
-
     }
 }
