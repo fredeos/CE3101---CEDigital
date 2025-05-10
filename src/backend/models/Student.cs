@@ -5,6 +5,9 @@ namespace backend.models{
 
     // Entidad Estudiante
     public class Student {
+        [BsonId]
+        private ObjectId object_id {get; set;}
+        
         [BsonElement("StudentID")]  // Carnet
         required public int StudentID {get; set;}
 
