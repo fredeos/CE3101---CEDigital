@@ -8,7 +8,7 @@ namespace backend.models{
         [BsonId]
         private ObjectId object_id {get; set;}
         
-        [BsonElement("StudentID")]  // Carnet
+        [BsonElement("StudentID")]  // Carnet (PK)
         required public int StudentID {get; set;}
 
         [BsonElement("IDCard")]  // Cédula

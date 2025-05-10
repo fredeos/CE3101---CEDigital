@@ -9,7 +9,7 @@ namespace backend.models{
         [BsonId]
         private ObjectId object_id {get; set;}
 
-        [BsonElement("IDCard")]  // Cédula
+        [BsonElement("IDCard")]  // Cédula (PK)
         required public int IDCard {get; set;}
 
         [BsonElement("FirstName")] // Nombre

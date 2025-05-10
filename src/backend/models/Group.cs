@@ -2,7 +2,7 @@ namespace backend.models{
 
     // Entidad Grupo
     public class Group{
-        required public int ID {get; set;}
+        required public int ID {get; set;}  // PK
 
         required public string CourseCode {get; set;}
 

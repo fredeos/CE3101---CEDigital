@@ -3,6 +3,8 @@ using MongoDB.Bson.Serialization.Attributes;
 
 
 namespace backend.models {
+
+    // Entidad Administrador
     public class Admin {
 
         [BsonId]

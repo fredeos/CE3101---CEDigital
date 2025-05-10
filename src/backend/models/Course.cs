@@ -4,7 +4,7 @@ namespace backend.models {
     // Entidad Cursos
     public class Course{
 
-        required public string Code {get; set;}
+        required public string Code {get; set;} // PK
 
         required public string Name {get; set;}
 
