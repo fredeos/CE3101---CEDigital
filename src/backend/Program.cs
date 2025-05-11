@@ -30,12 +30,10 @@ app.UseHttpsRedirection();
 app.MapControllers();
 
 var dbservice = app.Services.GetRequiredService<ShopDBService>();
-dbservice.sql_db = new SQLContext("sql.log");
+dbservice.sql_db = new SQLContext();
 dbservice.sql_db.Configure("LAPTOP-FREDE","EShop");
 
-dbservice.mongo_db = new MongoContext("mongo.log"); 
+dbservice.mongo_db = new MongoContext();
 dbservice.mongo_db.Configure("localhost",27017,"People");
-
-Console.WriteLine($"Attribute name: {nameof(Item.id)}");
 
 app.Run();
