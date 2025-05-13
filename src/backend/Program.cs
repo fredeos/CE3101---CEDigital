@@ -6,7 +6,6 @@ using Microsoft.Extensions.Hosting;
 using backend.services;
 using backend.services.connections;
 using backend.models;
-using backend.services.encryption;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,15 +28,6 @@ if (app.Environment.IsDevelopment()){
 
 app.UseHttpsRedirection();
 app.MapControllers();
-
-
-string pass = "1234";
-Hashcrypt encryptor = new();
-
-Console.WriteLine("Encrypting...");
-string encrypted_pass = encryptor.EncryptString(pass);
-string decrypted_pass = encryptor.DecryptString(encrypted_pass);
-Console.WriteLine($"[Encrypted] is \'{encrypted_pass}\' \n [Decrypted] is \'{decrypted_pass}\'");
 
 var dbservice = app.Services.GetRequiredService<ShopDBService>();
 dbservice.sql_db = new SQLContext();

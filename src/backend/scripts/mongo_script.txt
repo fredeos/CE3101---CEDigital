@@ -1,14 +1,13 @@
 -> Database information
   - Database mame: CEDigital
   * use CEDigital
+
   - Collections: Students, Professors, Administrators
   * db.createCollection('Students')
   * db.createCollection('Professors')
   * db.createCollection('Administrators')
 
 -> Database commands for population
-
-=> password is '1234'
 
 * db.Students.insertMany([{'id':2023087683,'ssn':305560135,'Fname':'Frederick','Lname1':'Obando','Lname2':'Solano','email':'fobando@estudiantec.cr','phone_num':'+506 8800-9673', 'password':'KWwdzAEF96zL4/MAVw1u7Q=='},
 {'id':2023074492,'ssn':102760144,'Fname':'Jessica','Lname1':'Jimenez','Lname2':'Ureña','email':'jesjimenez@estudiantec.cr','phone_num':'+506 1111-0000', 'password':'KWwdzAEF96zL4/MAVw1u7Q=='},
@@ -22,3 +21,5 @@
 
 * db.Administrators.insertMany([{'ssn':705510345, 'Fname':'Oscar', 'Lname1':'Perez', 'Lname2':'Cruz', 'email':'operez@itcr.ac.cr', 'password':'KWwdzAEF96zL4/MAVw1u7Q=='},
 {'ssn':706240171, 'Fname':'Mariana', 'Lname1':'Leiva', 'Lname2':'Vargas', 'email':'mleiva@itcr.ac.cr', 'password':'KWwdzAEF96zL4/MAVw1u7Q=='}])
+
+=> password 'KWwdzAEF96zL4/MAVw1u7Q==' is '1234'

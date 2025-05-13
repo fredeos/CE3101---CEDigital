@@ -28,7 +28,7 @@ CREATE TABLE Academic.Groups (
     id INT IDENTITY(1,1) PRIMARY KEY,
     course_code NVARCHAR(8) NOT NULL, -- FK
     semester_id INT NOT NULL, -- FK
-    num INT NOT NULL,
+    num INT NOT NULL
 );
 
 CREATE TABLE Academic.CourseGroups (
