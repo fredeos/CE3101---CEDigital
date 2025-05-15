@@ -1,6 +1,7 @@
 using System.Text;
 using System.Security.Cryptography;
 using System.IO;
+using MongoDB.Bson;
 
 
 namespace backend.services.encryption {

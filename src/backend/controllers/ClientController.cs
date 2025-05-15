@@ -13,14 +13,14 @@ namespace backend.controllers {
 
         [HttpGet("{id}")]
         public ActionResult<Client> GetClient(int id){
-            var results = db.mongo_db.find<Client>("Clients", c => c.Ssn == id);
+            var results = db.mongo_db!.find<Client>("Clients", c => c.Ssn == id);
             var client = results.FirstOrDefault();
             return Ok(results.FirstOrDefault());
         }
 
         [HttpPost("new")]
         public ActionResult<Client> AddClient([FromBody] Client client){
-            var inserted = db.mongo_db.insert<Client>("Clients",[client]);
+            var inserted = db.mongo_db!.insert<Client>("Clients",[client]);
             return Ok(inserted.FirstOrDefault());
         }
 
@@ -30,13 +30,13 @@ namespace backend.controllers {
                 .Set(c => c.Ssn, client.Ssn)
                 .Set(c => c.FirstName, client.FirstName)
                 .Set(c => c.LastName, client.LastName);
-            var updated = db.mongo_db.update<Client>("Clients",c => c.Ssn == id, update);
+            var updated = db.mongo_db!.update<Client>("Clients",c => c.Ssn == id, update);
             return Ok(updated);
         }
 
         [HttpDelete("remove/{id}")]
         public ActionResult RemoveClient(int id){
-            var deleted = db.mongo_db.delete<Client>("Clients", c => c.Ssn == id);
+            var deleted = db.mongo_db!.delete<Client>("Clients", c => c.Ssn == id);
             return Ok(deleted);
         }
     }
