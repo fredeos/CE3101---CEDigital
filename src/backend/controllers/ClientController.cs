@@ -8,8 +8,8 @@ namespace backend.controllers {
 
     [ApiController]
     [Route("clients")]
-    public class ClientController(ShopDBService db_ap) : ControllerBase {
-        private readonly ShopDBService db = db_ap;
+    public class ClientController(CEDigitalService db_ap) : ControllerBase {
+        private readonly CEDigitalService db = db_ap;
 
         [HttpGet("{id}")]
         public ActionResult<Client> GetClient(int id){

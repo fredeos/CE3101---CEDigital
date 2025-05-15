@@ -7,8 +7,8 @@ namespace backend.controllers {
 
     [ApiController]
     [Route("items")]
-    public class ItemController(ShopDBService db_ap) : ControllerBase {
-        private readonly ShopDBService db = db_ap;
+    public class ItemController(CEDigitalService db_ap) : ControllerBase {
+        private readonly CEDigitalService db = db_ap;
         
         [HttpGet("find/{id}")]
         public ActionResult<Item> GetItem(int id){

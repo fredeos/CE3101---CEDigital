@@ -1,4 +1,4 @@
-namespace backend.modelsñ{
+namespace backend.models{
 
     // Entidad AsignaciónEvaluación
     public class AssignmentEvaluation{
