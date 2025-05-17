@@ -3,9 +3,15 @@ import { Suspense } from 'react';
 
 import './App.css';
 
+// Rutas de la vista profesor
 import professorRoutes from './routes/professorRoutes';
 import ProfessorHome from './roles/Profesor/pages/Home';
 import ProfessorLogin from './roles/Profesor/pages/Login';
+
+// Rutas de la vista estudiante
+import estudianteRoutes from './routes/estudianteRoutes';
+import EstudianteLogin from './roles/Estudiante/loginEstudiante/login_estudiante';
+
 
 function App() {
   return (
@@ -25,10 +31,16 @@ function App() {
       ))}
 
       {/* Rutas de la vista del estudiante*/}
-      
-
+      <Route path="/cedigital-estudiantes" element={<EstudianteLogin />} />
+      {estudianteRoutes.map((route) => (
+        <Route
+          key={route.path}
+          path={route.path}
+          element={route.element}
+        />
+      ))}
+        
     </Routes>
-
   );
 }
 
