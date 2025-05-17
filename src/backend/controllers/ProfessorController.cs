@@ -4,7 +4,7 @@ using MongoDB.Driver;
 using backend.models;
 using backend.services;
 
-using backend.services.encryption;
+using backend.utils;
 
 namespace backend.controllers {
 

@@ -31,9 +31,9 @@ app.MapControllers();
 
 var dbservice = app.Services.GetRequiredService<CEDigitalService>();
 dbservice.sql_db = new SQLContext();
-dbservice.sql_db.Configure("CARLOSCL","CEDigital"); // Primer atributo depende de la máquina/localhost  Segundo atributo es el nombre de la DB
+dbservice.sql_db.Configure("LAPTOP-FREDE","CEDigital");
 
 dbservice.mongo_db = new MongoContext();
-dbservice.mongo_db.Configure("localhost",27017,"CEDigital"); // Solo depende de que ya este generada la DB en Mongo
+dbservice.mongo_db.Configure("localhost",27017,"CEDigital");
 
-app.Run();
+app.Run(); 

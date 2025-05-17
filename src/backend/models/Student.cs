@@ -27,7 +27,7 @@ namespace backend.models{
         required public string Email {get; set;}    // Correo electronico
 
         [BsonElement("phone_num")]    
-        required public int PhoneNumber {get; set;}  // Telefóno
+        required public string PhoneNumber {get; set;}  // Telefóno
 
         [BsonElement("password")]
         required public string Password {get; set;}    // Contraseña
