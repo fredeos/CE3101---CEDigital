@@ -1,12 +1,22 @@
 import { lazy } from "react";
 
 const LoginProfessor = lazy(() => import("../roles/Profesor/pages/Login"));
-const DashboardProfessor = lazy(() => import("../roles/Profesor/pages/Dashboard"));
+const CourseSelection = lazy(() => import("../roles/Profesor/pages/Courses"));
+const ProfessorDashboard = lazy(() => import("../roles/Profesor/pages/Dashboard"))
+const ProfessorHome = lazy(() => import("../roles/Profesor/pages/Home"));
 
 const professorRoutes = [
   {
-    path: "/dashboard",
-    element: <DashboardProfessor />,
+    path: "/profesor-cursos",
+    element: <CourseSelection />,
+  },
+  {
+    path: "/gestion-grupo",
+    element: <ProfessorDashboard />
+  },
+  {
+    path: "/cedigital-estudiantes",
+    element: <ProfessorHome />,
   }
 ];
 

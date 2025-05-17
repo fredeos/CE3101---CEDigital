@@ -20,7 +20,7 @@ function ProfessorLogin() {
   useEffect(() => {
     const isLoggedIn = checkAuth()
     if (isLoggedIn) {
-      //window.location.href = "/dashboard" // Redireccionamiento al dashboard
+      window.location.href = "/profesor-cursos" // Redireccionamiento al dashboard
     }
   }, [])
 
@@ -39,15 +39,17 @@ function ProfessorLogin() {
 
     const result = await login(credentials) // Llamada al hook de autenticacion del login
 
+    console.log(result)
+
     if (result.success) {
-      setNotification({type: "success", message: "¡Inicio de sesión exitoso! Redireccionando..."}) // Login éxitoso
+      setNotification({type: "success", message: "¡Inicio de sesión exitoso!"}) // Login éxitoso
 
       // Redireccionamiento a dashboard después de iniciar sesión correctamente
       setTimeout(() => {
-        //window.location.href = "/dashboard"   // Redireccionamiento al dashboard
+        window.location.href = "/profesor-cursos"   // Redireccionamiento al dashboard
       }, 1500)
     } else {
-      setNotification({type: "error", message: "Credenciales no válidas. Inténtelo de nuevo."}) // Login érroneo
+      setNotification({type: "error", message: result.error || "Credenciales no válidas. Inténtelo de nuevo."}) // Login érroneo
     }
   }
 

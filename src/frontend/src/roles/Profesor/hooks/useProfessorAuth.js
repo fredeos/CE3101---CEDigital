@@ -53,6 +53,8 @@ export function useProfessorAuth() {
         return { success: true, professor: professorData } // Retorna éxito y datos del profesor
       }
 
+      return { success: false, error: "Credenciales no válidas" }
+
     } catch (err) {
       
       setError(err.message) // Maneja errores

@@ -8,7 +8,7 @@ function ProfessorHome() {
 
   // Manejo de redireccionamiento al Login del profesor
   const handleLoginRedirect = () => {
-    window.location.href = "/login"
+    window.location.href = "/cedigital-profesores"
   }
 
   return (
@@ -23,12 +23,12 @@ function ProfessorHome() {
 
         {/* Descripción */}
         <p className="home-description">
-          Esta plataforma le permitirá a los profesores poder gestionar todos los aspetos relacionados a sus cursos
+          Por definir
         </p>
 
         {/* Botón de redireccionamiento */}
         <button className="login-redirect-button" onClick={handleLoginRedirect} onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}>
-          Ir a login
+          Ir a login de profesores
           <ArrowRight size={20} className={`arrow-icon ${isHovering ? "arrow-animate" : ""}`} />
         </button>
         
