@@ -167,7 +167,7 @@ ADD CONSTRAINT FK_GroupForStudent FOREIGN KEY (group_id) REFERENCES Academic.Gro
 
 ALTER TABLE Academic.ProfessorGroups
 ADD CONSTRAINT FK_GroupForProfessor FOREIGN KEY (group_id) REFERENCES Academic.Groups (id),
-    CONSTRAINT FK_ProfessorInGroup FOREIGN KEY (professor_id) REFERENCES Academic.Students (ssn);
+    CONSTRAINT FK_ProfessorInGroup FOREIGN KEY (professor_id) REFERENCES Academic.Professors (ssn);
 
 ALTER TABLE Academic.News
 ADD CONSTRAINT FK_GroupNews FOREIGN KEY (group_id) REFERENCES Academic.Groups (id),
@@ -183,11 +183,40 @@ ALTER TABLE Academic.StudentAssignments
 ADD CONSTRAINT FK_AssignmentForStudent FOREIGN KEY (assignment_id) REFERENCES Academic.Assignments (id),
     CONSTRAINT FK_StudentOnAssignment FOREIGN KEY (student_id) REFERENCES Academic.Students (ssn);
 
-ALTER TABLE Academic.AssignmentSubmissions
+/*ALTER TABLE Academic.AssignmentSubmissions
 ADD CONSTRAINT FK_SubmissionStudentGroup FOREIGN KEY (studentgroup_id) REFERENCES Academic.AssignmentGroups (id),
     CONSTRAINT FK_AssignmentForSubmission FOREIGN KEY (assignment_id) REFERENCES Academic.Assignments (id),
     CONSTRAINT FK_LastSubmittedFile FOREIGN KEY (submitted_file) REFERENCES Files.SubmissionFiles(id),
-    CONSTRAINT FK_LastFeedbackFile FOREIGN KEY (feedback_file) REFERENCES Files.FeedbackFiles (id);
+    CONSTRAINT FK_LastFeedbackFile FOREIGN KEY (feedback_file) REFERENCES Files.FeedbackFiles (id);*/
+
+-------------------------------------- Para AssignmentSubmissions --------------------------------------
+-- Para assignment_id
+ALTER TABLE Academic.AssignmentSubmissions
+ADD CONSTRAINT FK_SubmissionAssignment
+FOREIGN KEY (assignment_id) REFERENCES Academic.Assignments (id);
+
+-- Para student_id
+ALTER TABLE Academic.AssignmentSubmissions
+ADD CONSTRAINT FK_SubmissionStudent_SSN
+FOREIGN KEY (student_id) REFERENCES Academic.Students(ssn);
+
+-- Para group_id
+ALTER TABLE Academic.AssignmentSubmissions
+ADD CONSTRAINT FK_SubmissionGroup
+FOREIGN KEY (group_id) REFERENCES Academic.AssignmentGroups(id);
+
+-- Para submitted_file
+ALTER TABLE Academic.AssignmentSubmissions
+ADD CONSTRAINT FK_SubmittedFile
+FOREIGN KEY (submitted_file) REFERENCES Files.SubmissionFiles(id);
+
+-- Para feedback_file
+ALTER TABLE Academic.AssignmentSubmissions
+ADD CONSTRAINT FK_FeedbackFile
+FOREIGN KEY (feedback_file) REFERENCES Files.FeedbackFiles(id);
+
+-------------------------------------- Fin para AssignmentSubmissions --------------------------------------
+
 
 ALTER TABLE Academic.StudentSubmissions
 ADD CONSTRAINT FK_SubmissionForStudent FOREIGN KEY (submission_id) REFERENCES Academic.AssignmentSubmissions (id),

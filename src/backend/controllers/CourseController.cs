@@ -45,14 +45,14 @@ namespace backend.controllers{
 
         [HttpGet("courses/{code}")]
         public ActionResult<Course> GetCourse(string code)
-        { // Se debe ingresar el code en Swagger como 'código'
+        { 
             Console.WriteLine(code);
             String tablename = "Academic.Courses as AC";
             String attributes = $"AC.code as {nameof(Course.Code)}, AC.course_name as {nameof(Course.Name)}, AC.credits as {nameof(Course.Credits)}, AC.career_name as {nameof(Course.Career)}";
             String query = @$"
             SELECT {attributes} 
             FROM {tablename}
-            WHERE AC.code = {code};";
+            WHERE AC.code = \'{code}\';";
             var results = db.sql_db!.SELECT<Course>(query);
             if (results == null || results.Count == 0)
             {
