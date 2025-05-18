@@ -1,12 +1,12 @@
 import { lazy } from "react";
 
 const LoginEstudiante = lazy(() => import("../roles/Estudiante/loginEstudiante/login_estudiante"));
-//const DashboardProfessor = lazy(() => import("../roles/Profesor/pages/Dashboard"));
+const InicioEstudiante = lazy(() => import("../roles/Estudiante/inicioEstudiante/inicio_estudiante"));
 
 const estudianteRoutes = [
   {
-    //path: "/dashboard",
-    //element: <DashboardProfessor />,
+    path: "/inicio-Estudiantes",
+    element: <InicioEstudiante />,
   }
 ];
 
