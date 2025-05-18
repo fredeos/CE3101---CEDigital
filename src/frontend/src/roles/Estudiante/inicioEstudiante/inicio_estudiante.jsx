@@ -142,9 +142,7 @@ const StudentRecord = ({ onBack }) => {
 
       <div className="student-record-main">
         {/* Back button */}
-        <Button
-          variant="ghost"
-          className="student-record-back-button"
+        <Button variant="ghost" className="student-record-back-button"
           onClick={handleBackClick}
         >
           <ArrowLeft className="h-4 w-4" />
@@ -154,8 +152,8 @@ const StudentRecord = ({ onBack }) => {
           <CardTitle className="student-record-card-title">Cursos</CardTitle>
         </CardHeader>
         <Card className="student-record-card">
-          
-          
+
+
           <CardContent className="student-record-card-content">
             <Accordion type="single" collapsible className="w-full">
               {academicRecord.map((semester) => (
