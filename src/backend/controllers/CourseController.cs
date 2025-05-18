@@ -98,7 +98,7 @@ namespace backend.controllers{
             String tablename = "Academic.Courses";
             String retrieval = $"INSERTED.code as {nameof(Course.Code)}, INSERTED.course_name as {nameof(Course.Name)}, INSERTED.credits as {nameof(Course.Credits)}, INSERTED.career_name as {nameof(Course.Career)}";
             String modified_values = $"code = @{nameof(Course.Code)}, course_name = @{nameof(Course.Name)}, credits = @{nameof(Course.Credits)}, career_name = @{nameof(Course.Career)}";
-            String condition = $"code = {code}";
+            String condition = $"code = \'{code}\'";
 
             String query = @$"
             UPDATE {tablename} 

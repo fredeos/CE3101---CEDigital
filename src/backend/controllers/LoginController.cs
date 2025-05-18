@@ -16,7 +16,7 @@ namespace backend.controllers {
         [HttpGet("students/{email}/{password}")]
         public ActionResult<Student> LoginStudent(String email, String password)
         {
-            var results = db.mongo_db.find<Student>("Students", s => s.Email == email);
+            var results = db.mongo_db!.find<Student>("Students", s => s.Email == email);
             foreach (var student in results)
             {
                 student.Password = encryptor.DecryptString(student.Password);
@@ -30,7 +30,7 @@ namespace backend.controllers {
 
         [HttpGet("professors/{email}/{password}")]
         public ActionResult<Professor> LoginProfessor(String email, String password){
-            var results = db.mongo_db.find<Professor>("Professors", p => p.Email == email);
+            var results = db.mongo_db!.find<Professor>("Professors", p => p.Email == email);
             foreach (var professor in results)
             {
                 professor.Password = encryptor.DecryptString(professor.Password);
@@ -44,7 +44,7 @@ namespace backend.controllers {
         
         [HttpGet("admins/{email}/{password}")]
         public ActionResult<Admin> LoginAdministrator(String email, String password){
-            var results = db.mongo_db.find<Admin>("Administrators", a => a.Email == email);
+            var results = db.mongo_db!.find<Admin>("Administrators", a => a.Email == email);
             foreach (var admin in results)
             {
                 admin.Password = encryptor.DecryptString(admin.Password);
