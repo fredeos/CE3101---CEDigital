@@ -10,6 +10,16 @@ CREATE SCHEMA Files;
 -- 2. Creacion de tablas de la base datos
 
 ----------------------- [Tablas de esquema academico] -----------------------
+CREATE TABLE Academic.Professors (
+	id INT IDENTITY(1,1) UNIQUE,
+	ssn INT PRIMARY KEY
+);
+
+CREATE TABLE Academic.Students (
+	id INT IDENTITY(1,1) UNIQUE,
+	ssn INT PRIMARY KEY
+);
+
 CREATE TABLE Academic.Semesters (
 	id INT IDENTITY(1,1) UNIQUE,
     year INT NOT NULL,
@@ -33,19 +43,19 @@ CREATE TABLE Academic.Groups (
 
 CREATE TABLE Academic.CourseGroups (
     group_id INT NOT NULL, -- FK
-    student_id INT NOT NULL, -- FK(mongo)
+    student_id INT NOT NULL, -- FK
     PRIMARY KEY (group_id, student_id),
 );
 
 CREATE TABLE Academic.ProfessorGroups (
     group_id INT NOT NULL, -- FK
-    professor_id INT NOT NULL, -- FK(mongo)
+    professor_id INT NOT NULL, -- FK
     PRIMARY KEY (group_id, professor_id)
 );
 
 CREATE TABLE Academic.News (
     id INT IDENTITY(1,1) PRIMARY KEY,
-    professor_id INT NOT NULL, -- FK (mongo)
+    professor_id INT NOT NULL, -- FK
     group_id INT NOT NULL,  -- FK
     title NVARCHAR(50),
     messsage NVARCHAR(200),
@@ -69,7 +79,7 @@ CREATE TABLE Academic.Assignments (
 );
 
 CREATE TABLE Academic.StudentAssignments (
-    student_id INT NOT NULL, -- FK(mongo)
+    student_id INT NOT NULL, -- FK
     assignment_id INT NOT NULL, -- FK
     PRIMARY KEY (student_id, assignment_id)
 );
@@ -86,7 +96,7 @@ CREATE TABLE Academic.AssignmentSubmissions (
 );
 
 CREATE TABLE Academic.StudentSubmissions (
-    student_id INT NOT NULL, -- FK(mongo)
+    student_id INT NOT NULL, -- FK
     submission_id INT NOT NULL, -- FK
     PRIMARY KEY (student_id, submission_id)
 );
@@ -99,7 +109,7 @@ CREATE TABLE Academic.AssignmentGroups (
 );
 
 CREATE TABLE Academic.AssignmentStudentGroups (
-    student_id INT NOT NULL, --FK (mongo)
+    student_id INT NOT NULL, --FK
     group_id INT NOT NULL, -- FK
     PRIMARY KEY (student_id, group_id)
 );
@@ -144,22 +154,24 @@ CREATE TABLE Files.FeedbackFiles (
     feedback_file NVARCHAR(100),
     upload_date DATETIME DEFAULT(getdate()),
     PRIMARY KEY(submission_id, feedback_file)
-); 
+);
 
 -- 3. Modificacion de tablas para agregar restricciones y llaves foraneas
-
 ALTER TABLE Academic.Groups
 ADD CONSTRAINT FK_GroupOfCourse FOREIGN KEY (course_code) REFERENCES Academic.Courses (code),
     CONSTRAINT FK_GroupSemester FOREIGN KEY (semester_id) REFERENCES Academic.Semesters (id);
 
 ALTER TABLE Academic.CourseGroups
-ADD CONSTRAINT FK_GroupForStudent FOREIGN KEY (group_id) REFERENCES Academic.Groups (id);
+ADD CONSTRAINT FK_GroupForStudent FOREIGN KEY (group_id) REFERENCES Academic.Groups (id),
+    CONSTRAINT FK_StudentInGroup FOREIGN KEY (student_id) REFERENCES Academic.Students (ssn);
 
 ALTER TABLE Academic.ProfessorGroups
-ADD CONSTRAINT FK_GroupForProfessor FOREIGN KEY (group_id) REFERENCES Academic.Groups (id);
+ADD CONSTRAINT FK_GroupForProfessor FOREIGN KEY (group_id) REFERENCES Academic.Groups (id),
+    CONSTRAINT FK_ProfessorInGroup FOREIGN KEY (professor_id) REFERENCES Academic.Students (ssn);
 
 ALTER TABLE Academic.News
-ADD CONSTRAINT FK_GroupNews FOREIGN KEY (group_id) REFERENCES Academic.Groups (id);
+ADD CONSTRAINT FK_GroupNews FOREIGN KEY (group_id) REFERENCES Academic.Groups (id),
+    CONSTRAINT FK_ProfessorNews FOREIGN KEY (professor_id) REFERENCES Academic.Professors (ssn); 
 
 ALTER TABLE Academic.Rubrics 
 ADD CONSTRAINT FK_GroupRubrics FOREIGN KEY (group_id) REFERENCES Academic.Groups (id);
@@ -168,7 +180,8 @@ ALTER TABLE Academic.Assignments
 ADD CONSTRAINT FK_RubricAssignments FOREIGN KEY (rubric_id) REFERENCES Academic.Rubrics (id);
 
 ALTER TABLE Academic.StudentAssignments
-ADD CONSTRAINT FK_AssignmentForStudent FOREIGN KEY (assignment_id) REFERENCES Academic.Assignments (id);
+ADD CONSTRAINT FK_AssignmentForStudent FOREIGN KEY (assignment_id) REFERENCES Academic.Assignments (id),
+    CONSTRAINT FK_StudentOnAssignment FOREIGN KEY (student_id) REFERENCES Academic.Students (ssn);
 
 ALTER TABLE Academic.AssignmentSubmissions
 ADD CONSTRAINT FK_SubmissionStudentGroup FOREIGN KEY (studentgroup_id) REFERENCES Academic.AssignmentGroups (id),
@@ -177,10 +190,28 @@ ADD CONSTRAINT FK_SubmissionStudentGroup FOREIGN KEY (studentgroup_id) REFERENCE
     CONSTRAINT FK_LastFeedbackFile FOREIGN KEY (feedback_file) REFERENCES Files.FeedbackFiles (id);
 
 ALTER TABLE Academic.StudentSubmissions
-ADD CONSTRAINT FK_SubmissionForStudent FOREIGN KEY (submission_id) REFERENCES Academic.AssignmentSubmissions (id);
+ADD CONSTRAINT FK_SubmissionForStudent FOREIGN KEY (submission_id) REFERENCES Academic.AssignmentSubmissions (id),
+    CONSTRAINT FK_StudentAssignmentSubmission FOREIGN KEY (student_id) REFERENCES Academic.Students (ssn);
 
 ALTER TABLE Academic.AssignmentGroups
 ADD CONSTRAINT FK_GroupForAssigment FOREIGN KEY (assignment_id) REFERENCES Academic.Assignments (id);
 
 ALTER TABLE Academic.AssignmentStudentGroups
-ADD CONSTRAINT FK_StudenInAssignmentGroup FOREIGN KEY (group_id) REFERENCES Academic.AssignmentGroups (id);
+ADD CONSTRAINT FK_AssignmentGroupForStudent FOREIGN KEY (group_id) REFERENCES Academic.AssignmentGroups (id),
+    CONSTRAINT FK_StudentInAssignmentGroup FOREIGN KEY (student_id) REFERENCES Academic.Students (ssn);
+
+ALTER TABLE Files.Folders
+ADD CONSTRAINT FK_FolderGroup FOREIGN KEY (group_id) REFERENCES Academic.Groups (id),
+    CONSTRAINT FK_FolderParent FOREIGN KEY (parent_id) REFERENCES Files.Folders (id);
+
+ALTER TABLE Files.Documents
+ADD CONSTRAINT FK_DocumentFolder FOREIGN KEY (folder_id) REFERENCES Files.Folders (id);
+
+ALTER TABLE Files.Specifications
+ADD CONSTRAINT FK_AssignmentSpecification FOREIGN KEY (assignment_id) REFERENCES Academic.Assignments (id);
+
+ALTER TABLE Files.SubmissionFiles
+ADD CONSTRAINT FK_SubmissionFile FOREIGN KEY (submission_id) REFERENCES Academic.AssignmentSubmissions (id);
+
+ALTER TABLE Files.FeedbackFiles
+ADD CONSTRAINT FK_FeedbackFile FOREIGN KEY (submission_id) REFERENCES Academic.AssignmentSubmissions (id);

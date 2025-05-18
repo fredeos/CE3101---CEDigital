@@ -2,6 +2,7 @@
     > SQL Server:
         Server Name: <device server instance>
         Database Name: CEDigital
+
     > MongoDB Connection:
         IP: localhost
         Port: 27017
