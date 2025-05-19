@@ -86,8 +86,9 @@ CREATE TABLE Academic.StudentAssignments (
 
 CREATE TABLE Academic.AssignmentSubmissions (
     id INT IDENTITY(1,1) PRIMARY KEY,
-    studentgroup_id INT NOT NULL, -- FK
     assignment_id INT NOT NULL, -- FK
+    student_id INT NOT NULL, -- FK a un estudiante
+    group_id INT NOT NULL, -- FK a un subgrupo de estudiantes
     grade FLOAT(2),
     commentary NVARCHAR(200),
     submitted_file INT, -- FK

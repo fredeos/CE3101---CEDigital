@@ -8,8 +8,7 @@ namespace backend.controllers {
 
     [ApiController]
     [Route("api/students")]
-    public class StudentController(CEDigitalService db_ap) : ControllerBase
-    {
+    public class StudentController(CEDigitalService db_ap) : ControllerBase {
         private readonly CEDigitalService db = db_ap;
         private readonly Hashcrypt encryptor = new();
 
