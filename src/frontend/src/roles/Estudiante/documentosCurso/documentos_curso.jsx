@@ -1,18 +1,18 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ArrowLeft, ArrowRight, User, Folder, FileText, ChevronRight, Download, ExternalLink, ArrowUp } from "lucide-react"
+import { ArrowLeft, ArrowRight, User, Folder, FileText, Download, ExternalLink, ArrowUp } from "lucide-react"
 import "./documentos_curso.css"
 
 const FileExplorer = ({ onBack }) => {
-    // Sample user data
+    // Ejemplo de info del usuario
     const user = {
         name: "Alex Johnson",
         email: "alex.johnson@university.edu",
         studentId: "U2023456",
     }
 
-    // Sample file structure data as an array - in a real app, this would come from an API
+    // Ejemplo de como estará los datos estructurados enviados por la api
     const fileSystem = [
         {
             id: "root",
@@ -125,50 +125,33 @@ const FileExplorer = ({ onBack }) => {
         },
     ]
 
-    // State to track current folder
+    // Estado para monitorear el folder actual
     const [currentFolderId, setCurrentFolderId] = useState("root")
 
-    // Helper function to find an item by ID
+    // Encuentra un objeto en la lista de objetos de archivos y carpetas
     const findItemById = (id) => {
         return fileSystem.find((item) => item.id === id)
     }
 
-    // Get current folder data
+    // Obtiene el folder actual (el objeto con los datos)
     const currentFolder = findItemById(currentFolderId)
 
     // Get items in current folder
     const folderItems = currentFolder.items.map((id) => findItemById(id))
 
-    // Function to build breadcrumb path
-    const getBreadcrumbPath = () => {
-        const path = []
-        let current = currentFolder
-        path.unshift({ id: current.id, name: current.name })
-
-        while (current.parent) {
-            current = findItemById(current.parent)
-            path.unshift({ id: current.id, name: current.name })
-        }
-
-        return path
-    }
-
-    // Get breadcrumb path
-    const breadcrumbPath = getBreadcrumbPath()
-
-    // Navigate to folder
+    // Cambia la carpeta actual, para simular la salida o la entrada en una carpeta
     const navigateToFolder = (folderId) => {
         setCurrentFolderId(folderId)
     }
 
-    // Navigate to parent folder
+    // Cambia la carpeta actual, por el padre de la que es actual, para simular la salida de una carpeta (regresarse)
     const navigateToParent = () => {
         if (currentFolder.parent) {
             setCurrentFolderId(currentFolder.parent)
         }
     }
 
-    // Handle file click
+    // Para abrir archivos enviados por el api
     const handleFileClick = (file) => {
     console.log(`Opening file: ${file.name}`)
     // In a real app, this would open the file in the browser or download it
@@ -176,23 +159,23 @@ const FileExplorer = ({ onBack }) => {
     // window.open(fileUrl, '_blank')
     }
 
-    // Get icon for file type
+    // Se obtiene el tipo de icono según el tipo de archivo
     const getFileIcon = (fileType) => {
-    switch (fileType) {
-        case "pdf":
-        return <FileText className="h-5 w-5 text-red-500" />
-        case "word":
-        return <FileText className="h-5 w-5 text-blue-500" />
-        case "excel":
-        return <FileText className="h-5 w-5 text-green-500" />
-        case "powerpoint":
-        return <FileText className="h-5 w-5 text-orange-500" />
-        default:
-        return <FileText className="h-5 w-5 text-gray-500" />
-    }
+        switch (fileType) {
+            case "pdf":
+                return <FileText className="h-5 w-5 text-red-500" />
+            case "word":
+                return <FileText className="h-5 w-5 text-blue-500" />
+            case "excel":
+                return <FileText className="h-5 w-5 text-green-500" />
+            case "powerpoint":
+                return <FileText className="h-5 w-5 text-orange-500" />
+            default:
+                return <FileText className="h-5 w-5 text-gray-500" />
+        }
     }
 
-    // Check if file is viewable in browser
+    // Verificar si el archivo es posible verlo con el browser (si está en la lista = true, si no = false)
     const isViewableInBrowser = (fileType) => {
         return ["pdf", "jpg", "jpeg", "png", "gif"].includes(fileType)
     }
@@ -216,7 +199,7 @@ const FileExplorer = ({ onBack }) => {
             </header>
 
             <div className="container mx-auto py-8 px-4">
-                {/* Back button */}
+                {/* Boton para volver */}
                 <Button
                     variant="ghost"
                     className="back-button"
@@ -232,7 +215,7 @@ const FileExplorer = ({ onBack }) => {
                     </CardHeader>
 
                     <CardContent className="card-content-container">
-                        {/* Breadcrumb navigation - Fixed to avoid nested li elements */}
+                        {/* Encabezado que muestra la carpeta actual y el boton para salir de una carpeta*/}
                         <div className="nav-container">
                             <ArrowRight className="h-3 w-6" />
                             <u className="user-name">{currentFolder.name}</u>
@@ -245,7 +228,7 @@ const FileExplorer = ({ onBack }) => {
                             )}
                         </div>
 
-                        {/* Folders */}
+                        {/* Manejo de vista de carpetas */}
                         {folderItems.filter((item) => item.type === "folder").length > 0 && (
                         <div className="folders-section">
                             <h3 className="folders-title">Folders</h3>
@@ -265,7 +248,7 @@ const FileExplorer = ({ onBack }) => {
                         </div>
                         )}
 
-                        {/* Files */}
+                        {/* Manejo de vista de archivos */}
                         {folderItems.filter((item) => item.type === "file").length > 0 && (
                         <div className="files-section">
                             <h3 className="files-title">Files</h3>
@@ -288,23 +271,23 @@ const FileExplorer = ({ onBack }) => {
                                         <span className="file-date">{file.uploadDate}</span>
                                         {isViewableInBrowser(file.fileType) ? (
                                             <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            className="file-action-button"
-                                            onClick={() => handleFileClick(file)}
-                                            >
-                                            <ExternalLink className="h-4 w-4 mr-1" />
-                                            Open
+                                                variant="ghost"
+                                                size="sm"
+                                                className="file-action-button"
+                                                onClick={() => handleFileClick(file)}
+                                                >
+                                                <ExternalLink className="h-4 w-4 mr-1" />
+                                                Open
                                             </Button>
                                         ) : (
                                             <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            className="file-action-button"
-                                            onClick={() => handleFileClick(file)}
-                                            >
-                                            <Download className="h-4 w-4 mr-1" />
-                                            Download
+                                                variant="ghost"
+                                                size="sm"
+                                                className="file-action-button"
+                                                onClick={() => handleFileClick(file)}
+                                                >
+                                                <Download className="h-4 w-4 mr-1" />
+                                                Download
                                             </Button>
                                         )}
                                     </div>
@@ -314,7 +297,7 @@ const FileExplorer = ({ onBack }) => {
                         </div>
                         )}
 
-                        {/* Empty folder message */}
+                        {/* Cuando la carpeta está vacía */}
                         {folderItems.length === 0 && (
                         <div className="empty-folder">This folder is empty.</div>
                         )}
