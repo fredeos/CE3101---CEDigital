@@ -86,13 +86,14 @@ CREATE TABLE Academic.StudentAssignments (
 
 CREATE TABLE Academic.AssignmentSubmissions (
     id INT IDENTITY(1,1) PRIMARY KEY,
-    studentgroup_id INT NOT NULL, -- FK
-    assignment_id INT NOT NULL, -- FK
-    grade FLOAT(2),
-    commentary NVARCHAR(200),
-    submitted_file INT, -- FK
-    feedback_file INT, -- FK
-    submission_date DATETIME DEFAULT(getdate()),
+    assignment_id INT NOT NULL,
+    student_id INT NULL,
+    group_id INT NULL,
+    grade DECIMAL(5,2) NULL,
+    commentary NVARCHAR(200) NULL,
+    submitted_file INT NULL,
+    feedback_file INT NULL,
+    submission_date DATETIME DEFAULT(GETDATE())
 );
 
 CREATE TABLE Academic.StudentSubmissions (
@@ -156,6 +157,42 @@ CREATE TABLE Files.FeedbackFiles (
     PRIMARY KEY(submission_id, feedback_file)
 );
 
+-- Función para la tabla AssignmentSubmissions
+
+USE CEDigital;
+GO
+
+CREATE FUNCTION dbo.ValidateSubmissionType(
+    @assignment_id INT,
+    @student_id INT,
+    @group_id INT
+)
+RETURNS BIT
+AS
+BEGIN
+    DECLARE @is_valid BIT = 0;
+    DECLARE @individual_flag INT;
+    
+    SELECT @individual_flag = individual_flag 
+    FROM Academic.Assignments 
+    WHERE id = @assignment_id;
+    
+    IF (@individual_flag = 0 AND @student_id IS NOT NULL AND @group_id IS NULL)
+        OR (@individual_flag = 1 AND @group_id IS NOT NULL AND @student_id IS NULL)
+        SET @is_valid = 1;
+    
+    RETURN @is_valid;
+END;
+GO
+
+-- Constraint para la función
+
+ALTER TABLE Academic.AssignmentSubmissions
+ADD CONSTRAINT CK_SubmissionType 
+CHECK (dbo.ValidateSubmissionType(assignment_id, student_id, group_id) = 1);
+
+-- Fin de Función para la tabla AssignmentSubmissions
+
 -- 3. Modificacion de tablas para agregar restricciones y llaves foraneas
 ALTER TABLE Academic.Groups
 ADD CONSTRAINT FK_GroupOfCourse FOREIGN KEY (course_code) REFERENCES Academic.Courses (code),
@@ -183,11 +220,6 @@ ALTER TABLE Academic.StudentAssignments
 ADD CONSTRAINT FK_AssignmentForStudent FOREIGN KEY (assignment_id) REFERENCES Academic.Assignments (id),
     CONSTRAINT FK_StudentOnAssignment FOREIGN KEY (student_id) REFERENCES Academic.Students (ssn);
 
-/*ALTER TABLE Academic.AssignmentSubmissions
-ADD CONSTRAINT FK_SubmissionStudentGroup FOREIGN KEY (studentgroup_id) REFERENCES Academic.AssignmentGroups (id),
-    CONSTRAINT FK_AssignmentForSubmission FOREIGN KEY (assignment_id) REFERENCES Academic.Assignments (id),
-    CONSTRAINT FK_LastSubmittedFile FOREIGN KEY (submitted_file) REFERENCES Files.SubmissionFiles(id),
-    CONSTRAINT FK_LastFeedbackFile FOREIGN KEY (feedback_file) REFERENCES Files.FeedbackFiles (id);*/
 
 -------------------------------------- Para AssignmentSubmissions --------------------------------------
 -- Para assignment_id
@@ -214,6 +246,7 @@ FOREIGN KEY (submitted_file) REFERENCES Files.SubmissionFiles(id);
 ALTER TABLE Academic.AssignmentSubmissions
 ADD CONSTRAINT FK_FeedbackFile
 FOREIGN KEY (feedback_file) REFERENCES Files.FeedbackFiles(id);
+
 
 -------------------------------------- Fin para AssignmentSubmissions --------------------------------------
 
