@@ -14,6 +14,7 @@ namespace backend.controllers
     {
         CEDigitalService db = db_ap;
 
+        // ------------------------------------------ Metodos GET ------------------------------------------
         [HttpGet]
         public ActionResult<IEnumerable<Semester>> GetAllSemesters()
         {
@@ -32,8 +33,7 @@ namespace backend.controllers
             G.id as {nameof(SemesterGroupInfoDTO.ID)}, G.num as {nameof(SemesterGroupInfoDTO.Number)},
             G.course_code as {nameof(SemesterGroupInfoDTO.CourseCode)}, C.course_name as {nameof(SemesterGroupInfoDTO.CourseName)},
             G.semester_id as {nameof(SemesterGroupInfoDTO.Semester_ID)}, S.year as {nameof(SemesterGroupInfoDTO.SemesterYear)}, S.period as {nameof(SemesterGroupInfoDTO.SemesterPeriod)},
-            PG.professor_id as {nameof(SemesterGroupInfoDTO.Professor_ID)}
-            "; 
+            PG.professor_id as {nameof(SemesterGroupInfoDTO.Professor_ID)}";
 
             string sql_query = $@"
             SELECT {attributes}
@@ -43,21 +43,26 @@ namespace backend.controllers
             ";
 
             var results = db.sql_db!.SELECT<SemesterGroupInfoDTO>(sql_query);
-            if (results != null & results!.Count > 0){
+            if (results != null & results!.Count > 0)
+            {
                 foreach (var group in results)
                 {
                     var professor = db.mongo_db!.find<Professor>("Professors", p => p.IDCard == group.Professor_ID).FirstOrDefault();
-                    if (professor != null){
+                    if (professor != null)
+                    {
                         group.ProfessorName = professor.FirstName;
                         group.ProfessorLastName = professor.FirstLastName;
-                    } else {
+                    }
+                    else
+                    {
                         return NotFound($"Professor (ID={group.Professor_ID}) not found for {group.CourseCode} group #{group.Number}");
                     }
                 }
             }
             return Ok(results);
         }
-
+        
+        // ------------------------------------------ Metodos POST ------------------------------------------
         [HttpPost]
         public ActionResult<Semester> CreateSemester([FromBody] Semester semester)
         {
@@ -73,6 +78,10 @@ namespace backend.controllers
             }
             return CreatedAtAction(nameof(CreateSemester), new { id = result.Id }, result);
         }
+
+        // ------------------------------------------ Metodos PUT ------------------------------------------
+
+        // ------------------------------------------ Metodos DELETE ------------------------------------------
 
     }
 }

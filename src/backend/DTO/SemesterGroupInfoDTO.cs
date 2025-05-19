@@ -3,7 +3,7 @@
 namespace backend.models.DTO{
     public class SemesterGroupInfoDTO
     {
-        // Propieades del grupo
+        // Propiedades del grupo
         required public int ID { get; set; }  // PK
         public int Number { get; set; }   // Número de grupo
 

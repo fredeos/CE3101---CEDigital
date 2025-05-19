@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Dapper;
 using backend.models;
 using backend.services;
+using backend.DTO;
 
 
 namespace backend.controllers
@@ -10,11 +11,38 @@ namespace backend.controllers
 
     [ApiController]
     [Route("api")]
-
     public class GroupController(CEDigitalService db_ap) : ControllerBase
     {
-
         private readonly CEDigitalService db = db_ap;
+
+        // ------------------------------------------ Metodos GET ------------------------------------------
+        [HttpGet("groups/student/{id}")]
+        public ActionResult<IEnumerable<GroupOfCourseForStudentDTO>> GetAllGroupsForStudent(int id)
+        {
+            string table = @$"((Academic.Groups as G JOIN Academic.CourseGroups as A ON G.id = A.group_id)
+            JOIN Academic.Semesters as S ON G.semester_id = S.id)
+            JOIN Academic.Courses as C ON G.course_code = C.code";
+
+            string attributes = $@"G.id as {nameof(GroupOfCourseForStudentDTO.ID)}, G.num as {nameof(GroupOfCourseForStudentDTO.GroupNum)},
+            C.course_name as {nameof(GroupOfCourseForStudentDTO.CourseName)}, S.id as {nameof(GroupOfCourseForStudentDTO.SemesterID)},
+            S.year as {nameof(GroupOfCourseForStudentDTO.SemesterYear)}, S.period as {nameof(GroupOfCourseForStudentDTO.SemesterPeriod)}";
+
+            string condition = $@"A.student_id = {id}";
+            string sort = $@"{nameof(GroupOfCourseForStudentDTO.SemesterYear)} DESC, {nameof(GroupOfCourseForStudentDTO.SemesterPeriod)} DESC";
+
+            string sql_query = $@"
+            SELECT {attributes}
+            FROM {table}
+            WHERE {condition}
+            ORDER BY {sort}; ";
+
+            var results = db.sql_db!.SELECT<GroupOfCourseForStudentDTO>(sql_query);
+
+            return Ok(results);
+        }
+
+
+        // ------------------------------------------ Metodos POST ------------------------------------------
 
         /// <summary>
         /// Permite añadir grupos en un semestre existente colocando tanto el código del curso, 
@@ -22,7 +50,7 @@ namespace backend.controllers
         /// </summary>
         /// <param name="Group"></param>
         /// <returns></returns>
-        
+
         [HttpPost("add/group")]
         public ActionResult<Group> AddGroup([FromBody] Group Group)
         {
