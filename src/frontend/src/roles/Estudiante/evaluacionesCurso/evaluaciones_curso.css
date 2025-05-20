@@ -1,0 +1,252 @@
+.assignments-view-container {
+    min-height: 100vh;
+    background-color: #f8fafc;
+}
+
+/* Header styles */
+.assignments-view-header {
+    background-color: white;
+    border-bottom: 1px solid #e2e8f0;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    padding: 1rem 1.5rem;
+}
+
+.header-container {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-title {
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: #1e293b;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.user-details {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.user-name {
+    font-weight: 500;
+}
+
+.user-email {
+    font-size: 0.875rem;
+    color: #64748b;
+}
+
+.user-icon {
+    background-color: #f1f5f9;
+    padding: 0.5rem;
+    border-radius: 9999px;
+}
+
+.icon {
+    height: 1.25rem;
+    width: 1.25rem;
+    color: #475569;
+}
+
+/* Contenido principal en la tarjeta de evaluaciones */
+.main-content {
+    width: 100%;
+    max-width: 95%;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 2rem 1rem;
+}
+
+.back-button {
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: #475569;
+}
+
+.back-button:hover {
+    color: #0f172a;
+}
+
+.button-icon {
+    height: 1rem;
+    width: 1rem;
+}
+
+.assignments-card {
+    width: 100%;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    gap: 0;
+
+}
+
+.card-header {
+    background-color: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.card-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.card-content {
+    padding: 1.5rem;
+}
+
+/* Estilos del elemento accordion */
+.accordion {
+    width: 100%;
+}
+
+.accordion-trigger {
+    padding: 1rem 0.25rem;
+}
+
+.category-header {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+@media (min-width: 640px) {
+    .category-header {
+        flex-direction: row;
+        align-items: center;
+    }
+}
+
+.category-name {
+    font-weight: 500;
+    font-size: 1.125rem;
+}
+
+.category-percentage {
+    display: flex;
+    align-items: center;
+    margin-top: 0.5rem;
+}
+
+@media (min-width: 640px) {
+    .category-percentage {
+        margin-top: 0;
+        margin-left: auto;
+    }
+}
+
+.earned {
+    font-weight: 500;
+    margin-right: 0.3rem;
+}
+
+.total {
+    color: #64748b;
+}
+
+.accordion-content {
+    padding-top: 0.5rem;
+    padding-bottom: 1rem;
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+}
+
+.assignments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.assignment-button {
+    width: 100%;
+    justify-content: space-between;
+    text-align: left;
+    height: auto;
+    padding: 0.75rem 1rem;
+}
+
+.assignment-button:hover {
+    background-color: #f8fafc;
+}
+
+.assignment-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.assignment-title {
+    display: flex;
+    align-items: center;
+}
+
+.assignment-icon {
+    height: 1rem;
+    width: 1rem;
+    margin-right: 0.5rem;
+    color: #64748b;
+}
+
+.name {
+    font-weight: 500;
+}
+
+.limit-date {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin-top: 0.25rem;
+}
+
+.assignment-grade {
+    display: flex;
+    flex-direction: flex;
+    align-items: flex-end;
+    font-size: 0.875rem;
+    
+}
+
+/* Estilo de la nota final*/
+.final-grade-header {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+}
+
+@media (min-width: 640px) {
+    .final-grade-header {
+        flex-direction: row;
+        align-items: center;
+    }
+}
+
+.grade-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.grade-display {
+    display: flex;
+    align-items: center;
+    margin-top: 0.5rem;
+    font-size: 1.125rem;
+    margin-right: 0.75rem;
+}
+
+@media (min-width: 640px) {
+    .grade-display {
+        margin-top: 0;
+    }
+}
