@@ -119,40 +119,54 @@ CREATE TABLE Academic.AssignmentStudentGroups (
 CREATE TABLE Files.Folders (
     id INT IDENTITY(1,1) PRIMARY KEY,
     group_id INT NOT NULL, -- FK
-    parent_id INT, -- FK
-    folder_name NVARCHAR(50) NOT NULL
+    parent_id INT NULL, -- FK
+    folder_name NVARCHAR(50) NOT NULL,
+    upload_date DATETIME DEFAULT(getdate()),
 );
 
+-- Ruta de guardado de documentos: CE3101---CEDigital/src/backend/content/documents
 CREATE TABLE Files.Documents (
     id INT IDENTITY(1,1) PRIMARY KEY,
     folder_id INT NOT NULL, -- FK
     file_name NVARCHAR(50) NOT NULL,
     file_type NVARCHAR(10) NOT NULL,
-    size INT NOT NULL,
-    filepath NVARCHAR(100) NOT NULL,
+    size BIGINT NOT NULL,
+    filepath NVARCHAR(160) NOT NULL,
     upload_date DATETIME DEFAULT(getdate()),
 );
 
+-- Ruta de guardado de especificaiones: CE3101---CEDigital/src/backend/content/specifications
 CREATE TABLE Files.Specifications (
     id INT IDENTITY(1,1) UNIQUE,
     assignment_id INT NOT NULL, -- FK
-    specification_file NVARCHAR(100),
+    file_name NVARCHAR(50) NOT NULL,
+    file_type NVARCHAR(10) NOT NULL,
+    size BIGINT NOT NULL,
+    specification_file NVARCHAR(150), -- filepath: guardado con un nombre autogenerado (GUID)
     upload_date DATETIME DEFAULT(getdate()),
     PRIMARY KEY(assignment_id, specification_file)
-);
+);  
 
+-- Ruta de guardado de entregables: CE3101---CEDigital/src/backend/content/submissions
 CREATE TABLE Files.SubmissionFiles (
     id INT IDENTITY(1,1) UNIQUE,
     submission_id INT NOT NULL, -- FK
-    submission_file NVARCHAR(100),
+    file_name NVARCHAR(50) NOT NULL,
+    file_type NVARCHAR(10) NOT NULL,
+    size BIGINT NOT NULL,
+    submission_file NVARCHAR(150), -- filepath: guardado con un nombre autogenerado (GUID)
     upload_date DATETIME DEFAULT(getdate()),
     PRIMARY KEY(submission_id, submission_file)
 );
 
+-- Ruta de guardado de retroalimentaciones: CE3101---CEDigital/src/backend/content/feedbacks
 CREATE TABLE Files.FeedbackFiles (
     id INT IDENTITY(1,1) UNIQUE,
     submission_id INT NOT NULL, -- FK
-    feedback_file NVARCHAR(100),
+    file_name NVARCHAR(50) NOT NULL,
+    file_type NVARCHAR(10) NOT NULL,
+    size BIGINT NOT NULL,
+    feedback_file NVARCHAR(150), -- filepath: guardado con un nombre autogenerado (GUID)
     upload_date DATETIME DEFAULT(getdate()),
     PRIMARY KEY(submission_id, feedback_file)
 );
@@ -249,7 +263,6 @@ FOREIGN KEY (feedback_file) REFERENCES Files.FeedbackFiles(id);
 
 
 -------------------------------------- Fin para AssignmentSubmissions --------------------------------------
-
 
 ALTER TABLE Academic.StudentSubmissions
 ADD CONSTRAINT FK_SubmissionForStudent FOREIGN KEY (submission_id) REFERENCES Academic.AssignmentSubmissions (id),

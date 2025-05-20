@@ -28,6 +28,34 @@ VALUES
 ('CE-3101', 1, 1),
 ('CE-4101', 1, 1);
 
+-- Insertar raices de los cursos
+INSERT INTO Files.Folders (group_id, parent_id, folder_name)
+VALUES
+(1, NULL, 'root'),
+(2, NULL, 'root'),
+(3, NULL, 'root'),
+(4, NULL, 'root'),
+(5, NULL, 'root');
+
+-- Insertar estructura basica de todos los cursos
+INSERT INTO Files.Folders (group_id, parent_id, folder_name)
+VALUES
+(1, 1, 'Documentos públicos'), (1, 1, 'Examenes'), (1, 1, 'Proyectos'), (1, 1, 'Tareas'), (1, 1, 'Apuntes'),
+(2, 2, 'Documentos públicos'), (2, 2, 'Examenes'), (2, 2, 'Proyectos'), (2, 2, 'Tareas'), (2, 2, 'Apuntes'),
+(3, 3, 'Documentos públicos'), (3, 3, 'Examenes'), (3, 3, 'Proyectos'), (3, 3, 'Tareas'), (3, 3, 'Apuntes'),
+(4, 4, 'Documentos públicos'), (4, 4, 'Examenes'), (4, 4, 'Proyectos'), (4, 4, 'Tareas'), (4, 4, 'Apuntes'),
+(5, 5, 'Documentos públicos'), (5, 5, 'Examenes'), (5, 5, 'Proyectos'), (5, 5, 'Tareas'), (5, 5, 'Apuntes');
+
+-- Insertar subfolder y documento de prueba para un folder curso de un curso
+INSERT INTO Files.Folders (group_id, parent_id, folder_name)
+VALUES
+(1,6,'Notas');
+
+INSERT INTO Files.Documents (folder_id, file_name, file_type, size, filepath)
+VALUES
+(1, 'archivo', 'txt', 500, '<invalid>'), (6, 'Plan de curso', 'pdf', 20000, '<invalid>');
+
+
 INSERT INTO Academic.ProfessorGroups (group_id, professor_id)
 VALUES
 (1, 309801693), (5, 309801693),
