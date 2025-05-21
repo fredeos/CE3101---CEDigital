@@ -1,11 +1,11 @@
 namespace backend.models{
 
     //Entidad GrupoEvaluación
-    public class EvaluationGroup{
+    public class AssignmentGroups{
 
         public int ID {get; set;} // PK
         
-        required public int AssignmentEvaluationID {get; set;} // FK relación con AsignaciónEvaluación
+        required public int AssignmentID {get; set;} // FK relación con AsignaciónEvaluación
 
         public int Number {get; set;}
     }
