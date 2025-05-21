@@ -11,7 +11,7 @@ namespace backend.DTO
         public int? ParentID { get; set; }
         required public string FileName { get; set; }
         public string? FileType { get; set; }
-        public int? FileSize { get; set; }
-        required public DateTime UploadDate { get; set; }
+        public long? FileSize { get; set; }
+        public DateTime? UploadDate { get; set; }
     }
 }

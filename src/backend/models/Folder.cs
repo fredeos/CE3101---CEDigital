@@ -3,7 +3,6 @@ namespace backend.models{
     // Entidad Carpeta
     public class Folder
     {
-
         required public int ID { get; set; }  // PK
 
         required public int GroupID { get; set; } // FK de la relación con Grupo
@@ -12,7 +11,7 @@ namespace backend.models{
 
         required public string Name { get; set; }
         
-        public DateTime? UploadDate { get; set; } // Fecha de creación de la carpeta
+        public DateTime? CreationDate { get; set; } // Fecha de creación de la carpeta
 
     }
 }

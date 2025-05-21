@@ -8,10 +8,10 @@ namespace backend.models{
 
         required public string Name {get; set;}
 
-        public int Percentage {get; set;}
+        public double Percentage {get; set;}
 
         public DateTime Deadline {get; set;}
 
-        public bool IndividualAssignment {get; set;} 
+        public int IsIndividualAssignment {get; set;} 
     }
 }

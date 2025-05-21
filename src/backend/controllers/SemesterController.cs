@@ -68,9 +68,10 @@ namespace backend.controllers
         {
             string sql_query = $@"
             INSERT INTO Academic.Semesters (year, period)
-            OUTPUT INSERTED.id as {nameof(Semester.Id)}, INSERTED.year as {nameof(Semester.Year)}, INSERTED.period as {nameof(Semester.Period)}
-            VALUES (@{nameof(Semester.Year)}, @{nameof(Semester.Period)});
-            ";
+            OUTPUT INSERTED.id as {nameof(Semester.Id)}, INSERTED.year as {nameof(Semester.Year)}, 
+                   INSERTED.period as {nameof(Semester.Period)}
+            VALUES (@{nameof(Semester.Year)}, @{nameof(Semester.Period)}); ";
+            
             var result = db.sql_db!.INSERT<Semester>(sql_query, semester);
             if (result == null)
             {

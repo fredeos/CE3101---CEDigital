@@ -31,8 +31,20 @@ CREATE TABLE Academic.Courses (
     code NVARCHAR(8) PRIMARY KEY,
     course_name NVARCHAR(80), 
     credits INT NOT NULL,
-    career_name NVARCHAR(50)
+    career_name NVARCHAR(50),
+    available_flag INT NOT NULL DEFAULT(1) -- 0: no disponible, 1: disponible
 );
+
+ALTER TABLE Academic.Courses
+ADD available_flag INT NOT NULL DEFAULT 1;
+
+SELECT S.year as Year, S.period as Period, C.code as CourseCode, C.course_name as Name, C.career_name as Career, COUNT(G.course_code) as AvailableGroups
+FROM (Academic.Courses as C JOIN Academic.Groups as G
+ON G.course_code = C.code) JOIN Academic.Semesters as S
+ON G.semester_id = S.id
+WHERE C.available_flag = 1
+GROUP BY S.year, S.period, C.code, C.course_name, C.career_name
+ORDER BY course_name, Year DESC, Period DESC; 
 
 CREATE TABLE Academic.Groups (
     id INT IDENTITY(1,1) PRIMARY KEY,
@@ -91,8 +103,8 @@ CREATE TABLE Academic.AssignmentSubmissions (
     group_id INT NULL,
     grade DECIMAL(5,2) NULL,
     commentary NVARCHAR(200) NULL,
-    submitted_file INT NULL,
-    feedback_file INT NULL,
+    submitted_file INT NULL, -- FK
+    feedback_file INT NULL, -- FK
     submission_date DATETIME DEFAULT(GETDATE())
 );
 

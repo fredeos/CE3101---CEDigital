@@ -46,6 +46,8 @@ VALUES
 (4, 4, 'Documentos públicos'), (4, 4, 'Examenes'), (4, 4, 'Proyectos'), (4, 4, 'Tareas'), (4, 4, 'Apuntes'),
 (5, 5, 'Documentos públicos'), (5, 5, 'Examenes'), (5, 5, 'Proyectos'), (5, 5, 'Tareas'), (5, 5, 'Apuntes');
 
+SELECT * FROM Files.Documents;
+
 -- Insertar subfolder y documento de prueba para un folder curso de un curso
 INSERT INTO Files.Folders (group_id, parent_id, folder_name)
 VALUES

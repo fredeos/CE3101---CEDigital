@@ -1,9 +1,7 @@
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 
 using backend.models;
-using backend.models.DTO;
 using backend.services;
 using backend.DTO;
 
@@ -25,8 +23,8 @@ namespace backend.controllers
             { // Si no se especifica un folder_id, se obtienen todos los archivos de la carpeta raiz del curso
                 // Buscar ID de la raiz del grupo
                 string sql_query1 = $@"
-                SELECT F.id as {nameof(Folder.ID)}, F.group_id as {nameof(Folder.GroupID)}, 
-                F.parent_id as {nameof(Folder.ParentFolderID)}, F.folder_name as {nameof(Folder.Name)}
+                SELECT  F.id as {nameof(Folder.ID)}, F.group_id as {nameof(Folder.GroupID)}, 
+                        F.parent_id as {nameof(Folder.ParentFolderID)}, F.folder_name as {nameof(Folder.Name)}
                 FROM Files.Folders as F
                 WHERE F.group_id = {group_id} AND F.parent_id IS NULL; ";
 
@@ -38,8 +36,8 @@ namespace backend.controllers
 
                 // Buscar todas las carpetas en la raiz
                 string sql_query2 = $@"
-                SELECT F.id as {nameof(FileDTO.FileID)}, F.parent_id as {nameof(FileDTO.ParentID)},
-                F.folder_name as {nameof(FileDTO.FileName)}, F.upload_date as {nameof(FileDTO.UploadDate)}
+                SELECT  F.id as {nameof(FileDTO.FileID)}, F.parent_id as {nameof(FileDTO.ParentID)},
+                        F.folder_name as {nameof(FileDTO.FileName)}, F.upload_date as {nameof(FileDTO.UploadDate)}
                 FROM Files.Folders as F
                 WHERE F.group_id = {group_id} AND F.parent_id = {root_folder.ID}
                 ORDER BY {nameof(FileDTO.FileName)} ASC; ";
@@ -54,9 +52,9 @@ namespace backend.controllers
 
                 // Buscar todos los archivos de la raiz
                 string sql_query3 = $@"
-                SELECT D.id as {nameof(FileDTO.FileID)}, D.folder_id as {nameof(FileDTO.ParentID)},
-                D.file_name as {nameof(FileDTO.FileName)}, D.file_type as {nameof(FileDTO.FileType)},
-                D.size as {nameof(FileDTO.FileSize)}, D.upload_date as {nameof(FileDTO.UploadDate)}
+                SELECT  D.id as {nameof(FileDTO.FileID)}, D.folder_id as {nameof(FileDTO.ParentID)},
+                        D.file_name as {nameof(FileDTO.FileName)}, D.file_type as {nameof(FileDTO.FileType)},
+                        D.size as {nameof(FileDTO.FileSize)}, D.upload_date as {nameof(FileDTO.UploadDate)}
                 FROM Files.Documents as D JOIN Files.Folders as F
                 ON F.id = D.folder_id
                 WHERE F.group_id = {group_id} AND D.folder_id = {root_folder.ID}
@@ -69,8 +67,8 @@ namespace backend.controllers
             { // Se busca los archivos de una carpeta especifica de un curso
                 // Buscar todas las carpetas en el folder indicado
                 string sql_query1 = $@"
-                SELECT F.id as {nameof(FileDTO.FileID)}, F.parent_id as {nameof(FileDTO.ParentID)},
-                F.folder_name as {nameof(FileDTO.FileName)}, F.upload_date as {nameof(FileDTO.UploadDate)}
+                SELECT  F.id as {nameof(FileDTO.FileID)}, F.parent_id as {nameof(FileDTO.ParentID)},
+                        F.folder_name as {nameof(FileDTO.FileName)}, F.upload_date as {nameof(FileDTO.UploadDate)}
                 FROM Files.Folders as F
                 WHERE F.group_id = {group_id} AND F.parent_id = {folder_id}
                 ORDER BY {nameof(FileDTO.FileName)} ASC; ";
@@ -85,9 +83,9 @@ namespace backend.controllers
 
                 // Buscar todos los archivos en el folder indicado
                 string sql_query2 = $@"
-                SELECT D.id as {nameof(FileDTO.FileID)}, D.folder_id as {nameof(FileDTO.ParentID)},
-                D.file_name as {nameof(FileDTO.FileName)}, D.file_type as {nameof(FileDTO.FileType)},
-                D.size as {nameof(FileDTO.FileSize)}, D.upload_date as {nameof(FileDTO.UploadDate)}
+                SELECT  D.id as {nameof(FileDTO.FileID)}, D.folder_id as {nameof(FileDTO.ParentID)},
+                        D.file_name as {nameof(FileDTO.FileName)}, D.file_type as {nameof(FileDTO.FileType)},
+                        D.size as {nameof(FileDTO.FileSize)}, D.upload_date as {nameof(FileDTO.UploadDate)}
                 FROM Files.Documents as D JOIN Files.Folders as F
                 ON F.id = D.folder_id
                 WHERE F.group_id = {group_id} AND D.folder_id = {folder_id}
@@ -98,8 +96,5 @@ namespace backend.controllers
             }
             return Ok(files);
         }
-        
-        // ------------------------------------------ Metodos POST ------------------------------------------
-
     }
 }

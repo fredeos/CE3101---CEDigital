@@ -9,12 +9,12 @@ namespace backend.models{
 
         required public string Name {get; set;}
 
-        required public string Extension {get; set;} // Ejemplo: .pdf
+        required public string Extension {get; set;} // Ejemplo: pdf
 
-        public double Size {get; set;}
+        public long Size {get; set;}
 
         required public string Path {get; set;}
 
-        public DateTime CreationDate {get; set;}
+        public DateTime? CreationDate {get; set;}
     }
 }
