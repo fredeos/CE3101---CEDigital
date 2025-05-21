@@ -81,14 +81,20 @@ namespace backend.controllers
             return CreatedAtAction(nameof(GetRubric), new { group_id = result.GroupID }, result);
         }
 
-        [HttpPut("modified/rubric/{rubrid_id}")]
-        public ActionResult<Rubric> UpdateRubric(int rubrid_id, [FromBody] Rubric updatedRubric)
+        /// <summary>
+        /// Permite modificar un rubro consideran que el cambio no aumente el porcentaje total a más de 100%.
+        /// </summary>
+        /// <param name="rubric_id"></param>
+        /// <param name="updatedRubric"></param>
+        /// <returns></returns>
+        [HttpPut("modified/rubric/{rubric_id}")]
+        public ActionResult<Rubric> UpdateRubric(int rubric_id, [FromBody] Rubric updatedRubric)
         {
             // Primero obtenemos el rubro actual para comparar
             string getCurrentQuery = @$"
                 SELECT percentage 
                 FROM Academic.Rubrics 
-                WHERE id = {rubrid_id}";
+                WHERE id = {rubric_id}";
 
             int currentPercentage = db.sql_db!.SELECT<int>(getCurrentQuery).FirstOrDefault();
 
@@ -96,7 +102,7 @@ namespace backend.controllers
             string checkQuery = @$"
                 SELECT SUM(percentage) 
                 FROM Academic.Rubrics 
-                WHERE group_id = {updatedRubric.GroupID} AND id != {rubrid_id}";
+                WHERE group_id = {updatedRubric.GroupID} AND id != {rubric_id}";
 
             int otherItemsTotal = db.sql_db!.SELECT<int>(checkQuery).FirstOrDefault();
             int newTotal = otherItemsTotal + updatedRubric.Percentage;
@@ -116,13 +122,13 @@ namespace backend.controllers
                     INSERTED.group_id AS {nameof(Rubric.GroupID)}, 
                     INSERTED.rubric_name AS {nameof(Rubric.Name)}, 
                     INSERTED.percentage AS {nameof(Rubric.Percentage)}
-                WHERE id = {rubrid_id}";
+                WHERE id = {rubric_id}";
 
             var result = db.sql_db!.UPDATE<Rubric>(updateQuery, updatedRubric).FirstOrDefault();
 
             if (result == null)
             {
-                return NotFound($"Rubro con ID {rubrid_id} no encontrado");
+                return NotFound($"Rubro con ID {rubric_id} no encontrado");
             }
 
             return Ok(result);
@@ -131,17 +137,17 @@ namespace backend.controllers
         /// <summary>
         /// Elimina en cadena un rubro y todo lo relacionado a este.
         /// </summary>
-        /// <param name="rubrid_id"></param>
+        /// <param name="rubric_id"></param>
         /// <returns></returns>
         
-        [HttpDelete("delete/rubric/{rubrid_id}")]
-        public ActionResult DeleteRubric(int rubrid_id)
+        [HttpDelete("delete/rubric/{rubric_id}")]
+        public ActionResult DeleteRubric(int rubric_id)
         {
             try
             {
                 // 1. Primero obtenemos todas las asignaciones relacionadas con este rubro
                 var assignmentIds = db.sql_db!.SELECT<int>(
-                    $"SELECT id FROM Academic.Assignments WHERE rubric_id = {rubrid_id}"
+                    $"SELECT id FROM Academic.Assignments WHERE rubric_id = {rubric_id}"
                 );
 
                 foreach (var assignmentId in assignmentIds)
@@ -198,7 +204,7 @@ namespace backend.controllers
 
                 // 11. Eliminar todas las Assignments del rubro
                 db.sql_db!.DELETE<object>(
-                    $"DELETE FROM Academic.Assignments WHERE rubric_id = {rubrid_id}"
+                    $"DELETE FROM Academic.Assignments WHERE rubric_id = {rubric_id}"
                 );
 
                 // 12. Finalmente eliminar el rubro
@@ -208,12 +214,12 @@ namespace backend.controllers
                     $"DELETED.group_id AS {nameof(Rubric.GroupID)}, " +
                     $"DELETED.rubric_name AS {nameof(Rubric.Name)}, " +
                     $"DELETED.percentage AS {nameof(Rubric.Percentage)} " +
-                    $"WHERE id = {rubrid_id}"
+                    $"WHERE id = {rubric_id}"
                 );
 
                 if (deletedRubrics.Count == 0)
                 {
-                    return NotFound($"Rubro con ID {rubrid_id} no encontrado");
+                    return NotFound($"Rubro con ID {rubric_id} no encontrado");
                 }
 
                 return NoContent();

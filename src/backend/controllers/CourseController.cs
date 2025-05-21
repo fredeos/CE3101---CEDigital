@@ -111,5 +111,5 @@ namespace backend.controllers{
             return AcceptedAtAction(nameof(ModifyCourse), new { id = code }, results);
         }
 
-        }
-     }
+    }
+}
