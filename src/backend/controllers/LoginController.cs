@@ -34,6 +34,7 @@ namespace backend.controllers {
             foreach (var professor in results)
             {
                 professor.Password = encryptor.DecryptString(professor.Password);
+            
                 if (professor.Password == password)
                 {
                     return Ok(professor);
@@ -44,14 +45,20 @@ namespace backend.controllers {
         
         [HttpGet("admins/{email}/{password}")]
         public ActionResult<Admin> LoginAdministrator(String email, String password){
-            var results = db.mongo_db!.find<Admin>("Administrators", a => a.Email == email);
+            //var results = db.mongo_db!.find<Admin>("Administrators", a => a.Email == email);
+            var results = db.mongo_db!.find<Admin>("Administrators", a => true);
+            Console.WriteLine($"Se encontraron {results.Count} admins");
+
             foreach (var admin in results)
             {
                 admin.Password = encryptor.DecryptString(admin.Password);
+                Console.WriteLine($"Intentando comparar: desencriptado={admin.Password} vs ingresado={password}");
+
+
                 if (admin.Password == password)
                 {
                     return Ok(admin);
-                }    
+                }
             }
             return NotFound();
         }

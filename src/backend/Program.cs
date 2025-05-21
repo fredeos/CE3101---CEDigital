@@ -9,6 +9,17 @@ using backend.models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173") 
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
+
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
@@ -18,6 +29,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<CEDigitalService>();
 
 var app = builder.Build();
+app.UseCors("AllowFrontend");
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment()){
@@ -26,7 +39,7 @@ if (app.Environment.IsDevelopment()){
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.MapControllers();
 
 var dbservice = app.Services.GetRequiredService<CEDigitalService>();
@@ -36,5 +49,9 @@ dbservice.sql_db.Configure("CARLOSCL","CEDigital");
 
 dbservice.mongo_db = new MongoContext();
 dbservice.mongo_db.Configure("localhost",27017,"CEDigital");
+
+var encryptor = new backend.utils.Hashcrypt();
+string encryptedPassword = encryptor.EncryptString("admin"); // la clave que vos querés usar
+Console.WriteLine($"Contraseña encriptada: {encryptedPassword}");
 
 app.Run(); 

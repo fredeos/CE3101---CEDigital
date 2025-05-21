@@ -1,21 +1,25 @@
 import "../styles/LoginAdmin.css"; 
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import api from "../Services/api"
 
 function AdminLogin() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = (e) => {
-    e.preventDefault();
-
-    if (email === "admin@cedigital.com" && password === "admin") {
-      navigate("/cedigital-admin/dashboard");
-    } else {
-      alert("Credenciales incorrectas");
-    }
-  };
+ const handleLogin = async (e) => {
+  e.preventDefault();
+  try {
+    const res = await api.get(`/login/admins/${email}/${password}`);
+    console.log("✅ Login exitoso:", res.data);
+    alert(`Bienvenido/a ${res.data.Fname}`);
+    navigate("/cedigital-admin/dashboard");
+  } catch (err) {
+    console.error("❌ Login fallido:", err);
+    alert("Credenciales incorrectas o error de conexión");
+  }
+};
 
   return (
     <div className="admin-login-container">
