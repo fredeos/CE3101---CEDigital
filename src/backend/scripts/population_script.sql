@@ -46,8 +46,6 @@ VALUES
 (4, 4, 'Documentos públicos'), (4, 4, 'Examenes'), (4, 4, 'Proyectos'), (4, 4, 'Tareas'), (4, 4, 'Apuntes'),
 (5, 5, 'Documentos públicos'), (5, 5, 'Examenes'), (5, 5, 'Proyectos'), (5, 5, 'Tareas'), (5, 5, 'Apuntes');
 
-SELECT * FROM Files.Documents;
-
 -- Insertar subfolder y documento de prueba para un folder curso de un curso
 INSERT INTO Files.Folders (group_id, parent_id, folder_name)
 VALUES
@@ -71,3 +69,10 @@ VALUES
 (4, 2021476501), (5, 2021476501),
 (4, 2021430403), (5, 2021430403),
 (4, 2021032537), (5, 2021032537);
+
+INSERT INTO Academic.Assignments (rubric_id, name, percentage, turnin_date, individual_flag)
+VALUES
+(4, 'Tarea 1', 2.00 , '2025-05-23 23:50:00.500', 0), 
+(4, 'Tarea 2', 2.00 , '2025-05-24 23:50:00.500', 0), 
+(4, 'Tarea 3', 8.00 , '2025-05-25 23:50:00.500', 1);
+

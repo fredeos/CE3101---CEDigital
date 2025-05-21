@@ -105,7 +105,8 @@ CREATE TABLE Academic.AssignmentSubmissions (
     commentary NVARCHAR(200) NULL,
     submitted_file INT NULL, -- FK
     feedback_file INT NULL, -- FK
-    submission_date DATETIME DEFAULT(GETDATE())
+    submission_date DATETIME DEFAULT(GETDATE()),
+	published_flag INT DEFAULT(0) -- 0: not published, 1:published
 );
 
 CREATE TABLE Academic.StudentSubmissions (

@@ -15,10 +15,21 @@ namespace backend.controllers{
         private readonly IWebHostEnvironment _env = env;
 
         // ------------------------------------------ Metodos GET ------------------------------------------
+        [HttpGet("specifications/group/{group_id}/{assignment_id}/{specification_id}")]
+        public IActionResult DownloadSpecification(int group_id, int assignment_id, int specification_id)
+        {
+            return Ok();
+        }
+
+        [HttpGet("specifications/group/{group_id}/{assignment_id}/recent")]
+        public IActionResult DownloadLastSpecification(int group_id, int assignment_id)
+        {
+            return Ok();
+        }
 
         // ------------------------------------------ Metodos POST ------------------------------------------
-        [HttpPost("group/{group_id}/assigment/{assigment_id}/add/specification")]
-        public async Task<ActionResult<Specification>> UploadSpecification(int group_id, int assignment_id, [FromForm] IFormFile spec_file)
+        [HttpPost("group/{group_id}/assigment/{assignment_id}/add/specification")]
+        public async Task<ActionResult<Specification>> UploadSpecification(int group_id, int assignment_id, IFormFile spec_file)
         {
             if (spec_file == null)
             {
@@ -55,14 +66,14 @@ namespace backend.controllers{
             };
 
             string sql_query2 = $@"
-            INSERT INTO Files.Specifications (assignment_id, file_name, file_type, size, specification_file, upload_date)
+            INSERT INTO Files.Specifications (assignment_id, file_name, file_type, size, specification_file)
             OUTPUT  INSERTED.id as {nameof(Specification.ID)}, INSERTED.assignment_id as {nameof(Specification.AssigmentID)},
                     INSERTED.file_name as {nameof(Specification.Name)}, INSERTED.file_type as {nameof(Specification.Extension)},
                     INSERTED.size as {nameof(Specification.Size)}, INSERTED.specification_file as {nameof(Specification.Path)},
                     INSERTED.upload_date as {nameof(Specification.UploadDate)}
             VALUES 
             (@{nameof(Specification.AssigmentID)}, @{nameof(Specification.Name)}, @{nameof(Specification.Extension)}, 
-            @{nameof(Specification.Size)}, @{nameof(Specification.Size)}, @{nameof(Specification.Path)}, getdate()); ";
+            @{nameof(Specification.Size)}, @{nameof(Specification.Path)}); ";
 
             var inserted_file = db.sql_db!.INSERT<Specification>(sql_query2, spec);
             if (inserted_file == null){
