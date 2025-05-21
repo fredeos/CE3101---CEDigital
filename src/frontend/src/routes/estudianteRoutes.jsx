@@ -5,7 +5,8 @@ const LoginEstudiante = lazy(() => import("../roles/Estudiante/loginEstudiante/l
 const InicioEstudiante = lazy(() => import("../roles/Estudiante/inicioEstudiante/inicio_estudiante"));
 const DashboardCurso = lazy(() => import("../roles/Estudiante/dashboardCurso/dashboard_curso"));
 const DocumentosCurso = lazy(() => import("../roles/Estudiante/documentosCurso/documentos_curso"));
-const EvaluacionesCurso = lazy(() => import ("../roles/Estudiante/evaluacionesCurso/evaluaciones_curso"))
+const EvaluacionesCurso = lazy(() => import("../roles/Estudiante/evaluacionesCurso/evaluaciones_curso"))
+const AsignacionCurso = lazy(() => import("../roles/Estudiante/asignacionCurso/asignacion_curso"))
 
 const estudianteRoutes = [
   {
@@ -23,6 +24,10 @@ const estudianteRoutes = [
   {
     path: "/evaluaciones-curso-estudiantes",
     element: <EvaluacionesCurso/>
+  },
+  {
+    path: "/asignacion-curso-estudiantes",
+    element: <AsignacionCurso/>
   }
 ];
 
