@@ -1,0 +1,193 @@
+/* Estilos generales */
+.groups-management {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.section-title {
+  font-size: 1.1rem;
+  margin-bottom: 15px;
+  color: #2c3e50;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.empty-message {
+  color: #6c757d;
+  font-style: italic;
+  padding: 10px 0;
+}
+
+/* Formulario de creación de grupos */
+.create-group-section {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.form-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+/* Listas de estudiantes */
+.available-students,
+.selected-members {
+  margin: 15px 0;
+}
+
+.students-list,
+.members-list,
+.group-members {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #eee;
+  border-radius: 4px;
+}
+
+.student-item,
+.member-item,
+.group-member {
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 1.5rem;
+  border-bottom: 1px solid #eee;
+}
+
+.student-item:last-child,
+.member-item:last-child {
+  border-bottom: none;
+}
+
+.btn-add-groups,
+.btn-remove-groups {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+}
+
+.btn-add-groups {
+  color: #28a745;
+}
+
+.btn-add-groups:hover {
+  background: #e8f5e9;
+}
+
+.btn-remove-groups {
+  color: #dc3545;
+}
+
+.btn-remove-groups:hover {
+  background: #ffebee;
+}
+
+/* Botón crear grupo */
+.btn-create-group {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.btn-create-group:hover {
+  background: #0069d9;
+}
+
+/* Grupos existentes */
+.existing-groups-section {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.groups-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.group-card {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 15px;
+}
+
+.group-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.group-name {
+  margin: 0;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-delete-group {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #dc3545;
+  padding: 4px;
+}
+
+.btn-delete-group:hover {
+  background: #ffebee;
+  border-radius: 4px;
+}
+
+.group-members {
+  padding-left: 20px;
+}
+
+.group-member {
+  padding: 6px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Iconos */
+.group-icon,
+.member-icon {
+  color: #6c757d;
+}

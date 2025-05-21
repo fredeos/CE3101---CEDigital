@@ -7,21 +7,23 @@ import { useProfessorGroupsWithCourses } from "../hooks/useProfessorGroupsWithCo
 // Componentes de la página del dashboard
 import DashboardHeader from "../components/Dashboard/DashboardHeader"
 import DashboardNav from "../components/Dashboard/DashboardNav"
+import DefaultModule from "../components/Dashboard/DefaultModule"
 
 // Importaciones de los estilos de los componentes
 import "../styles/Dashboard.css"
-import "../styles/Group.css"
+import "../styles/Noticias/News.css"
+import "../styles/Grupo/Group.css"
 import "../styles/Modal.css"
-/* import "../styles/Items.css"
-import "../styles/Documents.css" */
+import "../styles/Rubros/Items.css"
+import "../styles/Evaluaciones/Assignments.css"
+import "../styles/Documentos/Documents.css"
 
 // Importaciones de los módulos de la página (componentes)
-import DefaultModule from "../components/Dashboard/DefaultModule"
-import NewsModule from "../components/Dashboard/NewsModule"
-import GroupModule from "../components/Dashboard/GroupModule"
-/* import ItemsModule from "../components/Dashboard/ItemsModule"
-import AssignmentsModule from "../components/Dashboard/AssignmentsModule"
-import DocumentsModule from "../components/Dashboard/DocumentModule" */
+import NewsModule from "../components/Modules/NewsModule"
+import GroupModule from "../components/Modules/GroupModule"
+import ItemsModule from "../components/Modules/ItemsModule"
+import AssignmentsModule from "../components/Modules/AssignmentsModule"
+//import DocumentsModule from "../components/Modules/DocumentModule" 
 
 function useURLParams() {
   const getParam = (name) => {
@@ -149,11 +151,11 @@ export default function ProfessorDashboard() {
         return <NewsModule course={selectedCourse} group={selectedGroup} professor={professor}/>
       case "group":
         return <GroupModule course={selectedCourse} group={selectedGroup} />
-      /* case "items":
+       case "items":
         return <ItemsModule course={selectedCourse} group={selectedGroup} />
       case "assessments":
         return  <AssignmentsModule course={selectedCourse} group={selectedGroup}/>
-      case "documents":
+      /*case "documents":
         return <DocumentsModule course={selectedCourse} group={selectedGroup} /> */
       default:
         return <DefaultModule course={selectedCourse} group={selectedGroup} />

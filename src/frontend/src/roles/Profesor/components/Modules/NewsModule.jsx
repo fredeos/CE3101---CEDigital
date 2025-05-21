@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useGroupNews } from "../../hooks/useGroupNews";
 import { Edit, Trash2, Calendar, User } from "lucide-react";
 import Modal from "../Modal";
-import "../../styles/News.css";
+import "../../styles/Noticias/News.css";
 
 export default function NewsModule({ course, group, professor }) {
   const { news, isLoading, addNews, updateNews, removeNews } = useGroupNews(group?.id);

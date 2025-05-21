@@ -3,7 +3,7 @@ import { useStudentsData } from "../../hooks/useStudentsData";
 import { generateStudentReport } from "../../../../utils/pdfGenerator";
 import { Download, Search } from "lucide-react";
 import Modal from "../Modal";
-import "../../styles/Group.css"
+import "../../styles/Grupo/Group.css"
 
 export default function GroupModule({ course, group }) {
   const { students, isLoading, error } = useStudentsData(course?.id, group?.id);

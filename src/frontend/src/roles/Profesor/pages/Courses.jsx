@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useProfessorAuth } from "../hooks/useProfessorAuth";
 import { useProfessorGroupsWithCourses } from "../hooks/useProfessorGroupsWithCourses";
 import { LogOut, Users } from "lucide-react";
-import "../styles/CourseSelection.css";
+import "../styles/Courses.css";
 
 export default function CourseSelection() {
     const { professor, logout, checkAuth } = useProfessorAuth();
