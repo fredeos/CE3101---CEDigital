@@ -5,7 +5,6 @@ import './App.css';
 
 // Rutas de la vista profesor
 import professorRoutes from './routes/professorRoutes';
-import ProfessorHome from './roles/Profesor/pages/Home';
 import ProfessorLogin from './roles/Profesor/pages/Login';
 
 // Rutas de la vista estudiante

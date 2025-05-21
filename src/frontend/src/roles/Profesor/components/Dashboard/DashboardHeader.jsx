@@ -1,7 +1,4 @@
-import { LogOut, ChevronLeft } from "lucide-react"
-
 export default function DashboardHeader({selectedCourse, selectedGroup }) {
-
   return (
     <header className="dashboard-header">
 

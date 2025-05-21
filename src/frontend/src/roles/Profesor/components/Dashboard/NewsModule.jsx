@@ -1,86 +1,90 @@
-import { useState } from "react"
-import { useNewsManager } from "../../hooks/useNewsManager.js"
-import { Plus, Edit, Trash2, Calendar, User } from "lucide-react"
+import { useState } from "react";
+import { useGroupNews } from "../../hooks/useGroupNews";
+import { Edit, Trash2, Calendar, User } from "lucide-react";
+import Modal from "../Modal";
+import "../../styles/News.css";
 
-// Recibe también el profesor como prop
 export default function NewsModule({ course, group, professor }) {
-  const { news, isLoading, error, addNews, updateNews, deleteNews } = useNewsManager(course?.id)
-  const [showForm, setShowForm] = useState(false)
-  const [editingNews, setEditingNews] = useState(null)
-  const [formData, setFormData] = useState({
-    title: "",
-    message: "",
-  })
+  const { news, isLoading, addNews, updateNews, removeNews } = useGroupNews(group?.id);
+  const [showForm, setShowForm] = useState(false);
+  const [editingNews, setEditingNews] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [newsToDelete, setNewsToDelete] = useState(null);
+  const [formData, setFormData] = useState({ title: "", message: "", professorFullName: "" });
 
-  // Filtra noticias por grupo si hay uno seleccionado
-  const filteredNews = group ? news.filter((item) => item.groupId === group.id) : news
+  const filteredNews = news;
 
   const handleAddClick = () => {
-    setEditingNews(null)
-    setFormData({
-      title: "",
-      message: "",
-    })
-    setShowForm(true)
-  }
+    setEditingNews(null);
+    setFormData({ title: "", message: "", professorFullName: "" });
+    setShowForm(true);
+  };
 
   const handleEditClick = (newsItem) => {
-    setEditingNews(newsItem)
+    setEditingNews(newsItem);
     setFormData({
       title: newsItem.title,
       message: newsItem.message,
-    })
-    setShowForm(true)
-  }
+      professorFullName: newsItem.professorFullName,
+    });
+    setShowForm(true);
+  };
 
-  const handleDeleteClick = async (id) => {
-    if (window.confirm("Are you sure you want to delete this news item?")) {
-      await deleteNews(id)
-    }
-  }
+  const handleDeleteClick = (id) => {
+    setNewsToDelete(id);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    const success = await removeNews(newsToDelete);
+    if (success) window.location.reload();
+    else alert("Error al eliminar la noticia");
+    setShowDeleteModal(false);
+  };
 
   const handleFormChange = (e) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
-    }))
-  }
+    }));
+  };
 
   const handleFormSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
+    if (!professor || !group) return;
 
-    let authorName = "Profesor"
-    if (professor && professor.name) {
-      authorName = professor.name
-    }
+    const payload = {
+      professorIDCard: professor.idCard,
+      groupID: group.id,
+      title: formData.title,
+      message: formData.message,
+      publicationDate: new Date().toISOString(),
+    };
 
+    let success = false;
     if (editingNews) {
-      await updateNews(editingNews.id, formData)
+      success = await updateNews(editingNews.id, { ...payload, id: editingNews.id });
     } else {
-      await addNews({
-        ...formData,
-        author: authorName,
-        groupId: group?.id || null,
-      })
+      success = await addNews(payload);
     }
 
-    setShowForm(false)
-    setEditingNews(null)
-  }
+    if (success) {
+      setShowForm(false);
+      setEditingNews(null);
+      window.location.reload();
+    } else {
+      alert("Error al guardar la noticia");
+    }
+  };
 
-  // Solo la fecha (sin hora)
   const formatDate = (dateString) => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString()
-  }
+    const date = new Date(dateString);
+    return date.toLocaleDateString();
+  };
 
   if (isLoading) {
-    return <div className="dashboard-module">Loading news...</div>
-  }
-
-  if (error) {
-    return <div className="dashboard-module">Error: {error}</div>
+    return <div className="dashboard-module">Cargando noticias</div>;
   }
 
   return (
@@ -103,7 +107,6 @@ export default function NewsModule({ course, group, professor }) {
                 required
               />
             </div>
-
             <div className="form-group">
               <label htmlFor="message" className="form-label">
                 Mensaje
@@ -118,7 +121,6 @@ export default function NewsModule({ course, group, professor }) {
                 required
               ></textarea>
             </div>
-
             <div className="form-actions">
               <button type="button" className="btn-cancel" onClick={() => setShowForm(false)}>
                 Cancelar
@@ -133,15 +135,13 @@ export default function NewsModule({ course, group, professor }) {
         <>
           <div className="module-header">
             <h2 className="module-title">Noticias del grupo</h2>
-            <button className="btn-add" onClick={handleAddClick}>
-              <Plus size={16} />
+            <button className="btn-add-news" onClick={handleAddClick}>
               Añadir noticia
             </button>
           </div>
-
           {filteredNews.length === 0 ? (
             <div className="empty-state">
-              <p>No hay noticias disponibles.</p> 
+              <p>No hay noticias disponibles.</p>
             </div>
           ) : (
             <div className="news-list">
@@ -150,26 +150,24 @@ export default function NewsModule({ course, group, professor }) {
                   <div className="news-item-header">
                     <h3 className="news-item-title">{item.title}</h3>
                     <div className="news-item-actions">
-                      <button className="btn-icon" onClick={() => handleEditClick(item)}>
+                      <button className="btn-edit" onClick={() => handleEditClick(item)}>
                         <Edit size={16} />
                       </button>
-                      <button className="btn-icon btn-delete" onClick={() => handleDeleteClick(item.id)}>
+                      <button className="btn-delete" onClick={() => handleDeleteClick(item.id)}>
                         <Trash2 size={16} />
                       </button>
                     </div>
                   </div>
-
                   <div className="news-item-meta">
                     <span className="meta-item">
                       <User size={14} />
-                      {item.author}
+                      {item.professorFullName}
                     </span>
                     <span className="meta-item">
                       <Calendar size={14} />
-                      {formatDate(item.publicationDate)}
+                      {formatDate(item.publishDate)}
                     </span>
                   </div>
-
                   <p className="news-item-content">{item.message}</p>
                 </div>
               ))}
@@ -177,6 +175,22 @@ export default function NewsModule({ course, group, professor }) {
           )}
         </>
       )}
+
+      <Modal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        title="Confirmar eliminación"
+      >
+        <p>¿Seguro que desea eliminar esta noticia?</p>
+        <div className="modal-actions">
+          <button className="btn-cancel" onClick={() => setShowDeleteModal(false)}>
+            Cancelar
+          </button>
+          <button className="btn-danger" onClick={confirmDelete}>
+            Eliminar
+          </button>
+        </div>
+      </Modal>
     </div>
-  )
+  );
 }

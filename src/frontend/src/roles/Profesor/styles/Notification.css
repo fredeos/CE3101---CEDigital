@@ -26,12 +26,14 @@
 
 .notification-success {
   background-color: #ecfdf5;
+  color: #10b981;
   border-left: 4px solid #10b981;
 }
 
 .notification-error {
-  background-color: #fef2f2;
-  border-left: 4px solid #ef4444;
+  background-color: #fff7f6;
+  color: #8a1200;
+  border-left: 4px solid #8a1200;
 }
 
 .notification-content {
@@ -50,18 +52,19 @@
 }
 
 .notification-error .notification-icon {
-  color: #ef4444;
+  color: #8a1200;
 }
 
 .notification-message {
   font-size: 0.875rem;
-  color: #1f2937;
+  color: #000000;
   margin: 0;
 }
 
 .notification-close {
   background: none;
   border: none;
+  margin-left: 1rem;
   padding: 0;
   cursor: pointer;
   color: #6b7280;

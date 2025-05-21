@@ -38,13 +38,13 @@ export default function DashboardNav({ activeTab, onTabChange, onBackToSelection
       <div className="header-right">
         <div className="avatar">
           <div className="avatar-initials">
-            {professor.name
+            {professor.firstName
               .split(" ")
               .map((n) => n[0])
               .join("")}
           </div>
           <div className="professor-info">
-            <span className="professor-name">{professor.name}</span>
+            <span className="professor-name">{professor.firstName} {professor.firstLastName}</span>
           </div>
         </div>
       </div>

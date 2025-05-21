@@ -1,32 +1,37 @@
-"use client"
-
-import { useState } from "react"
-import { useStudentsData } from "../../hooks/useStudentsData"
-import { Download, Search } from "lucide-react"
+import { useState } from "react";
+import { useStudentsData } from "../../hooks/useStudentsData";
+import { generateStudentReport } from "../../../../utils/pdfGenerator";
+import { Download, Search } from "lucide-react";
+import Modal from "../Modal";
+import "../../styles/Group.css"
 
 export default function GroupModule({ course, group }) {
-  const { students, isLoading, error } = useStudentsData(course?.id, group?.id)
-  const [searchTerm, setSearchTerm] = useState("")
+  const { students, isLoading, error } = useStudentsData(course?.id, group?.id);
+  const [showDownloadModal, setShowDownloadModal] = useState(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const handleDownloadPDF = () => {
-    // In a real application, this would generate a PDF
-    alert("Downloading student list as PDF...")
-  }
+  const handleConfirmDownload = () => {
+    if (!course || !group || students.length === 0) return;
+    setIsGeneratingPDF(true);
+    generateStudentReport(students, course, group);
+    setIsGeneratingPDF(false);
+    setShowDownloadModal(false);
+  };
 
-  // Filter students based on search term
   const filteredStudents = students.filter(
     (student) =>
       student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       student.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      student.email.toLowerCase().includes(searchTerm.toLowerCase()),
-  )
+      student.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   if (isLoading) {
     return (
       <div className="group-module">
-        <div className="loading-state">Loading student data...</div>
+        <div className="loading-state">Cargando estudiantes...</div>
       </div>
-    )
+    );
   }
 
   if (error) {
@@ -34,72 +39,89 @@ export default function GroupModule({ course, group }) {
       <div className="group-module">
         <div className="error-state">{error}</div>
       </div>
-    )
+    );
   }
 
   if (!course || !group) {
     return (
       <div className="group-module">
-        <div className="empty-state">Please select a course and group to view student information.</div>
+        <div className="empty-state">Seleccione un curso y grupo para ver los estudiantes.</div>
       </div>
-    )
+    );
   }
 
   return (
-    <div className="group-module">
+    <div className="dashboard-module">
       <div className="group-header">
-        <h2 className="group-title">
-          Students in {group.name} <span className="course-name">({course.name})</span>
-        </h2>
+        <h1 className="group-title">Estudiantes matriculados</h1>
         <div className="group-actions">
           <div className="search-container">
             <Search size={18} className="search-icon" />
             <input
               type="text"
-              placeholder="Search students..."
+              placeholder="Buscar estudiante"
               className="search-input"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <button className="btn-download" onClick={handleDownloadPDF} disabled={students.length === 0}>
+          <button
+            className="btn-download"
+            onClick={() => setShowDownloadModal(true)}
+            disabled={students.length === 0}
+          >
             <Download size={16} />
-            Download PDF
+            PDF
           </button>
         </div>
       </div>
 
       {students.length === 0 ? (
-        <div className="empty-state">No students found in this group.</div>
+        <div className="empty-state">No hay estudiantes matriculados en este grupo</div>
       ) : (
-        <>
-          <div className="student-count">
-            Showing {filteredStudents.length} of {students.length} students
-          </div>
-          <div className="student-table-container">
-            <table className="student-table">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>Phone</th>
+        <div className="student-table-container">
+          <table className="student-table">
+            <thead>
+              <tr>
+                <th>Carnet</th>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Número télefonico</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredStudents.map((student) => (
+                <tr key={student.id}>
+                  <td className="student-id">{student.id}</td>
+                  <td className="student-name">{student.name}</td>
+                  <td className="student-email">{student.email}</td>
+                  <td className="student-phone">{student.phone}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {filteredStudents.map((student) => (
-                  <tr key={student.id}>
-                    <td className="student-id">{student.id}</td>
-                    <td className="student-name">{student.name}</td>
-                    <td className="student-email">{student.email}</td>
-                    <td className="student-phone">{student.phone}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
+
+      <Modal
+        isOpen={showDownloadModal}
+        onClose={() => setShowDownloadModal(false)}
+        title="Confirmar descarga"
+      >
+        <p>¿Descargar lista de estudiantes en PDF?</p>
+        <div className="modal-actions">
+          <button className="btn-cancel" onClick={() => setShowDownloadModal(false)}>
+            Cancelar
+          </button>
+          <button
+            className="btn-submit"
+            onClick={handleConfirmDownload}
+            disabled={isGeneratingPDF}
+          >
+            {isGeneratingPDF ? "Generando..." : "Descargar"}
+          </button>
+        </div>
+      </Modal>
     </div>
-  )
+  );
 }

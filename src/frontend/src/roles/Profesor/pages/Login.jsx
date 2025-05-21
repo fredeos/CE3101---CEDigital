@@ -1,120 +1,80 @@
-"use client"
+import { useState, useEffect } from "react";
+import { useProfessorAuth } from "../hooks/useProfessorAuth";
+import Notification from "../components/Notification";
+import "../styles/Login.css";
 
-import { useState, useEffect } from "react"
-import { useProfessorAuth } from "../hooks/useProfessorAuth"
-import Notification from "../components/Notification"
-import "../styles/Login.css"
-
-/* Vista de login del profesor */
 function ProfessorLogin() {
-  
-  const [credentials, setCredentials] = useState({
-    email: "",
-    password: "",
-  })
-  
-  const [notification, setNotification] = useState(null)
-  const { login, isLoading, isAuthenticated, checkAuth } = useProfessorAuth()
+  const [credentials, setCredentials] = useState({ email: "", password: "" });
+  const [notification, setNotification] = useState(null);
+  const { login, isLoading, checkAuth } = useProfessorAuth();
 
-  // Verifica si el usuario esta logueado para casos donde se refresca la página
   useEffect(() => {
-    const isLoggedIn = checkAuth()
-    if (isLoggedIn) {
-      window.location.href = "/profesor-cursos" // Redireccionamiento al dashboard
+    if (checkAuth()) {
+      window.location.href = "/profesor-cursos";
     }
-  }, [])
+  }, []);
 
-  // ...
   const handleChange = (e) => {
-    const { name, value } = e.target
     setCredentials((prev) => ({
       ...prev,
-      [name]: value,
-    }))
-  }
+      [e.target.name]: e.target.value,
+    }));
+  };
 
-  // Manejo del envio de formulario
   const handleSubmit = async (e) => {
-    e.preventDefault()
-
-    const result = await login(credentials) // Llamada al hook de autenticacion del login
-
-    console.log(result)
-
+    e.preventDefault();
+    const result = await login(credentials);
     if (result.success) {
-      setNotification({type: "success", message: "¡Inicio de sesión exitoso!"}) // Login éxitoso
-
-      // Redireccionamiento a dashboard después de iniciar sesión correctamente
+      setNotification({ type: "success", message: "¡Inicio de sesión exitoso!" });
       setTimeout(() => {
-        window.location.href = "/profesor-cursos"   // Redireccionamiento al dashboard
-      }, 1500)
+        window.location.href = "/profesor-cursos";
+      }, 1200);
     } else {
-      setNotification({type: "error", message: result.error || "Credenciales no válidas. Inténtelo de nuevo."}) // Login érroneo
+      setNotification({ type: "error", message: result.error || "Credenciales no válidas." });
     }
-  }
-
-  // Manejo de notificación
-  const closeNotification = () => {
-    setNotification(null) // Cierra la notificación
-  }
+  };
 
   return (
-    <div className="login-container">
+    <div className="login-container-profesor">
       {notification && (
-        <Notification type={notification.type} message={notification.message} onClose={closeNotification} />
+        <Notification
+          type={notification.type}
+          message={notification.message}
+          onClose={() => setNotification(null)}
+        />
       )}
 
-      {/* Login */}
-      <div className="login-card">
-        
-        {/* Encabezado */}
-        <div className="login-header">
-          <h1 className="login-title">CE Digital</h1>
-          <p className="login-subtitle">Ingrese sus credenciales para continuar</p>
-        </div>
-        
-        {/* Emilinar este div - es para testear */}
-        <div className="demo-info">
-          <div className="demo-credentials">
-            <p>
-              <strong>Email:</strong> example@profes.ce
-            </p>
-            <p>
-              <strong>Password:</strong> 1234
-            </p>
-          </div>
+      <div className="login-card-profesor">
+        <div className="login-header-profesor">
+          <h1 className="login-title-profesor">CE Digital</h1>
         </div>
 
-        {/* Formula */}
-        <form className="login-form" onSubmit={handleSubmit}>
-          
-          {/* Correo */}
-          <div className="form-group">
-            <label htmlFor="email" className="form-label">
+        <form className="login-form-profesor" onSubmit={handleSubmit}>
+          <div className="form-group-profesor">
+            <label htmlFor="email" className="form-label-profesor">
               Correo institucional
             </label>
             <input
               id="email"
               type="email"
               name="email"
-              className="form-input"
+              className="form-input-profesor"
               value={credentials.email}
               onChange={handleChange}
-              placeholder="example@profes.ce"
+              placeholder="example@itcr.ac.cr"
               required
             />
           </div>
 
-          {/* Contraseña */}
-          <div className="form-group">
-            <label htmlFor="password" className="form-label">
+          <div className="form-group-profesor">
+            <label htmlFor="password" className="form-label-profesor">
               Contraseña
             </label>
             <input
               id="password"
               type="password"
               name="password"
-              className="form-input"
+              className="form-input-profesor"
               value={credentials.password}
               onChange={handleChange}
               placeholder="••••••••"
@@ -122,21 +82,16 @@ function ProfessorLogin() {
             />
           </div>
 
-          {/* Botón de envío de formulario */}
-          <div className="form-footer">
-            <button type="submit" className="login-button" disabled={isLoading}>
+          <div className="form-footer-profesor">
+            <button type="submit" className="login-button-profesor" disabled={isLoading}>
               {isLoading ? "Iniciando sesión..." : "Iniciar sesión"}
             </button>
-
-            <a href="#" className="forgot-password">
-              ¿Olvidó su contraseña?
-            </a>
+            <a className="forgot-password-profesor">¿Olvidó su contraseña?</a>
           </div>
-          
         </form>
       </div>
     </div>
-  )
+  );
 }
 
 export default ProfessorLogin;

@@ -1,23 +1,28 @@
-// Imports
 import { useState, useEffect } from "react"
-import { useProfessorAuth } from "../hooks/useProfessorAuth"
-import { useCoursesData } from "../hooks/useCoursesData"
-import { useGroupsData } from "../hooks/useGroupsData"
 
-// Import de los diferentes modulos de la vista
+// Importaciones de las funcinalidades
+import { useProfessorAuth } from "../hooks/useProfessorAuth"
+import { useProfessorGroupsWithCourses } from "../hooks/useProfessorGroupsWithCourses"
+
+// Componentes de la página del dashboard
 import DashboardHeader from "../components/Dashboard/DashboardHeader"
 import DashboardNav from "../components/Dashboard/DashboardNav"
 
-// Import de los estilos de los diferentes modulos de la vista
+// Importaciones de los estilos de los componentes
 import "../styles/Dashboard.css"
 import "../styles/Group.css"
+import "../styles/Modal.css"
+/* import "../styles/Items.css"
+import "../styles/Documents.css" */
 
-// Import dashboard module components
+// Importaciones de los módulos de la página (componentes)
 import DefaultModule from "../components/Dashboard/DefaultModule"
 import NewsModule from "../components/Dashboard/NewsModule"
 import GroupModule from "../components/Dashboard/GroupModule"
+/* import ItemsModule from "../components/Dashboard/ItemsModule"
+import AssignmentsModule from "../components/Dashboard/AssignmentsModule"
+import DocumentsModule from "../components/Dashboard/DocumentModule" */
 
-// Función auxiliar para obtener parámetros de la URL
 function useURLParams() {
   const getParam = (name) => {
     const params = new URLSearchParams(window.location.search)
@@ -27,86 +32,129 @@ function useURLParams() {
 }
 
 export default function ProfessorDashboard() {
+
   const { professor, checkAuth } = useProfessorAuth()
-  const { courses, isLoading: coursesLoading } = useCoursesData()
-  const { groups, isLoading: groupsLoading } = useGroupsData()
+  const { data: groupsData, isLoading, error } = useProfessorGroupsWithCourses()
   const { getParam } = useURLParams()
 
-  // Obtener courseId y groupId de los parámetros de la URL
+  // Obtener los parámetros de la ULR
   const courseId = getParam("courseId")
   const groupId = getParam("groupId")
 
-  // Estado para la pestaña activa
-  const [activeTab, setActiveTab] = useState("default") // pestaña por defecto
-
-  // Estado para el curso y grupo seleccionados
+  const [activeTab, setActiveTab] = useState("news")
   const [selectedCourse, setSelectedCourse] = useState(null)
   const [selectedGroup, setSelectedGroup] = useState(null)
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true)
+  const [courses, setCourses] = useState([])
 
-  // Verificar autenticación y cargar datos de curso/grupo
+  // Verificar autenticación
   useEffect(() => {
-    // Verificar autenticación solo una vez al montar el componente
-    const isLoggedIn = checkAuth()
-    if (!isLoggedIn) {
-      window.location.href = "/cedigital-profesores"
+    const verifyAuth = async () => {
+      const isLoggedIn = checkAuth()
+      if (!isLoggedIn) {
+        window.location.href = "/cedigital-profesores"
+      }
+      setIsCheckingAuth(false)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    verifyAuth()
   }, [])
 
-  // Manejar la selección de curso y grupo desde los parámetros de la URL
+  // Procesar los datos y agrupar por curso
   useEffect(() => {
-    // Si no se proporciona courseId, redirigir a la selección de curso
+    if (!groupsData || groupsData.length === 0) return
+
+    const coursesMap = {}
+    groupsData.forEach(item => {
+      if (!coursesMap[item.courseCode]) {
+        coursesMap[item.courseCode] = {
+          id: item.courseCode,
+          code: item.courseCode,
+          name: item.courseName,
+          credits: item.credits,
+          career: item.career,
+          groups: []
+        }
+      }
+      coursesMap[item.courseCode].groups.push({
+        id: item.groupId.toString(),
+        groupId: item.groupId,
+        number: item.groupNumber,
+        name: `Grupo ${item.groupNumber}`,
+        semesterId: item.semesterId
+      })
+    })
+
+    setCourses(Object.values(coursesMap))
+  }, [groupsData])
+
+  // Seleccionar curso y grupo basado en los parámetros de URL
+  useEffect(() => {
+    if (isCheckingAuth || isLoading || courses.length === 0) return
+
     if (!courseId) {
       window.location.href = "/profesor-cursos"
       return
     }
 
-    // Buscar el curso y grupo seleccionados
-    if (!coursesLoading && courses.length > 0) {
-      const course = courses.find((c) => c.id === courseId)
-      if (course) {
-        setSelectedCourse(course)
-      } else {
-        // Curso no encontrado, redirigir a la selección de curso
-        window.location.href = "/profesor-cursos"
-      }
+    const course = courses.find(c => c.id === courseId)
+    if (!course) {
+      window.location.href = "/profesor-cursos"
+      return
     }
 
-    if (!groupsLoading && groups.length > 0 && groupId) {
-      const group = groups.find((g) => g.id === groupId)
-      if (group) {
-        setSelectedGroup(group)
-      }
-    }
-  }, [courseId, groupId, courses, groups, coursesLoading, groupsLoading])
+    setSelectedCourse(course)
 
-  // Manejar el cambio de pestaña
+    if (groupId) {
+      const group = course.groups.find(g => g.id === groupId)
+      setSelectedGroup(group || null)
+    }
+  }, [courseId, groupId, courses, isLoading, isCheckingAuth])
+
   const handleTabChange = (tabId) => {
     setActiveTab(tabId)
   }
 
-  // Manejar regreso a la selección
   const handleBackToSelection = () => {
     window.location.href = "/profesor-cursos"
   }
 
-  // Mostrar estado de carga
-  if (coursesLoading || groupsLoading || !selectedCourse || !professor) {
+  if (isCheckingAuth || isLoading) {
     return (
       <div className="dashboard-loading">
-        <p>Cargando...</p>
+        <p>Cargando datos del profesor...</p>
       </div>
     )
   }
 
-  // Renderizar el módulo apropiado según la pestaña activa
+  if (error) {
+    return (
+      <div className="dashboard-error">
+        <p>Error al cargar los grupos: {error}</p>
+        <button onClick={() => window.location.reload()}>Reintentar</button>
+      </div>
+    )
+  }
+  
+  if (!selectedCourse) {
+    return (
+      <div className="dashboard-loading">
+        
+      </div>
+    )
+  }
+
   const renderActiveModule = () => {
     switch (activeTab) {
       case "news":
         return <NewsModule course={selectedCourse} group={selectedGroup} professor={professor}/>
       case "group":
         return <GroupModule course={selectedCourse} group={selectedGroup} />
-
+      /* case "items":
+        return <ItemsModule course={selectedCourse} group={selectedGroup} />
+      case "assessments":
+        return  <AssignmentsModule course={selectedCourse} group={selectedGroup}/>
+      case "documents":
+        return <DocumentsModule course={selectedCourse} group={selectedGroup} /> */
       default:
         return <DefaultModule course={selectedCourse} group={selectedGroup} />
     }
@@ -114,15 +162,21 @@ export default function ProfessorDashboard() {
 
   return (
     <div className="dashboard-container">
-      <DashboardNav activeTab={activeTab} onTabChange={handleTabChange} professor={professor} onBackToSelection={handleBackToSelection}/>
+      <DashboardNav 
+        activeTab={activeTab} 
+        onTabChange={handleTabChange} 
+        professor={professor} 
+        onBackToSelection={handleBackToSelection}
+      />
 
       <div className="dashboard-main">
-
         <DashboardHeader
           selectedCourse={selectedCourse}
           selectedGroup={selectedGroup}
         />
-        <div className="dashboard-content">{renderActiveModule()}</div>
+        <div className="dashboard-content">
+          {renderActiveModule()}
+        </div>
       </div>
     </div>
   )
