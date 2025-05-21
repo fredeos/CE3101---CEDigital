@@ -1,10 +1,21 @@
 - DATABASE SERVERS AND CONNECTIONS
     > SQL Server:
-        Server Name:
-        Login: 
+        Server Name: <device server instance>
         Database Name: CEDigital
+
     > MongoDB Connection:
-        Connection Name: CEDigital
-        Port: 27018
-        Database Name: People
--
+        IP: localhost
+        Port: 27017
+        ConnectionName: CEDigital Server
+        Database Name: CEDigital
+
+- IIS configurations
+    > Backend:
+        + Requirements: IIS installation, .NET Hosting Bundle, .NET Core
+        + Steps:
+          1. Create a new IIS web site(and application pool)
+          2. Define a physical directory for the server files. Any directory in the root "C:\Sites\<dotnetsite>" (configure
+          access permisions of the application pool of the site and IIS program)
+          3. Within the 'src/backend' directoy execute the dotnet publis command: dotnet publish -c Release -o "C:\Sites\<dotnetsite>"
+          4. Restart the site and access it via any of its http methods
+    > Frontend:

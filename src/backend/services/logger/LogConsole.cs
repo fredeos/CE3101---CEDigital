@@ -7,14 +7,13 @@ namespace backend.services.logger {
         INFO
     }
 
-    public class LogConsole{
+    public class LogConsole {
         // --------------------------------[ Class attributes ]--------------------------------
         private String __logfile;
-        private static String __logs_dir = Path.Combine(".","logs");
+        private readonly String __logs_dir = Path.Combine(".","logs");
         // --------------------------------[ Class functions & methods ]--------------------------------
         public LogConsole(String filename){
             this.__logfile = Path.Combine(__logs_dir,$"{filename}");
-
             if (!File.Exists(__logfile)){
                 File.WriteAllText(__logfile,$"\n[{TimeStamp()}][{TypeStamp(LogTypes.INFO)}]: ============= Log file initialized");
             }

@@ -15,7 +15,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddSingleton<ShopDBService>();
+builder.Services.AddSingleton<CEDigitalService>();
 
 var app = builder.Build();
 
@@ -29,13 +29,12 @@ if (app.Environment.IsDevelopment()){
 app.UseHttpsRedirection();
 app.MapControllers();
 
-var dbservice = app.Services.GetRequiredService<ShopDBService>();
-dbservice.sql_db = new SQLContext("sql.log");
-dbservice.sql_db.Configure("LAPTOP-FREDE","EShop");
+var dbservice = app.Services.GetRequiredService<CEDigitalService>();
+dbservice.sql_db = new SQLContext();
+//dbservice.sql_db.Configure("LAPTOP-FREDE","CEDigital");
+dbservice.sql_db.Configure("CARLOSCL","CEDigital");
 
-dbservice.mongo_db = new MongoContext("mongo.log"); 
-dbservice.mongo_db.Configure("localhost",27017,"People");
+dbservice.mongo_db = new MongoContext();
+dbservice.mongo_db.Configure("localhost",27017,"CEDigital");
 
-Console.WriteLine($"Attribute name: {nameof(Item.id)}");
-
-app.Run();
+app.Run(); 
