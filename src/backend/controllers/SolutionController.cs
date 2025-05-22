@@ -117,14 +117,125 @@ namespace backend.controllers
             else if (assignment != null && assignment.IndividualFlag == 1) // Grupo
             {
                 // Buscar el grupo al que pertenece el estudiante
+                string sql_query2 = @$"
+                SELECT  AG.id as {nameof(AssignmentGroups.ID)}, AG.assignment_id as {nameof(AssignmentGroups.AssignmentID)},
+                        AG.group_num as {nameof(AssignmentGroups.Number)}
+                FROM (Academic.AssignmentStudentGroups as SG JOIN Academic.AssignmentGroups as AG ON SG.group_id = AG.id)
+                    JOIN Academic.Assignments as A ON AG.assignment_id = A.id
+                WHERE SG.student_id = {student_id} AND A.id = {assignment.ID}; ";
 
-                // Verificar si ya existe un registro para guardar el entregable
+                var group = db.sql_db!.SELECT<AssignmentGroups>(sql_query2).FirstOrDefault();
+                if (group != null)
+                {
+                    group.GroupMembers = [];
+                    // Buscar los integrantes del grupo
+                    string sql_query3 = @$"
+                    SELECT SG.group_id as {nameof(StudentGroup.GroupID)}, SG.student_id as {nameof(StudentGroup.StudentID)}
+                    FROM Academic.AssignmentStudentGroups as SG JOIN Academic.AssignmentGroups as AG
+                    ON SG.group_id = AG.id
+                    WHERE SG.group_id = {group.ID}; ";
+
+                    var sqlmembers = db.sql_db!.SELECT<StudentGroup>(sql_query3);
+                    foreach (var sqlmember in sqlmembers)
+                    {
+                        var member = db.mongo_db!.find<Student>("Students", s => s.StudentID == sqlmember.StudentID).FirstOrDefault();
+                        if (member != null) group.GroupMembers.Add(member);
+                    }
+                    // Verificar si ya existe un registro para guardar el entregable
+                    string sql_query4 = @$"
+                    SELECT  SUB.id as {nameof(AssignmentSubmission.ID)}, SUB.group_id as {nameof(AssignmentSubmission.EvaluationGroupID)},
+                            SUB.assignment_id as {nameof(AssignmentSubmission.AssignmentEvaluationID)}
+                    FROM (Academic.Assignments as A JOIN Academic.AssignmentSubmissions as SUB ON SUB.assignment_id = A.id)
+                        JOIN Academic.AssignmentGroups as AG ON AG.assignment_id = A.id
+                    WHERE SUB.group_id = {group.ID} AND SUB.assignment_id = {assignment.ID}; ";
+
+                    var submission_field = db.sql_db!.SELECT<AssignmentSubmission>(sql_query4).FirstOrDefault();
+                    if (submission_field == null)
+                    {
+                        // Crear el espacio de entrega
+                        string sql_query5 = @$"
+                        INSERT INTO Academic.AssignmentSubmissions (assignment_id, student_id, group_id, grade, 
+                                commentary, submitted_file, feedback_file)
+                        OUTPUT  INSERTED.id as {nameof(AssignmentSubmission.ID)}, 
+                                INSERTED.assignment_id as {nameof(AssignmentSubmission.AssignmentEvaluationID)}
+                        VALUES
+                        ({assignment.ID}, NULL, {group.ID}, NULL, NULL, NULL, NULL); ";
+
+                        submission_field = db.sql_db!.INSERT<AssignmentSubmission>(sql_query5, new(){})!;
+                        // Agregar a todos los miembros del grupo al mismo espacio de entrega
+                        foreach (var member in group.GroupMembers)
+                        {
+                            string sql_query6 = @$"
+                            INSERT INTO Academic.StudentSubmissions (student_id, submission_id)
+                            OUTPUT  INSERTED.student_id as {nameof(StudentSolution.StudentID)},
+                                    INSERTED.submission_id as {nameof(StudentSolution.AssignmentSubmissionID)}
+                            VALUES 
+                            ({member.StudentID}, {submission_field!.ID}); ";
+
+                            db.sql_db!.INSERT<StudentSolution>(sql_query6, new() { StudentID = 0, AssignmentSubmissionID = 0 });
+                        }
+                    }
+                    // Crear un objeto para el archivo por subir
+                    string submissions_path = Path.Combine(_env.WebRootPath ?? _env.ContentRootPath, "content", "submissions");
+                    string extension = Path.GetExtension(submission_file.FileName).Substring(1);
+                    int nameLen = submission_file.FileName.Length;
+                    Solution solution = new()
+                    {
+                        ID = 0,
+                        AssigmentSubmissionID = submission_field.ID,
+                        Name = submission_file.FileName.Substring(0, nameLen - extension.Length - 1),
+                        Extension = extension,
+                        Size = submission_file.Length,
+                        Path = Path.Combine(submissions_path, Guid.NewGuid().ToString() + "." + extension)
+                    };
+
+                    try
+                    {
+                        // Guardar el archivo del entregable
+                        string sql_query5 = $@"
+                        INSERT INTO Files.SubmissionFiles (submission_id, file_name, file_type, size, submission_file)
+                        OUTPUT  INSERTED.id as {nameof(Solution.ID)}, INSERTED.submission_id as {nameof(Solution.AssigmentSubmissionID)},
+                                INSERTED.file_name as {nameof(Solution.Name)}, INSERTED.file_type as {nameof(Solution.Extension)},
+                                INSERTED.size as {nameof(Solution.Size)}, INSERTED.submission_file as {nameof(Solution.Path)},
+                                INSERTED.upload_date as {nameof(Solution.UploadDate)}
+                        VALUES
+                        (@{nameof(Solution.AssigmentSubmissionID)}, @{nameof(Solution.Name)}, @{nameof(Solution.Extension)}, @{nameof(Solution.Size)}, @{nameof(Solution.Path)}); ";
+
+                        var inserted = db.sql_db!.INSERT<Solution>(sql_query5, solution);
+                        // Actualizar el espacio de entrega
+                        if (inserted != null)
+                        {
+                            using (var stream = System.IO.File.Create(inserted.Path!))
+                            {
+                                await submission_file.CopyToAsync(stream);
+                            }
+
+                            string sql_query6 = @$"
+                            UPDATE Academic.AssignmentSubmissions
+                            SET submitted_file = {inserted.ID}, submission_date = getdate()
+                            OUTPUT INSERTED.id as {nameof(AssignmentSubmission.ID)}
+                            WHERE id = {submission_field.ID} AND group_id = {group.ID}; ";
+
+                            db.sql_db!.UPDATE<AssignmentSubmission>(sql_query6, submission_field);
+
+                            return CreatedAtAction(nameof(UploadSolution), new { inserted.ID }, inserted);
+                        }
+                    }
+                    catch (System.Exception)
+                    {
+                        return StatusCode(500, "Internal server error");
+                    }
+                }
+                else
+                {
+                    return NotFound($"Student(ID={student_id}) is not part of any subgroup for assignment(ID={assignment_id}) not found in group(ID={group_id})");
+                }
             }
             else
             {
                 return NotFound($"Assignment(ID={assignment_id}) not found in group(ID={group_id})");
             }
-            return BadRequest();
+            return StatusCode(500, "Internal server error");
         }
 
         // ------------------------------------------ Metodos PUT ------------------------------------------

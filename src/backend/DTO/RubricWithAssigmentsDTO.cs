@@ -9,6 +9,6 @@ namespace backend.DTO
         required public string Name { get; set; }
         public float? TotalPercentage { get; set; }
         public float? EarnedPercentage { get; set; }
-        public List<AssignmentForStudentDTO> Assignments { get; set; }
+        public List<AssignmentForStudentDTO>? Assignments { get; set; }
     }
 }

@@ -228,9 +228,9 @@ namespace backend.controllers
                     a.ShowPercentage = 0;
                     string sql_query3 = $@"
                     SELECT SUB.grade as {nameof(AssignmentSubmission.grade)}, SUB.published_flag as {nameof(AssignmentSubmission.Published)}
-                    FROM Academic.AssigmentSubmissions as SUB JOIN Academic.Assignments as A
-                    ON SUB.assignment_id = A.id
-                    WHERE SUB.assignment_id = {a.ID}";
+                    FROM (Academic.AssignmentSubmissions as SUB JOIN Academic.StudentSubmissions as SS ON SS.submission_id = SUB.id)
+                    JOIN Academic.Assignments as A ON SUB.assignment_id = A.id
+                    WHERE SUB.assignment_id = {a.ID} AND SS.student_id = {student_id}";
                     var assignment_submission = db.sql_db!.SELECT<AssignmentSubmission>(sql_query3).FirstOrDefault();
                     if (assignment_submission != null)
                     {
@@ -261,6 +261,118 @@ namespace backend.controllers
             }
 
             return Ok(rubrics_list);
+        }
+
+        [HttpGet("assigments/{assignment_id}/forstudent/{student_id}")]
+        public ActionResult<StudentViewFullAssignmentDTO> GetFullAssignmentInformation(int assignment_id, int student_id)
+        {
+            // Verificar si el estudiante esta en un grupo para la asignacion
+            string sql_query1 = $@"
+            SELECT  AG.id as {nameof(AssignmentGroups.ID)}, AG.assignment_id as {nameof(AssignmentGroups.AssignmentID)},
+                    AG.group_num as {nameof(AssignmentGroups.Number)}
+            FROM (Academic.StudentSubmissions as SS JOIN Academic.AssignmentSubmissions as SUB
+                ON SS.submission_id = SUB.id ) JOIN Academic.AssignmentGroups as AG 
+                ON SUB.group_id = AG.id
+            WHERE SS.student_id = {student_id} AND SUB.assignment_id = {assignment_id}; ";
+
+            var group = db.sql_db!.SELECT<AssignmentGroups>(sql_query1).FirstOrDefault();
+            string context_condition = "";
+            if (group == null){ // No tiene grupo
+                context_condition = $"AND SUB.student_id = {student_id}";
+            } else{ // Tiene grupo
+                context_condition = $"AND SUB.group_id = {group.ID}";
+            }
+
+            // Buscar que exista la asignacion
+            string sql_query2 = @$"
+            SELECT  A.id as {nameof(StudentViewFullAssignmentDTO.ID)}, A.name as {nameof(StudentViewFullAssignmentDTO.Name)},
+                    R.rubric_name as {nameof(StudentViewFullAssignmentDTO.Category)}, A.percentage as {nameof(StudentViewFullAssignmentDTO.TotalPercentage)},
+                    A.turnin_date as {nameof(StudentViewFullAssignmentDTO.DueDate)}
+            FROM ( Academic.Assignments as A JOIN Academic.Rubrics as R 
+                ON A.rubric_id = R.id ) JOIN Academic.StudentAssignments as SA
+                ON SA.assignment_id = A.id
+            WHERE A.id = {assignment_id} AND SA.student_id = {student_id}; ";
+            var fullassignment = db.sql_db!.SELECT<StudentViewFullAssignmentDTO>(sql_query2).FirstOrDefault();
+            if (fullassignment == null)
+            {
+                return NotFound($"Assignment(ID={assignment_id}) not found for student(ID={student_id})");
+            }
+
+            // Agregar los integrantes del grupo si existian
+            if (group != null)
+            {
+                group.GroupMembers = [];
+                string sql_query = @$"
+                SELECT SG.group_id as {nameof(StudentGroup.GroupID)}, SG.student_id as {nameof(StudentGroup.StudentID)}
+                FROM Academic.AssignmentStudentGroups as SG JOIN Academic.AssignmentGroups as AG
+                ON SG.group_id = AG.id
+                WHERE SG.group_id = {group.ID}; ";
+
+                var sqlmembers = db.sql_db!.SELECT<StudentGroup>(sql_query);
+                foreach (var sqlmember in sqlmembers)
+                {
+                    var member = db.mongo_db!.find<Student>("Students", s => s.StudentID == sqlmember.StudentID).FirstOrDefault();
+                    if (member != null) group.GroupMembers.Add(member);
+                }
+
+                fullassignment.GroupMembers = group.GroupMembers;
+            }
+
+            // Buscar las especificaciones
+            string sql_query3 = @$"
+            SELECT  S.id as {nameof(SpecificationDTO.ID)}, S.file_name as {nameof(SpecificationDTO.Name)},
+                    S.file_type as {nameof(SpecificationDTO.Extension)}, S.size as {nameof(SpecificationDTO.Size)}
+            FROM Files.Specifications as S JOIN Academic.Assignments as A
+            ON S.assignment_id = A.id
+            WHERE S.assignment_id = {assignment_id}; ";
+
+            var specifications = db.sql_db!.SELECT<SpecificationDTO>(sql_query3);
+            fullassignment.Attachments = specifications;
+
+            // Buscar la la entrega de la evaluacion
+            string sql_query4 = @$"
+            SELECT SUB.grade as {nameof(StudentViewFullAssignmentDTO.EarnedScore)}, SUB.commentary as {nameof(StudentViewFullAssignmentDTO.Commentary)}
+            FROM Academic.Assignments as A JOIN Academic.AssignmentSubmissions as SUB
+            ON SUB.assignment_id = A.id
+            WHERE SUB.assignment_id = {assignment_id} {context_condition}; ";
+
+            var assignment_complement = db.sql_db!.SELECT<StudentViewFullAssignmentDTO>(sql_query4).FirstOrDefault();
+            if (assignment_complement != null)
+            {
+                fullassignment.EarnedScore = assignment_complement.EarnedScore;
+                if (fullassignment.EarnedScore != null)
+                {
+                    fullassignment.EarnedPercentage = fullassignment.EarnedScore / fullassignment.MaxScore * fullassignment.TotalPercentage;
+                }
+                fullassignment.Commentary = assignment_complement.Commentary;
+
+                // Buscar el entregable mas reciente
+                string sql_query5 = @$"
+                SELECT  F.id as {nameof(SolutionDTO.ID)}, F.file_name as {nameof(SolutionDTO.Name)},
+                        F.file_type as {nameof(SolutionDTO.Extension)}, F.size as {nameof(SolutionDTO.Size)},
+                        F.upload_date as {nameof(SolutionDTO.UploadDate)}
+                FROM ( Academic.Assignments as A JOIN Academic.AssignmentSubmissions as SUB
+                    ON SUB.assignment_id = A.id ) JOIN Files.SubmissionFiles as F
+                    ON SUB.submitted_file = F.id
+                WHERE SUB.assignment_id = {assignment_id} {context_condition}; ";
+
+                var lastsubmission = db.sql_db!.SELECT<SolutionDTO>(sql_query5).FirstOrDefault();
+                fullassignment.Submission = lastsubmission;
+
+                // Buscar la retroalimenaction mas reciente
+                string sql_query6 = $@"
+                SELECT  F.id as {nameof(FeedbackDTO.ID)}, F.file_name as {nameof(FeedbackDTO.Name)},
+                        F.file_type as {nameof(FeedbackDTO.Extension)}, F.size as {nameof(FeedbackDTO.Size)}
+                FROM ( Academic.Assignments as A JOIN Academic.AssignmentSubmissions as SUB
+                    ON SUB.assignment_id = A.id ) JOIN Files.FeedbackFiles as F
+                    ON SUB.feedback_file = F.id
+                WHERE SUB.assignment_id = {assignment_id} {context_condition}; ";
+
+                var lastfeedback = db.sql_db!.SELECT<FeedbackDTO>(sql_query6).FirstOrDefault();
+                fullassignment.Feedback = lastfeedback;
+            }
+
+            return Ok(fullassignment);
         }
 
         /// <summary>

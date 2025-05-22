@@ -109,10 +109,6 @@ CREATE TABLE Academic.AssignmentSubmissions (
 	published_flag INT DEFAULT(0) -- 0: no publicado, 1:publicado
 );
 
-SELECT * FROM Academic.AssignmentSubmissions;
-SELECT * FROM Academic.StudentSubmissions;
-SELECT * FROM Files.SubmissionFiles;
-
 CREATE TABLE Academic.StudentSubmissions (
     student_id INT NOT NULL, -- FK
     submission_id INT NOT NULL, -- FK
@@ -133,6 +129,8 @@ CREATE TABLE Academic.AssignmentStudentGroups (
 );
 
 ----------------------- [Tablas de esquema de archivos] -----------------------
+SELECT * FROM Files.SubmissionFiles;
+
 CREATE TABLE Files.Folders (
     id INT IDENTITY(1,1) PRIMARY KEY,
     group_id INT NOT NULL, -- FK
