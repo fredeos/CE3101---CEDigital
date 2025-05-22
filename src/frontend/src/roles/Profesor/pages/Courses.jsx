@@ -27,17 +27,20 @@ export default function CourseSelection() {
     });
     const courses = Object.values(coursesMap);
 
+    // En caso de no haber iniciado sesion redirige a login
     useEffect(() => {
         if (!checkAuth()) {
             window.location.href = "/cedigital-profesores";
         }
     }, []);
 
+    // Gestiona el cierre de sesion
     const handleLogout = () => {
-        logout();
+        logout(); // Llama a la funcion para limpiar los datos del usuario 
         window.location.href = "/cedigital-profesores";
     };
 
+    // Gestiona el grupo X del curso X seleccionado redirigiendo
     const handleSelectGroup = (course, group) => {
         window.location.href = `/gestion-grupo?courseId=${course.id}&groupId=${group.id}`;
     };
@@ -50,44 +53,28 @@ export default function CourseSelection() {
         <div className="course-selection-container">
             <div className="selection-header">
                 <div className="professor-profile">
-                    <div className="avatar">
-                        <div className="avatar-initials">
-                            {professor.firstName
-                                .split(" ")
-                                .map((n) => n[0])
-                                .join("")}
-                        </div>
-                        <div className="professor-info">
-                            <h1 className="professor-name">
-                                {professor.firstName} {professor.firstLastName}
-                            </h1>
-                        </div>
-                    </div>
+                    <h1>{professor.firstName} {professor.firstLastName}</h1>
                 </div>
                 <button className="btn-logout" onClick={handleLogout}>
                     <LogOut size={16} />
                     Cerrar sesión
                 </button>
             </div>
+
             <div className="selection-content">
                 <div className="selection-head"></div>
                 <div className="direct-selection-grid">
                     {courses.map((course) => (
                         <div key={course.id} className="course-card">
                             <div className="course-card-header">
-                                <h3 className="course-name">{course.name}</h3>
-                                <p className="course-code">[{course.code}]</p>
+                                <h3>{course.name} [{course.code}]</h3>
                             </div>
                             <div className="course-groups">
                                 {course.groups.map((group) => (
                                     <div key={group.id} className="group-item">
                                         <div className="group-info">
-                                            <div className="group-icon">
-                                                <Users size={16} />
-                                            </div>
-                                            <div className="group-details">
-                                                <div className="group-name">{group.name}</div>
-                                            </div>
+                                            <Users size={17} />
+                                            <h1>{group.name}</h1>
                                         </div>
                                         <button
                                             className="btn-select-group"

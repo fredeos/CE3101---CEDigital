@@ -1,5 +1,4 @@
 
-/* News Module Specific Styles */
 .news-list {
   display: flex;
   flex-direction: column;
@@ -54,7 +53,6 @@
   margin-top: 25px;
 }
 
-/* Form Styles */
 .news-form {
   margin-bottom: 1.5rem;
 }
@@ -79,8 +77,7 @@
   border: 1px solid #d1d5db;
   border-radius: 0.375rem;
   font-size: 0.875rem;
-  color: #111827;
-  transition: all 0.2s;
+  color: #171717;
 }
 
 .form-textarea {
@@ -96,43 +93,33 @@
 }
 
 .btn-submit {
-  padding: 0.5rem 1rem;
-  background-color: #283c49;
-  border-radius: 12px;
+  padding: 0.5rem 0.75rem;
+  background-color: #171717;
+  border-radius: 10px;
   font-size: 0.875rem;
-  font-weight: 500;
   color: white;
   cursor: pointer;
-  transition: all 0.2s;
+  line-height: 1.25rem;
 }
 
 .btn-submit:hover {
-  background-color: #0b1921;
+  background-color: #2E2E2E;
 }
 
-/* Button Styles */
 .btn-add-news {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
   padding: 0.5rem 0.75rem;
-  background-color: white;
-  border: none;
-  border-radius: 12px;
+  background-color: #171717;
+  border-radius: 10px;
   font-size: 0.875rem;
-  font-weight: 500;
-  color: #0b1921;
+  color: white;
   cursor: pointer;
-  transition: all 0.2s;
+  line-height: 1.25rem;
 }
 
 .btn-add-news:hover {
-  background-color: #0b1921;
-  color: white;
+  background-color: #2E2E2E;
 }
 
-
-/* Empty State */
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -140,77 +127,6 @@
   justify-content: center;
   padding: 3rem 1rem;
   text-align: center;
-}
-
-.empty-state p {
   color: #6b7280;
   margin-bottom: 1.5rem;
-}
-
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-  .dashboard-header {
-    flex-direction: column;
-    gap: 1rem;
-    padding: 1rem;
-  }
-
-  .header-center {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .header-center {
-    text-align: left;
-  }
-
-  .dashboard-main {
-    flex-direction: column;
-    height: auto;
-  }
-
-  .dashboard-nav {
-    width: 100%;
-    border-right: none;
-    border-bottom: 1px solid #e5e7eb;
-    padding: 0.5rem 0;
-  }
-
-  .nav-list {
-    display: flex;
-    overflow-x: auto;
-    padding: 0 1rem;
-  }
-
-  .nav-item {
-    margin-bottom: 0;
-    margin-right: 0.5rem;
-  }
-
-  .nav-button {
-    padding: 0.5rem 0.75rem;
-    border-left: none;
-    border-bottom: 3px solid transparent;
-  }
-
-  .nav-label {
-    display: none;
-  }
-
-  .dashboard-content {
-    padding: 1rem;
-  }
-
-  .logout-text {
-    display: none;
-  }
-
-  .form-actions {
-    flex-direction: column;
-  }
-
-  .btn-cancel,
-  .btn-submit {
-    width: 100%;
-  }
 }

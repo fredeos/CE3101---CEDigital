@@ -65,11 +65,7 @@ export default function GroupModule({ course, group }) {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <button
-            className="btn-download"
-            onClick={() => setShowDownloadModal(true)}
-            disabled={students.length === 0}
-          >
+          <button className="btn-download" onClick={() => setShowDownloadModal(true)} disabled={students.length === 0}>
             <Download size={16} />
             PDF
           </button>
@@ -79,49 +75,40 @@ export default function GroupModule({ course, group }) {
       {students.length === 0 ? (
         <div className="empty-state">No hay estudiantes matriculados en este grupo</div>
       ) : (
-        <div className="student-table-container">
-          <table className="student-table">
-            <thead>
-              <tr>
-                <th>Carnet</th>
-                <th>Nombre</th>
-                <th>Email</th>
-                <th>Número télefonico</th>
+        <table className="student-table">
+          <thead>
+            <tr>
+              <th>Carnet</th>
+              <th>Nombre</th>
+              <th>Email</th>
+              <th>Número télefonico</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredStudents.map((student) => (
+              <tr key={student.id}>
+                <td>{student.id}</td>
+                <td>{student.name}</td>
+                <td>{student.email}</td>
+                <td>{student.phone}</td>
               </tr>
-            </thead>
-            <tbody>
-              {filteredStudents.map((student) => (
-                <tr key={student.id}>
-                  <td className="student-id">{student.id}</td>
-                  <td className="student-name">{student.name}</td>
-                  <td className="student-email">{student.email}</td>
-                  <td className="student-phone">{student.phone}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
       )}
 
-      <Modal
-        isOpen={showDownloadModal}
-        onClose={() => setShowDownloadModal(false)}
-        title="Confirmar descarga"
-      >
+      <Modal isOpen={showDownloadModal} onClose={() => setShowDownloadModal(false)} title="Confirmar descarga">
         <p>¿Descargar lista de estudiantes en PDF?</p>
         <div className="modal-actions">
           <button className="btn-cancel" onClick={() => setShowDownloadModal(false)}>
             Cancelar
           </button>
-          <button
-            className="btn-submit"
-            onClick={handleConfirmDownload}
-            disabled={isGeneratingPDF}
-          >
-            {isGeneratingPDF ? "Generando..." : "Descargar"}
+          <button className="btn-submit" onClick={handleConfirmDownload} disabled={isGeneratingPDF}>
+            Descargar
           </button>
         </div>
       </Modal>
+
     </div>
   );
 }

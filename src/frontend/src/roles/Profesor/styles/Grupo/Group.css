@@ -47,29 +47,20 @@
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.search-input:focus {
-  outline: none;
-  border-color: #4f46e5;
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-}
-
 .btn-download {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 0.75rem;
-  background-color: white;
-  color: #0b1921;
+  background-color: #171717;
+  color: white;
   font-size: 0.875rem;
-  font-weight: 500;
-  border: none;
-  border-radius: 12px;
+  border-radius: 10px;
   cursor: pointer;
-  transition: background-color 0.2s;
 }
 
 .btn-download:hover {
-  background-color: #0b1921;
+  background-color: #2b2b2b;
   color: white;
 }
 
@@ -84,13 +75,10 @@
   margin-bottom: 1rem;
 }
 
-.student-table-container {
-  overflow-x: auto;
-}
-
 .student-table {
   width: 100%;
   border-collapse: collapse;
+  font-size: 0.875rem;
 }
 
 .student-table th,
@@ -98,6 +86,7 @@
   padding: 0.75rem 1rem;
   text-align: left;
   border-bottom: 1px solid #e5e7eb;
+  border-radius: 10px;
 }
 
 .student-table th {
@@ -107,68 +96,10 @@
   font-size: 0.875rem;
 }
 
-.student-table td {
-  font-size: 0.875rem;
-  color: #111827;
-}
-
-.student-table tr:last-child td {
-  border-bottom: none;
-}
-
-.student-table tr:hover td {
-  background-color: #f9fafb;
-}
-
-.student-id {
-  font-family: monospace;
-  font-weight: 500;
-}
-
-.student-name {
-  font-weight: 500;
-}
-
-.student-email {
-  color: #4f46e5;
-}
-
-.student-phone {
-  font-family: monospace;
-}
-
 .empty-state,
 .loading-state,
 .error-state {
   padding: 2rem;
   text-align: center;
   color: #6b7280;
-}
-
-.error-state {
-  color: #b91c1c;
-  background-color: #fee2e2;
-  border-radius: 0.375rem;
-}
-
-@media (max-width: 768px) {
-  .group-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .group-actions {
-    width: 100%;
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .search-container {
-    width: 100%;
-  }
-
-  .btn-download {
-    width: 100%;
-    justify-content: center;
-  }
 }

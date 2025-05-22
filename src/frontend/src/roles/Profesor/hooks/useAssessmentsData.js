@@ -28,10 +28,12 @@ export function useAssessmentsData(courseCode, groupId) {
 
         // Obtener todas las asignaciones de cada rubro
         let allAssignments = []
+        
         for (const rubric of rubrics) {
           const rubricId = rubric.id ?? rubric.ID
           const assignmentsRes = await fetch(`http://localhost:5039/api/assignments/by-rubric/${rubricId}`)
-          if (!assignmentsRes.ok) continue
+          if (!assignmentsRes.ok) 
+            continue
           const assignments = await assignmentsRes.json()
           // Adaptar cada asignación al formato esperado
           const adapted = assignments.map((a) => ({

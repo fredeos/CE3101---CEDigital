@@ -141,7 +141,7 @@ export default function NewsModule({ course, group, professor }) {
           </div>
           {filteredNews.length === 0 ? (
             <div className="empty-state">
-              <p>No hay noticias disponibles.</p>
+              No hay noticias disponibles
             </div>
           ) : (
             <div className="news-list">

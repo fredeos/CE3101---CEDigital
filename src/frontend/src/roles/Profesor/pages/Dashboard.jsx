@@ -5,7 +5,6 @@ import { useProfessorAuth } from "../hooks/useProfessorAuth"
 import { useProfessorGroupsWithCourses } from "../hooks/useProfessorGroupsWithCourses"
 
 // Componentes de la página del dashboard
-import DashboardHeader from "../components/Dashboard/DashboardHeader"
 import DashboardNav from "../components/Dashboard/DashboardNav"
 import DefaultModule from "../components/Dashboard/DefaultModule"
 
@@ -25,6 +24,7 @@ import ItemsModule from "../components/Modules/ItemsModule"
 import AssignmentsModule from "../components/Modules/AssignmentsModule"
 //import DocumentsModule from "../components/Modules/DocumentModule" 
 
+// Funcion auxiliar para el ActiveTable
 function useURLParams() {
   const getParam = (name) => {
     const params = new URLSearchParams(window.location.search)
@@ -35,6 +35,7 @@ function useURLParams() {
 
 export default function ProfessorDashboard() {
 
+  // Datos obtenidos de la API
   const { professor, checkAuth } = useProfessorAuth()
   const { data: groupsData, isLoading, error } = useProfessorGroupsWithCourses()
   const { getParam } = useURLParams()
@@ -43,13 +44,14 @@ export default function ProfessorDashboard() {
   const courseId = getParam("courseId")
   const groupId = getParam("groupId")
 
+  // Estados
   const [activeTab, setActiveTab] = useState("news")
   const [selectedCourse, setSelectedCourse] = useState(null)
   const [selectedGroup, setSelectedGroup] = useState(null)
   const [isCheckingAuth, setIsCheckingAuth] = useState(true)
   const [courses, setCourses] = useState([])
 
-  // Verificar autenticación
+  // Verifica autenticacion
   useEffect(() => {
     const verifyAuth = async () => {
       const isLoggedIn = checkAuth()
@@ -61,7 +63,7 @@ export default function ProfessorDashboard() {
     verifyAuth()
   }, [])
 
-  // Procesar los datos y agrupar por curso
+  // Procesa los datos y agrupa por curso
   useEffect(() => {
     if (!groupsData || groupsData.length === 0) return
 
@@ -89,7 +91,7 @@ export default function ProfessorDashboard() {
     setCourses(Object.values(coursesMap))
   }, [groupsData])
 
-  // Seleccionar curso y grupo basado en los parámetros de URL
+  // Selecciona curso y grupo basado en los parametros de URL
   useEffect(() => {
     if (isCheckingAuth || isLoading || courses.length === 0) return
 
@@ -121,40 +123,27 @@ export default function ProfessorDashboard() {
   }
 
   if (isCheckingAuth || isLoading) {
-    return (
-      <div className="dashboard-loading">
-        <p>Cargando datos del profesor...</p>
-      </div>
-    )
+    return <div className="dashboard-loading">Cargando datos del profesor...</div>
   }
 
   if (error) {
-    return (
-      <div className="dashboard-error">
-        <p>Error al cargar los grupos: {error}</p>
-        <button onClick={() => window.location.reload()}>Reintentar</button>
-      </div>
-    )
+    return <div className="dashboard-error">Error al cargar los grupos</div>
   }
-  
+
   if (!selectedCourse) {
-    return (
-      <div className="dashboard-loading">
-        
-      </div>
-    )
+    return <div className="dashboard-loading">Cargando...</div>
   }
 
   const renderActiveModule = () => {
     switch (activeTab) {
       case "news":
-        return <NewsModule course={selectedCourse} group={selectedGroup} professor={professor}/>
+        return <NewsModule course={selectedCourse} group={selectedGroup} professor={professor} />
       case "group":
         return <GroupModule course={selectedCourse} group={selectedGroup} />
-       case "items":
+      case "items":
         return <ItemsModule course={selectedCourse} group={selectedGroup} />
       case "assessments":
-        return  <AssignmentsModule course={selectedCourse} group={selectedGroup}/>
+        return <AssignmentsModule course={selectedCourse} group={selectedGroup} />
       /*case "documents":
         return <DocumentsModule course={selectedCourse} group={selectedGroup} /> */
       default:
@@ -164,18 +153,18 @@ export default function ProfessorDashboard() {
 
   return (
     <div className="dashboard-container">
-      <DashboardNav 
-        activeTab={activeTab} 
-        onTabChange={handleTabChange} 
-        professor={professor} 
+      <DashboardNav
+        activeTab={activeTab}
+        onTabChange={handleTabChange}
+        professor={professor}
         onBackToSelection={handleBackToSelection}
       />
 
       <div className="dashboard-main">
-        <DashboardHeader
-          selectedCourse={selectedCourse}
-          selectedGroup={selectedGroup}
-        />
+        <header className="dashboard-header">
+          {selectedCourse.name}
+          {selectedGroup && <span className="group-indicator"> - {selectedGroup.name}</span>}
+        </header>
         <div className="dashboard-content">
           {renderActiveModule()}
         </div>

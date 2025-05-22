@@ -6,54 +6,56 @@ import "../styles/Login.css";
 function ProfessorLogin() {
   const [credentials, setCredentials] = useState({ email: "", password: "" });
   const [notification, setNotification] = useState(null);
-  const { login, isLoading, checkAuth } = useProfessorAuth();
+  const { login, checkAuth } = useProfessorAuth();
 
+  // Si el inicio de sesion es correcto lo redirige
   useEffect(() => {
     if (checkAuth()) {
       window.location.href = "/profesor-cursos";
     }
   }, []);
 
+  // Gestiona los cambios en las entradas de datos
   const handleChange = (e) => {
     setCredentials((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
     }));
+    console.log()
   };
 
+  //  Gestiona el envio del formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const result = await login(credentials);
+    const result = await login(credentials); // Obtiene la respuesta del backend
     if (result.success) {
       setNotification({ type: "success", message: "¡Inicio de sesión exitoso!" });
-      setTimeout(() => {
-        window.location.href = "/profesor-cursos";
-      }, 1200);
+      setTimeout(() => { window.location.href = "/profesor-cursos";}, 1000);
     } else {
       setNotification({ type: "error", message: result.error || "Credenciales no válidas." });
     }
   };
 
   return (
+
     <div className="login-container-profesor">
+
+      {/* Notificacion de inicio de sesion */}
       {notification && (
-        <Notification
-          type={notification.type}
-          message={notification.message}
-          onClose={() => setNotification(null)}
-        />
+        <Notification type={notification.type} message={notification.message} onClose={() => setNotification(null)} />
       )}
 
       <div className="login-card-profesor">
+
+        {/* Encabezado del inicio de sesion */}
         <div className="login-header-profesor">
           <h1 className="login-title-profesor">CE Digital</h1>
         </div>
 
+        {/* Formulario del inicio de sesion */}
         <form className="login-form-profesor" onSubmit={handleSubmit}>
           <div className="form-group-profesor">
-            <label htmlFor="email" className="form-label-profesor">
-              Correo institucional
-            </label>
+            <label htmlFor="email"> Correo institucional </label>
             <input
               id="email"
               type="email"
@@ -67,7 +69,7 @@ function ProfessorLogin() {
           </div>
 
           <div className="form-group-profesor">
-            <label htmlFor="password" className="form-label-profesor">
+            <label htmlFor="password">
               Contraseña
             </label>
             <input
@@ -82,12 +84,9 @@ function ProfessorLogin() {
             />
           </div>
 
-          <div className="form-footer-profesor">
-            <button type="submit" className="login-button-profesor" disabled={isLoading}>
-              {isLoading ? "Iniciando sesión..." : "Iniciar sesión"}
-            </button>
-            <a className="forgot-password-profesor">¿Olvidó su contraseña?</a>
-          </div>
+          <button type="submit" className="login-button-profesor">
+            Iniciar sesión
+          </button>
         </form>
       </div>
     </div>

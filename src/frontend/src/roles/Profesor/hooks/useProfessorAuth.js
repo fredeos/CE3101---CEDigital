@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 
 export function useProfessorAuth() {
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [professor, setProfessor] = useState(null);
@@ -12,10 +11,8 @@ export function useProfessorAuth() {
 
   // Funcion para verificar la autenticación del profesor
   const login = async (credentials) => {
-    setIsLoading(true);
     setError(null);
     try {
-
       // Realiza la consulta a la API para autenticar al profesor
       const response = await fetch(
         `http://localhost:5039/api/login/professors/${encodeURIComponent(credentials.email)}/${encodeURIComponent(credentials.password)}`,
@@ -43,8 +40,6 @@ export function useProfessorAuth() {
     } catch (err) {
       setError(err.message);
       return { success: false, error: err.message };
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -92,7 +87,6 @@ export function useProfessorAuth() {
     login,
     logout,
     checkAuth,
-    isLoading,
     error,
     isAuthenticated,
     professor,

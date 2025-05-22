@@ -91,6 +91,8 @@ export default function ItemsModule({ course, group }) {
       newTotal = totalPercentage + formData.percentage
     }
 
+    console.log(newTotal)
+
     if (newTotal > 100) {
       setFormError(`El porcentaje total supera el 100% (${newTotal}%). Ajuste el valor.`)
       return false
@@ -125,14 +127,6 @@ export default function ItemsModule({ course, group }) {
     setFormError(null);
   };
 
-  if (isLoading) {
-    return (
-      <div className="items-module">
-        <div className="loading-state">Cargando rubros...</div>
-      </div>
-    );
-  }
-
   if (error) {
     return (
       <div className="items-module">
@@ -143,9 +137,9 @@ export default function ItemsModule({ course, group }) {
 
   return (
     <div className="dashboard-module">
+
       {successMessage && (
         <div className="success-message">
-          <Check size={16} />
           {successMessage}
         </div>
       )}
@@ -167,45 +161,42 @@ export default function ItemsModule({ course, group }) {
             </div>
           )}
           <form onSubmit={handleFormSubmit}>
-            <div className="form-group">
-              <label htmlFor="name" className="form-label">
-                Nombre del rubro *
-              </label>
+            <label htmlFor="name" className="form-label">
+              Nombre del rubro *
+            </label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              className="form-input"
+              value={formData.name}
+              onChange={handleFormChange}
+              required
+            />
+            <label htmlFor="percentage" className="form-label">
+              Porcentaje (%) *
+            </label>
+            <div className="percentage-input-wrapper">
               <input
-                type="text"
-                id="name"
-                name="name"
-                className="form-input"
-                value={formData.name}
+                id="percentage"
+                name="percentage"
+                className="form-input percentage-input"
+                value={formData.percentage}
                 onChange={handleFormChange}
+                min="1"
+                max="100"
                 required
               />
+              <PercentIcon size={16} className="percentage-icon" />
             </div>
-            <div className="form-group">
-              <label htmlFor="percentage" className="form-label">
-                Porcentaje (%) *
-              </label>
-              <div className="percentage-input-wrapper">
-                <input
-                  id="percentage"
-                  name="percentage"
-                  className="form-input percentage-input"
-                  value={formData.percentage}
-                  onChange={handleFormChange}
-                  min="1"
-                  max="100"
-                  required
-                />
-                <PercentIcon size={16} className="percentage-icon" />
-              </div>
-              <div className="input-help-text-items">
-                Porcentaje total:{" "}
-                {editingItem
-                  ? totalPercentage - editingItem.percentage + (formData.percentage || 0)
-                  : totalPercentage + (formData.percentage || 0)}
-                %
-              </div>
+            <div className="input-help-text-items">
+              Porcentaje total:{" "}
+              {editingItem
+                ? totalPercentage - editingItem.percentage + (formData.percentage || 0)
+                : totalPercentage + (formData.percentage || 0)}
+              %
             </div>
+
             <div className="form-actions">
               <button type="button" className="btn-cancel" onClick={handleCancelClick}>
                 Cancelar
@@ -222,7 +213,7 @@ export default function ItemsModule({ course, group }) {
             <div className="items-title-section">
               <h2 className="items-title">Rubros del grupo</h2>
             </div>
-            <button className="btn-create" onClick={handleAddClick}>
+            <button className="btn-submit" onClick={handleAddClick}>
               Añadir rubro
             </button>
           </div>

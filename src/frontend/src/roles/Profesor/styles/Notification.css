@@ -32,8 +32,8 @@
 
 .notification-error {
   background-color: #fff7f6;
-  color: #8a1200;
-  border-left: 4px solid #8a1200;
+  color: #ef4444;
+  border-left: 4px solid #ef4444;
 }
 
 .notification-content {
@@ -52,7 +52,7 @@
 }
 
 .notification-error .notification-icon {
-  color: #8a1200;
+  color: #ef4444;
 }
 
 .notification-message {

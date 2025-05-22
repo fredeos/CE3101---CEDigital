@@ -2,6 +2,7 @@ import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 
 export const generateStudentReport = (students = [], course = {}, group = {}) => {
+    
     if (students.length === 0) {
         console.warn("No hay estudiantes para generar el reporte");
         return;

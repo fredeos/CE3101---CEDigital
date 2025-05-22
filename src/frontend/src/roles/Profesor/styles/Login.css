@@ -3,34 +3,34 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #0b1921;
+  background-color:rgb(248 250 252);
   padding: 1rem;
 }
 
 .login-card-profesor {
   width: 100%;
-  max-width: 32rem;
-  background-color: #eeeeee;
-  border-radius: 12px;
-  border: 5px solid #0b1921;
-  box-shadow: 8px 8px 0px 0px #334e5f;
+  max-width: 28rem;
+  background-color: white;
+  border-radius: 10px;
+  border: 1px solid #eeeeee;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 }
 
 .login-header-profesor {
   text-align: center;
   margin-bottom: 1.5rem;
-  border-bottom: 1px solid #334e5f;
+  border-bottom: 1px solid #000000;
 }
 
 .login-title-profesor {
   font-size: 1.9rem;
   font-weight: 700;
-  color: #334e5f;
+  color: #000000;
   margin-bottom: 0.5rem;
 }
 
 .login-form-profesor {
-  margin-top: 2rem;
+  margin-top: 1rem;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -39,54 +39,34 @@
 .form-group-profesor {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-}
-
-.form-label-profesor {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #334e5f;
+  gap: 0.6rem;
   text-align: left;
+  font-size: 0.9rem;
 }
 
 .form-input-profesor {
   width: 100%;
-  padding: 0.625rem 0.75rem;
+  padding: 0.5rem 0.75rem;
   background-color: #fffefe;
-  border: 1px solid #334e5f;
-  border-radius: 8px;
+  border: 1px solid #171717;
+  border-radius: 10px;
 }
 
 .form-input-profesor::placeholder {
   color: #9ca3af;
 }
 
-.form-footer-profesor {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  align-items: center;
-}
-
 .login-button-profesor {
-  padding: 0.625rem 1.25rem;
-  background-color: #eeeeee;
-  color: #334e5f;
-  font-weight: 500;
-  border: 1px solid #334e5f;
-  border-radius: 0.375rem;
+  padding: 0.5rem 1.25rem;
+  min-width: 100%;
+  background-color: #171717;
+  color: white;
+  border-radius: 10px;
   cursor: pointer;
-  transition: background-color 0.3s;
 }
 
 .login-button-profesor:hover {
-  background-color: #334e5f;
-  color: #eeeeee;
-}
-
-.forgot-password-profesor:hover {
-  text-decoration: underline;
-  cursor: pointer;
+  background-color: #2E2E2E;
 }
 
 @media (min-width: 640px) {

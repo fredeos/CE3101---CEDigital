@@ -104,8 +104,9 @@ export default function Assessments({ course, group }) {
       )}
 
       <div className="module-header">
-        <h2 className="header-title">Evaluaciones</h2>
+        Evaluaciones
         <div className="header-actions">
+
           <div className="dropdown-container">
             <button className="dropdown-toggle" onClick={() => setDropdownOpen(!dropdownOpen)}>
               {selectedItem ? selectedItem.name : "Seleccionar rubro"}
@@ -122,10 +123,11 @@ export default function Assessments({ course, group }) {
               </div>
             )}
           </div>
-          <button className="btn-create" onClick={handleAddClick}>
+          <button className="btn-submit" onClick={handleAddClick}>
             Crear evaluación
           </button>
         </div>
+
       </div>
 
       <div className="main-content">
@@ -155,23 +157,25 @@ export default function Assessments({ course, group }) {
                     <td>{formatTime(assessment.dueDate)}</td>
                     <td>
                       {assessment.isGroupAssessment ? (
-                        <span className="type-badge group">Grupal</span>
+                        <span>Grupal</span>
                       ) : (
-                        <span className="type-badge individual">Individual</span>
+                        <span>Individual</span>
                       )}
                     </td>
                     <td>{assessment.weight}%</td>
+
                     <td>
                       {assessment.fileName && (
                         <a href={assessment.fileUrl} target="_blank" rel="noopener noreferrer" className="file-link">
                           <span>
-                            {assessment.fileName.length > 20
-                              ? `${assessment.fileName.substring(0, 20)}...`
+                            {assessment.fileName.length > 30
+                              ? `${assessment.fileName.substring(0, 30)}...`
                               : assessment.fileName}
                           </span>
                         </a>
                       )}
                     </td>
+
                     <td>
                       <div className="actions-cell">
                         <button className="icon-btn edit" onClick={() => handleEditClick(assessment)} title="Editar">
@@ -236,7 +240,6 @@ export default function Assessments({ course, group }) {
       >
         <div className="delete-modal-content">
           <p>¿Está seguro de que desea eliminar la evaluación seleccionada?</p>
-          <p>Esta acción no se puede deshacer y puede afectar los cálculos de calificaciones.</p>
         </div>
       </Modal>
     </div>

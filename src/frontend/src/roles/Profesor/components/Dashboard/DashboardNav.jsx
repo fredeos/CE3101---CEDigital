@@ -1,4 +1,4 @@
-import { Newspaper, Users, FileText, List, ClipboardCheck, FileCheck, BarChart3, ChevronLeft } from "lucide-react"
+import { Newspaper, User, Users, FileText, List, ClipboardCheck, FileCheck, BarChart3, ChevronLeft } from "lucide-react"
 
 export default function DashboardNav({ activeTab, onTabChange, onBackToSelection, professor }) {
   const navItems = [
@@ -35,18 +35,10 @@ export default function DashboardNav({ activeTab, onTabChange, onBackToSelection
         ))}
       </ul>
 
-      <div className="header-right">
-        <div className="avatar">
-          <div className="avatar-initials">
-            {professor.firstName
-              .split(" ")
-              .map((n) => n[0])
-              .join("")}
-          </div>
-          <div className="professor-info">
-            <span className="professor-name">{professor.firstName} {professor.firstLastName}</span>
-          </div>
-        </div>
+
+      <div className="professor-info">
+        <User size={20} />
+        <span>{professor.firstName} {professor.firstLastName}</span>
       </div>
 
     </nav>
