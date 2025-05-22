@@ -1,0 +1,59 @@
+.cursos-container {
+  padding: 2rem;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f5f7fb;
+  min-height: 100vh;
+}
+
+.curso-form {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.curso-form input {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  min-width: 180px;
+}
+
+.curso-form button {
+  background-color: #004aad;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.6rem 1.2rem;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.curso-form button:hover {
+  background-color: #00337a;
+}
+
+.tabla-cursos {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  box-shadow: 0 0 8px rgba(0,0,0,0.05);
+}
+
+.tabla-cursos th, .tabla-cursos td {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.tabla-cursos th {
+  background-color: #004aad;
+  color: white;
+}
+
+.tabla-cursos button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+}
