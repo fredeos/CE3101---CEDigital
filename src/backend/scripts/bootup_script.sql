@@ -98,14 +98,14 @@ CREATE TABLE Academic.StudentAssignments (
 
 CREATE TABLE Academic.AssignmentSubmissions (
     id INT IDENTITY(1,1) PRIMARY KEY,
-    assignment_id INT NOT NULL,
+    assignment_id INT NOT NULL, -- FK
     student_id INT NULL,
     group_id INT NULL,
     grade DECIMAL(5,2) NULL,
     commentary NVARCHAR(200) NULL,
     submitted_file INT NULL, -- FK
     feedback_file INT NULL, -- FK
-    submission_date DATETIME DEFAULT(GETDATE()),
+    submission_date DATETIME NULL DEFAULT(GETDATE()),
 	published_flag INT DEFAULT(0) -- 0: not published, 1:published
 );
 

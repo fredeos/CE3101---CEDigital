@@ -70,9 +70,38 @@ VALUES
 (4, 2021430403), (5, 2021430403),
 (4, 2021032537), (5, 2021032537);
 
+-- Insertar evaluaciones de prueba y espacios para subir tareas para todos los estudiantes
 INSERT INTO Academic.Assignments (rubric_id, name, percentage, turnin_date, individual_flag)
 VALUES
 (4, 'Tarea 1', 2.00 , '2025-05-23 23:50:00.500', 0), 
 (4, 'Tarea 2', 2.00 , '2025-05-24 23:50:00.500', 0), 
 (4, 'Tarea 3', 8.00 , '2025-05-25 23:50:00.500', 1);
 
+INSERT INTO Academic.AssignmentGroups (assignment_id, group_num)
+VALUES
+(5, 1);
+
+INSERT INTO Academic.AssignmentStudentGroups (student_id, group_id)
+VALUES
+(2023087683, 1), (2023074492,1), (2021476501,1), (2021430403,1), (2021032537,1);
+
+INSERT INTO Academic.AssignmentSubmissions (assignment_id, student_id, group_id, grade, commentary, 
+submitted_file, feedback_file, submission_date)
+VALUES
+(3, 2023087683, NULL, 81.49, NULL, NULL, NULL, NULL),
+(3, 2023074492, NULL, NULL, NULL, NULL, NULL, NULL),
+(3, 2021476501, NULL, NULL, NULL, NULL, NULL, NULL),
+(3, 2021430403, NULL, NULL, NULL, NULL, NULL, NULL),
+(3, 2021032537, NULL, NULL, NULL, NULL, NULL, NULL),
+(4, 2023087683, NULL, 100.00, NULL, NULL, NULL, NULL),
+(4, 2023074492, NULL, NULL, NULL, NULL, NULL, NULL),
+(4, 2021476501, NULL, NULL, NULL, NULL, NULL, NULL),
+(4, 2021430403, NULL, NULL, NULL, NULL, NULL, NULL),
+(4, 2021032537, NULL, NULL, NULL, NULL, NULL, NULL),
+(5, NULL, 1, NULL, 60.70, NULL, NULL, NULL);
+
+INSERT INTO Academic.StudentSubmissions (student_id, submission_id)
+VALUES
+(2023087683,6), (2023074492, 7), (2021476501, 8), (2021430403, 9), (2021032537, 10),
+(2023087683,11), (2023074492, 12), (2021476501, 13), (2021430403, 14), (2021032537, 15),
+(2023087683,16), (2023074492, 16), (2021476501, 16), (2021430403, 16), (2021032537, 16);

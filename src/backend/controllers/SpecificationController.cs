@@ -18,13 +18,47 @@ namespace backend.controllers{
         [HttpGet("specifications/group/{group_id}/{assignment_id}/{specification_id}")]
         public IActionResult DownloadSpecification(int group_id, int assignment_id, int specification_id)
         {
-            return Ok();
+            string sql_query = $@"
+            SELECT  SP.id as {nameof(Specification.ID)}, SP.assignment_id as {nameof(Specification.AssigmentID)},
+                    SP.file_name as {nameof(Specification.Name)}, SP.file_type as {nameof(Specification.Extension)},
+                    SP.size as {nameof(Specification.Size)}, SP.specification_file as {nameof(Specification.Path)},
+                    SP.upload_date as {nameof(Specification.UploadDate)}
+            FROM ((Academic.Assignments as A JOIN Files.Specifications as SP ON A.id = SP.assignment_id)
+                JOIN Academic.Rubrics as R ON A.rubric_id = R.id) 
+                JOIN Academic.Groups as G ON R.group_id = G.id 
+            WHERE G.id = {group_id} AND A.id = {assignment_id} AND SP.id = {specification_id}";
+
+            var specification = db.sql_db!.SELECT<Specification>(sql_query).FirstOrDefault();
+            if (specification == null) // Verificar que exista la especificacion indicada
+            { 
+                return NotFound($"Specification(ID={specification_id}) not found for assignment(ID={assignment_id}) on group(ID={group_id})");
+            }
+
+            string content_type = "application/octet-stream";
+            return PhysicalFile(specification.Path!, content_type, specification.Name + "." + specification.Extension);
         }
 
         [HttpGet("specifications/group/{group_id}/{assignment_id}/recent")]
         public IActionResult DownloadLastSpecification(int group_id, int assignment_id)
         {
-            return Ok();
+            string sql_query = $@"
+            SELECT  SP.id as {nameof(Specification.ID)}, SP.assignment_id as {nameof(Specification.AssigmentID)},
+                    SP.file_name as {nameof(Specification.Name)}, SP.file_type as {nameof(Specification.Extension)},
+                    SP.size as {nameof(Specification.Size)}, SP.specification_file as {nameof(Specification.Path)},
+                    SP.upload_date as {nameof(Specification.UploadDate)}
+            FROM ((Academic.Assignments as A JOIN Files.Specifications as SP ON A.id = SP.assignment_id)
+                JOIN Academic.Rubrics as R ON A.rubric_id = R.id) 
+                JOIN Academic.Groups as G ON R.group_id = G.id 
+            WHERE G.id = {group_id} AND A.id = {assignment_id}
+            ORDER BY {nameof(Specification.UploadDate)} DESC; ";
+
+            var specification = db.sql_db!.SELECT<Specification>(sql_query).FirstOrDefault();
+            if (specification == null) // Verificar que exista una especificacion más reciente
+            { 
+                return NotFound($"No available specifications for assignment(ID={assignment_id}) on group(ID={group_id})");
+            }
+            string content_type = "application/octet-stream";
+            return PhysicalFile(specification.Path!, content_type, specification.Name + "." + specification.Extension);
         }
 
         // ------------------------------------------ Metodos POST ------------------------------------------
@@ -79,7 +113,7 @@ namespace backend.controllers{
             if (inserted_file == null){
                 return StatusCode(500, "Internal server error");
             }
-            using (var stream = System.IO.File.Create(inserted_file.Path)){
+            using (var stream = System.IO.File.Create(inserted_file.Path!)){
                 await spec_file.CopyToAsync(stream);
             }
 

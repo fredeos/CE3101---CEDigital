@@ -192,7 +192,63 @@ namespace backend.controllers
                 return StatusCode(500, $"Error al obtener las asignaciones: {ex.Message}");
             }
         }
-        
+
+        [HttpGet("assignments/group/{group_id}/student/{student_id}")]
+        public ActionResult<IEnumerable<RubricWithAssignmentsDTO>> GetAssignmentsPerRubricForStudent(int student_id, int group_id)
+        {
+            List<RubricWithAssignmentsDTO> rubrics_list = [];
+            // Buscar todas las rubricas del grupo
+            string sql_query1 = $@"
+            SELECT  R.id as {nameof(RubricWithAssignmentsDTO.ID)}, R.rubric_name as {nameof(RubricWithAssignmentsDTO.Name)},
+                    R.percentage as {nameof(RubricWithAssignmentsDTO.TotalPercentage)}
+            FROM Academic.Groups as G JOIN Academic.Rubrics as R ON G.id = R.group_id
+            WHERE G.id = {group_id}; ";
+            var rubrics = db.sql_db!.SELECT<RubricWithAssignmentsDTO>(sql_query1);
+            rubrics.ForEach(r =>
+            {
+                r.Assignments = [];
+            });
+            rubrics_list.AddRange(rubrics);
+
+            bool show_rubric_percentage = false;
+            foreach (var rubric in rubrics_list) // Buscar las asignaciones en cada rubro 
+            {   
+                // Buscar todas las asignaciones de cada rubrica para el estudiante en cuestion
+                string sql_query2 = $@"
+                SELECT  A.id as {nameof(AssignmentForStudentDTO.ID)}, A.name as {nameof(AssignmentForStudentDTO.Name)},
+                        A.turnin_date as {nameof(AssignmentForStudentDTO.DueDate)}, A.percentage as {nameof(AssignmentForStudentDTO.TotalPercentage)},
+                        SUB.grade as {nameof(AssignmentForStudentDTO.EarnedGrade)}, SUB.published_flag as {nameof(AssignmentForStudentDTO.ShowPercentage)}
+                FROM (Academic.StudentSubmissions as SS JOIN Academic.AssignmentSubmissions as SUB ON SS.submission_id = SUB.id )
+                    JOIN Academic.Assignments as A ON A.id = SUB.assignment_id 
+                WHERE SS.student_id = {student_id} AND A.rubric_id = {rubric.ID}";
+                var assignments = db.sql_db!.SELECT<AssignmentForStudentDTO>(sql_query2);
+                assignments.ForEach(a =>
+                {
+                    if (a.EarnedGrade != null)
+                    {
+                        a.EarnedPercentage = (a.EarnedGrade / 100) * a.TotalPercentage;
+                    }
+                    if (a.ShowPercentage == 1 && !show_rubric_percentage)
+                    {
+                        show_rubric_percentage = true;
+                    }
+                });
+                rubric.Assignments.AddRange(assignments);
+                if (show_rubric_percentage)
+                {
+                    foreach (var assignment in rubric.Assignments)
+                    {
+                        if (assignment.EarnedGrade != null)
+                        {
+                            rubric.EarnedPercentage += assignment.EarnedPercentage;
+                        }
+                    }
+                }
+            }
+
+            return Ok(rubrics_list);
+        }
+
         /// <summary>
         /// Permite modificar una asignación existente.
         /// Se valida que el nuevo porcentaje no exceda el permitido por el rubro.
