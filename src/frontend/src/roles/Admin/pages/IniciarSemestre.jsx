@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import api from "../Services/api";
+import "../styles/IniciarSemestre.css"; 
 
 function IniciarSemestre() {
   const [year, setYear] = useState("");
@@ -13,6 +14,11 @@ function IniciarSemestre() {
   const [cursoSeleccionado, setCursoSeleccionado] = useState("");
   const [numeroGrupo, setNumeroGrupo] = useState("");
   const [profesoresSeleccionados, setProfesoresSeleccionados] = useState([]);
+
+  const [estudiantes, setEstudiantes] = useState([]);
+  const [grupoIdSeleccionado, setGrupoIdSeleccionado] = useState(null);
+  const [estudiantesSeleccionados, setEstudiantesSeleccionados] = useState([]);
+
 
   // 1. Cargar cursos y profesores desde el backend
   useEffect(() => {
@@ -41,7 +47,7 @@ function IniciarSemestre() {
 
       if (res.data && res.data.id) {
         setSemestreCreado(res.data);
-        setMensaje("✅ Semestre creado con éxito.");
+        alert("✅ Semestre creado con éxito.");
         console.log("Semestre creado:", res.data);
       } else {
         throw new Error("Respuesta inválida del backend.");
@@ -57,7 +63,7 @@ function IniciarSemestre() {
     e.preventDefault();
 
     if (!semestreCreado) {
-      alert("⚠️ Primero debés crear un semestre.");
+      alert("⚠️ Primero se debe crear un semestre.");
       return;
     }
 
@@ -76,6 +82,8 @@ function IniciarSemestre() {
   });
 
       const grupoId = grupoRes.data.id;
+      setGrupoIdSeleccionado(grupoId);
+
 
       await Promise.all(
         profesoresSeleccionados.map((profId) =>
@@ -97,8 +105,41 @@ function IniciarSemestre() {
     }
   };
 
+  useEffect(() => {
+  const cargarEstudiantes = async () => {
+    try {
+      const res = await api.get("/students"); 
+      setEstudiantes(res.data);
+    } catch (err) {
+      console.error("Error cargando estudiantes", err);
+    }
+  };
+  cargarEstudiantes();
+}, []);
+
+  const handleMatricularEstudiantes = async (e) => {
+  e.preventDefault();
+  try {
+    await Promise.all(
+      estudiantesSeleccionados.map((id) =>
+        api.post("/add/student_to_a_group", {
+          GroupID: grupoIdSeleccionado,
+          StudentID: parseInt(id),
+        })
+      )
+    );
+    alert("✅ Estudiantes matriculados correctamente");
+    setEstudiantesSeleccionados([]);
+  } catch (err) {
+    console.error("❌ Error al matricular estudiantes", err);
+    alert("❌ Error al matricular estudiantes");
+  }
+};
+
+
+
   return (
-    <div style={{ padding: "2rem", maxWidth: "800px", margin: "auto" }}>
+    <div className="iniciar-semestre-container">
       <h2>Inicializar Semestre</h2>
 
       {/* Formulario para crear semestre */}
@@ -122,7 +163,7 @@ function IniciarSemestre() {
           <option value="">Seleccione</option>
           <option value="1">1 (Primer semestre)</option>
           <option value="2">2 (Segundo semestre)</option>
-          <option value="V">V (Verano)</option>
+          <option value="3">V (Verano)</option>
         </select>
 
         <button type="submit">Crear Semestre</button>
@@ -180,6 +221,32 @@ function IniciarSemestre() {
           <button type="submit">Agregar grupo</button>
         </form>
       )}
+
+    {grupoIdSeleccionado && (
+      <form onSubmit={handleMatricularEstudiantes}>
+        <h3>Matricular Estudiantes al Grupo #{grupoIdSeleccionado}</h3>
+
+        <label>Estudiantes:</label>
+        <select
+          multiple
+          value={estudiantesSeleccionados}
+          onChange={(e) =>
+            setEstudiantesSeleccionados(
+              Array.from(e.target.selectedOptions, (opt) => opt.value)
+            )
+          }
+      >
+          {estudiantes.map((est) => (
+            <option key={est.studentID} value={est.studentID}>
+              {est.firstLastName} {est.secondLastName} {est.firstName}
+            </option>
+          ))}
+        </select>
+
+        <button type="submit">Matricular</button>
+      </form>
+    )}
+
     </div>
   );
 }

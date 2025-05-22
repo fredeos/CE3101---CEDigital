@@ -1,0 +1,98 @@
+/* Contenedor principal */
+.iniciar-semestre-container {
+  padding: 2rem;
+  max-width: 800px;
+  margin: 2rem auto;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Titulos */
+.iniciar-semestre-container h2 {
+  text-align: center;
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+}
+
+.iniciar-semestre-container h3 {
+  color: #34495e;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #2980b9;
+  padding-bottom: 0.3rem;
+}
+
+/* Formularios */
+.iniciar-semestre-container form {
+  margin-top: 1rem;
+}
+
+/* Labels */
+.iniciar-semestre-container label {
+  display: block;
+  margin: 0.7rem 0 0.3rem;
+  font-weight: 600;
+  color: #34495e;
+}
+
+/* Inputs y selects */
+.iniciar-semestre-container input[type="text"],
+.iniciar-semestre-container input[type="number"],
+.iniciar-semestre-container select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1.5px solid #bdc3c7;
+  border-radius: 4px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+}
+
+.iniciar-semestre-container input[type="text"]:focus,
+.iniciar-semestre-container input[type="number"]:focus,
+.iniciar-semestre-container select:focus {
+  border-color: #2980b9;
+  outline: none;
+}
+
+/* Select múltiple */
+.iniciar-semestre-container select[multiple] {
+  height: 120px;
+  cursor: pointer;
+}
+
+/* Botones */
+.iniciar-semestre-container button {
+  margin-top: 1rem;
+  padding: 0.6rem 1.2rem;
+  background-color: #2980b9;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.iniciar-semestre-container button:hover {
+  background-color: #1c5980;
+}
+
+/* Mensajes */
+.iniciar-semestre-container p {
+  margin-top: 0.8rem;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+/* Mensaje de éxito */
+.iniciar-semestre-container p.success {
+  color: green;
+}
+
+/* Mensaje de error */
+.iniciar-semestre-container p.error {
+  color: red;
+}
