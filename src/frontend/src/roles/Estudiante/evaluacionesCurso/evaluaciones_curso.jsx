@@ -8,8 +8,8 @@ import "./evaluaciones_curso.css"
 const AssignmentsView = ({ onBack }) => {
     // Ejemplo de datos del usuario
     const user = {
-        name: "Alex Johnson",
-        email: "alex.johnson@university.edu",
+        name: "Alex Piedra",
+        email: "alex.piedra@estudiantec.cr",
         studentId: "U2023456",
     }
 
@@ -23,16 +23,16 @@ const AssignmentsView = ({ onBack }) => {
         showPercentage: true,
         assignments: [
             {
-                id: "Projecto 1",
-                name: "Projecto 1: Diseño de base de datos",
+                id: "Proyecto 1",
+                name: "Proyecto 1: Diseño de base de datos",
                 dueDate: "2025-02-15",
                 totalPercentage: 15,
                 earnedPercentage: 13,
                 showPercentage: true
             },
             {
-                id: "projecto2",
-                name: "Projecto 2: Implementación de API",
+                id: "proyecto2",
+                name: "Proyecto 2: Implementación de API",
                 dueDate: "2025-03-20",
                 totalPercentage: 20,
                 earnedPercentage: 14,

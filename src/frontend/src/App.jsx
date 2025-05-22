@@ -30,7 +30,7 @@ function App() {
       ))}
 
       {/* Rutas de la vista del estudiante*/}
-      <Route path="/cedigital-estudiantes" element={<EstudianteLogin />} />
+      <Route path="/cedigital-login-estudiantes" element={<EstudianteLogin />} />
       {estudianteRoutes.map((route) => (
         <Route
           key={route.path}

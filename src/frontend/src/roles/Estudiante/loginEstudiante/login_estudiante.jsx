@@ -1,19 +1,23 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import './login_estudiante.css'
+import {AlmacenarInfo} from '../sessionStorage/sessionStorage.js'
 
 const Login = () => {
-    // State for form inputs
+    // Se guarda la información que se coloca en la entrada del formulario cada vez que hay un cambio en este
     const [formData, setFormData] = useState({
-        username: "",
+        email: "",
         password: "",
     })
 
-    // State for loading and notification
+    // se manejan errores
+    const [error, setError] = useState(null);
+
+    // Estados para cargando y notifcaciones
     const [isLoading, setIsLoading] = useState(false)
     const [notification, setNotification] = useState({
         show: false,
@@ -21,61 +25,71 @@ const Login = () => {
         isError: false,
     })
 
-    // Handle input changes
+    // Maneja el cambio de los inputs (el name del input debe ser igual que el name utilizado aqui, si no no se observa lo que se escribe)
     const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({
+        const { name, value } = e.target
+        setFormData((prev) => ({
             ...prev,
             [name]: value,
         }))
     }
 
-    // Show notification
+    // Muestra la notificación
     const showNotification = (message, isError = false) => {
-    setNotification({
-        show: true,
-        message,
-        isError,
-    })
+    setNotification({show: true, message, isError})
 
-    // Hide notification after 3 seconds
+    // Esconde las notifaciones después de 3 segundos
     setTimeout(() => {
         setNotification((prev) => ({ ...prev, show: false }))
         }, 3000)
     }
 
-     // Handle form submission
+     // Función para hacer la solicitud a la api, sobre los credenciales del inicio de sesión
     const handleSubmit = async (e) => {
-        e.preventDefault()
-        setIsLoading(true)
-
+        e.preventDefault();
+        setIsLoading(true);
+        setError(null);
         try {
+            const encodedEmail = encodeURIComponent(formData.email);
+            const encodedPassword = encodeURIComponent(formData.password);
             await new Promise((resolve) => setTimeout(resolve, 1000))
-
-            if (formData.username === "student" && formData.password === "password") {
-                showNotification("Login successful! Redirecting to dashboard...", false)
-            } else {
-                showNotification("Invalid username or password. Please try again.", true)
+            
+            const response = await fetch(`http://localhost:5039/api/login/students/${encodedEmail}/${encodedPassword}`);
+            
+            if (!response.ok) {
+                // Manejo específico por código de estado
+                if (response.status === 404) {
+                    showNotification("Correo electrónico o contraseña inválida.", true)
+                }
+            }else{
+                showNotification("Inicio de sesión exitoso!", false)
+                const data = await response.json();
+                data.password = ""; // se elimina información sensible
+                data.phoneNumber = "";
+                AlmacenarInfo.setItem('studentInfo',data);
+                const currentUser = AlmacenarInfo.getItem('studentInfo');
+                console.log(currentUser); 
             }
-        } catch (error) {
-            showNotification("An error occurred. Please try again later.", true)
-            console.error("Login error:", error)
+            
+        } catch (err) {
+            showNotification("Ha ocurrido un error en el servidor. Por favor intente de nuevo más tarde.", true)
+            setError(err.message);
         } finally {
             setIsLoading(false)
         }
     }
-
+    
     return (
         <div className="login-container">
             <Card className="login-card">
                 <CardHeader className="space-y-1">
                     <CardTitle className="login-title">University Portal</CardTitle>
                     <CardDescription className="login-description">
-                        Enter your credentials to access your student account
+                        Ingrese sus credenciales para acceder
                     </CardDescription>
                 </CardHeader>
 
-                {/* Notification alert */}
+                {/* Notificación de alerta */}
                 {notification.show && (
                     <div className="notification-container">
                         <Alert className={notification.isError ? "error-notification" : "success-notification"}>
@@ -88,12 +102,12 @@ const Login = () => {
                     <form onSubmit={handleSubmit}>
                         <div className="form-grid">
                             <div className="form-field">
-                                <Label htmlFor="username">Student ID / Username</Label>
+                                <Label htmlFor="email">Student ID / Username</Label>
                                 <Input
-                                    id="username"
-                                    name="username"
+                                    id="email"
+                                    name="email"
                                     placeholder="Enter your student ID or username"
-                                    value={formData.username}
+                                    value={formData.email}
                                     onChange={handleChange}
                                     required
                                 />
@@ -111,7 +125,7 @@ const Login = () => {
                                 />
                             </div>
                             <Button type="submit" className="submit-button" disabled={isLoading}>
-                                {isLoading ? "Logging in..." : "Log in"}
+                                {isLoading ? "Iniciando sesión..." : "Iniciar sesión"}
                             </Button>
                         </div>
                     </form>

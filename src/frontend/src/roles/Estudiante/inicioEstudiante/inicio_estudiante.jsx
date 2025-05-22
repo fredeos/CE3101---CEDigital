@@ -1,114 +1,79 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft, User } from "lucide-react"
 import "./inicio_estudiante.css"
+import {AlmacenarInfo} from '../sessionStorage/sessionStorage.js'
 
 const StudentRecord = ({ onBack }) => {
-  // Sample user data - in a real app, this would come from authentication context
-  const user = {
-    name: "Alex Will",
-    email: "alex.johnson@university.edu",
-    id: "U2023456",
-  }
 
-  // Sample data - in a real app, this would come from an API
-  const [academicRecord, setAcademicRecord] = useState([
-    {
-      id: "sem-2025-1",
-      name: "Semester 1 2025",
-      current: true,
-      courses: [
-        {
-          id: "course-101",
-          name: "Fundamentals of Microelectronics",
-          group: "Group 1",
-          credits: 4,
-          status: "In Progress",
-          grade: null,
-        },
-        {
-          id: "course-102",
-          name: "Introduction to Computer Science",
-          group: "Group 3",
-          credits: 3,
-          status: "In Progress",
-          grade: null,
-        },
-        {
-          id: "course-103",
-          name: "Calculus I",
-          group: "Group 2",
-          credits: 4,
-          status: "In Progress",
-          grade: null,
-        },
-      ],
-    },
-    {
-      id: "sem-2024-2",
-      name: "Semester 2 2024",
-      current: false,
-      courses: [
-        {
-          id: "course-095",
-          name: "Physics II",
-          group: "Group 1",
-          credits: 4,
-          status: "Completed",
-          grade: "A",
-        },
-        {
-          id: "course-096",
-          name: "Data Structures",
-          group: "Group 2",
-          credits: 3,
-          status: "Completed",
-          grade: "B+",
-        },
-        {
-          id: "course-097",
-          name: "Digital Logic Design",
-          group: "Group 1",
-          credits: 4,
-          status: "Completed",
-          grade: "A-",
-        },
-      ],
-    },
-    {
-      id: "sem-2024-1",
-      name: "Semester 1 2024",
-      current: false,
-      courses: [
-        {
-          id: "course-091",
-          name: "Physics I",
-          group: "Group 2",
-          credits: 4,
-          status: "Completed",
-          grade: "B+",
-        },
-        {
-          id: "course-092",
-          name: "Introduction to Programming",
-          group: "Group 1",
-          credits: 3,
-          status: "Completed",
-          grade: "A",
-        },
-        {
-          id: "course-093",
-          name: "College Algebra",
-          group: "Group 3",
-          credits: 3,
-          status: "Completed",
-          grade: "A-",
-        },
-      ],
-    },
-  ])
+  // Se guarda la información de semestres y cursos del estudiante temporalmente
+  const [academicRecord, setAcademicRecord] = useState([])
+  
+  // se manejan errores
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    setError(null);
+    
+    const fetchAcademicRecord = async () => {
+      try {
+        const studentInfo = AlmacenarInfo.getItem('studentInfo');
+        const encodedStudentId = encodeURIComponent(studentInfo.studentID);
+        
+        const response = await fetch(`http://localhost:5039/api/groups/student/${encodedStudentId}`);
+        
+        if (!response.ok) {
+            // Manejo específico por código de estado
+            if (response.status === 404) {
+              throw new Error('Error al cargar el registro de semestres');
+            }
+        }else{
+            const data = await response.json();
+            changeFormatStudentRecord(data);
+        }
+        
+      } catch (err) {
+          showNotification("Ha ocurrido un error en el servidor. Por favor intente de nuevo más tarde.", true)
+          setError(err.message);
+      } finally {
+          
+      }
+    }
+
+    fetchAcademicRecord();
+  },[]);
+
+
+  // cambia el formato del Json dado por la api para mostrar los datos
+  const changeFormatStudentRecord = (courses) => { 
+    const groupedBySemester = courses.reduce((acc, course) => {
+      const semesterKey = `${course.semesterID}-${course.semesterYear}-${course.semesterPeriod}`;
+      
+      if (!acc[semesterKey]) {
+        acc[semesterKey] = {
+          semesterID: course.semesterID,
+          semesterYear: course.semesterYear,
+          semesterPeriod: course.semesterPeriod,
+          courses: []
+        };
+      }
+      
+      acc[semesterKey].courses.push({
+        id: course.id,
+        groupNum: course.groupNum,
+        courseName: course.courseName
+      });
+      
+      return acc; // ¡Importante! Retornar el acumulador en cada iteración.
+    }, {});
+
+    // Convertir el objeto a array y actualizar el estado
+    setAcademicRecord(Object.values(groupedBySemester));
+    AlmacenarInfo.setItem('semestreCursos',groupedBySemester); // guarda la información de los curso por semestres en un localStorage
+  };
+
 
   // Function to handle course click - in a real app, this would navigate to the course page
   const handleCourseClick = (courseId) => {
@@ -130,8 +95,8 @@ const StudentRecord = ({ onBack }) => {
           <div className="student-record-title">CE-Digital</div>
           <div className="student-record-user-info">
             <div className="student-record-user-details">
-              <span className="student-record-user-name">{user.name}</span>
-              <span className="student-record-user-email">{user.email}</span>
+              <span className="student-record-user-name">{AlmacenarInfo.getItem('studentInfo').firstName} {AlmacenarInfo.getItem('studentInfo').firstLastName}</span>
+              <span className="student-record-user-email">{AlmacenarInfo.getItem('studentInfo').email}</span>
             </div>
             <div className="student-record-user-avatar">
               <User className="h-5 w-5 text-slate-600" />
@@ -157,10 +122,10 @@ const StudentRecord = ({ onBack }) => {
           <CardContent className="student-record-card-content">
             <Accordion type="single" collapsible className="w-full">
               {academicRecord.map((semester) => (
-                <AccordionItem key={semester.id} value={semester.id}>
+                <AccordionItem key={semester.semesterID} value={semester.semesterID}>
                   <AccordionTrigger className="student-record-accordion-item">
                     <div className="flex items-center">
-                      {semester.name}
+                      Semestre {semester.semesterPeriod} {semester.semesterYear}
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="pt-2 pb-4 px-1">
@@ -173,9 +138,9 @@ const StudentRecord = ({ onBack }) => {
                           onClick={() => handleCourseClick(course.id)}
                         >
                           <div className="student-record-course-info">
-                            <span className="student-record-course-name">{course.name}</span>
+                            <span className="student-record-course-name">{course.courseName}</span>
                             <span className="student-record-course-meta">
-                              {course.group}
+                              Grupo {course.groupNum}
                             </span>
                           </div>
                         </Button>
