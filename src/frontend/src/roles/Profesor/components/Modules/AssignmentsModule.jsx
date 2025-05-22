@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react"
 import { useAssessmentsData } from "../../hooks/useAssessmentsData"
 import { useItemsData } from "../../hooks/useItemsData"
-import { ChevronDown, Edit, Trash2, Check, Users } from "lucide-react"
+import { ChevronDown, Check } from "lucide-react"
 import Modal from "../Modal"
-import FormAssignment from "../FormAssignment"
-import FormGroups from "../FormGroups"
+import FormAssignment from "../Custom/FormAssignment"
+import FormGroups from "../Custom/FormGroups"
 import { useStudentsData } from "../../hooks/useStudentsData"
+import { UploadFileModal } from "../Custom/UploadFileModal"
+import TableAssessments from "../Custom/TableAssignments"
 
 export default function Assessments({ course, group }) {
   const {
@@ -13,8 +15,9 @@ export default function Assessments({ course, group }) {
     isLoading: assessmentsLoading,
     error: assessmentsError,
     deleteAssessment,
+    uploadFile,
     reload,
-  } = useAssessmentsData(course?.code, group?.groupId);
+  } = useAssessmentsData(course?.code, group?.id);
 
   const { items, isLoading: itemsLoading, error: itemsError } = useItemsData(course?.id, group?.id);
   const { students } = useStudentsData(course?.id, group?.id);
@@ -26,12 +29,20 @@ export default function Assessments({ course, group }) {
   const [successMessage, setSuccessMessage] = useState(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [groupAssessmentSelected, setGroupAssessmentSelected] = useState(null);
-
+  const [uploadModalOpen, setUploadModalOpen] = useState(false)
+  const [uploadAssessment, setUploadAssessment] = useState(null)
+  const [localAssessments, setLocalAssessments] = useState(assessments);
   useEffect(() => {
     if (items && items.length > 0 && !selectedItem) {
       setSelectedItem(items[0]);
     }
   }, [items, selectedItem]);
+
+
+
+  useEffect(() => {
+    setLocalAssessments(assessments);
+  }, [assessments]);
 
   const handleItemSelect = (item) => {
     setSelectedItem(item);
@@ -52,13 +63,25 @@ export default function Assessments({ course, group }) {
     setDeleteConfirmation(assessment);
   };
 
+  const handleUploadFile = async (file) => {
+    if (!uploadAssessment || !group?.id) return;
+    const result = await uploadFile(file, group.id, uploadAssessment.id);
+    if (result.success) {
+      reload();
+    } else {
+      alert("Error al subir el archivo");
+    }
+  };
+
   const handleConfirmDelete = async () => {
     if (deleteConfirmation) {
       const result = await deleteAssessment(deleteConfirmation.id);
       if (result.success) {
         setSuccessMessage("Evaluación eliminada exitosamente.");
-        reload();
-        setTimeout(() => setSuccessMessage(null), 3000);
+        setLocalAssessments(prev =>
+          prev.filter(a => a.id !== deleteConfirmation.id)
+        );
+        setTimeout(() => setSuccessMessage(null), 1500);
       }
       setDeleteConfirmation(null);
     }
@@ -70,7 +93,7 @@ export default function Assessments({ course, group }) {
     if (success && message) {
       setSuccessMessage(message);
       reload();
-      setTimeout(() => setSuccessMessage(null), 3000);
+      setTimeout(() => setSuccessMessage(null), 1500);
     }
   };
 
@@ -85,7 +108,7 @@ export default function Assessments({ course, group }) {
   };
 
   const filteredAssessments = selectedItem
-    ? assessments.filter((assessment) => assessment.itemId === selectedItem.id)
+    ? localAssessments.filter((assessment) => assessment.itemId === selectedItem.id)
     : [];
 
   const isLoading = assessmentsLoading || itemsLoading;
@@ -136,70 +159,17 @@ export default function Assessments({ course, group }) {
             <p>No hay evaluaciones creadas para este rubro.</p>
           </div>
         ) : (
-          <div className="data-table-container">
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Evaluación</th>
-                  <th>Fecha</th>
-                  <th>Hora</th>
-                  <th>Tipo</th>
-                  <th>Peso</th>
-                  <th>Especificación</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredAssessments.map((assessment) => (
-                  <tr key={assessment.id}>
-                    <td className="title-cell"><span>{assessment.title}</span></td>
-                    <td>{formatDate(assessment.dueDate)}</td>
-                    <td>{formatTime(assessment.dueDate)}</td>
-                    <td>
-                      {assessment.isGroupAssessment ? (
-                        <span>Grupal</span>
-                      ) : (
-                        <span>Individual</span>
-                      )}
-                    </td>
-                    <td>{assessment.weight}%</td>
-
-                    <td>
-                      {assessment.fileName && (
-                        <a href={assessment.fileUrl} target="_blank" rel="noopener noreferrer" className="file-link">
-                          <span>
-                            {assessment.fileName.length > 30
-                              ? `${assessment.fileName.substring(0, 30)}...`
-                              : assessment.fileName}
-                          </span>
-                        </a>
-                      )}
-                    </td>
-
-                    <td>
-                      <div className="actions-cell">
-                        <button className="icon-btn edit" onClick={() => handleEditClick(assessment)} title="Editar">
-                          <Edit size={16} />
-                        </button>
-                        <button className="icon-btn delete" onClick={() => handleDeleteClick(assessment)} title="Eliminar">
-                          <Trash2 size={16} />
-                        </button>
-                        {assessment.isGroupAssessment && (
-                          <button
-                            className="icon-btn groups"
-                            onClick={() => setGroupAssessmentSelected(assessment)}
-                            title="Formar grupos"
-                          >
-                            <Users size={16} />
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <TableAssessments
+            groupId={group.id}
+            assessments={filteredAssessments}
+            formatDate={formatDate}
+            formatTime={formatTime}
+            handleEditClick={handleEditClick}
+            handleDeleteClick={handleDeleteClick}
+            setGroupAssessmentSelected={setGroupAssessmentSelected}
+            setUploadAssessment={setUploadAssessment}
+            setUploadModalOpen={setUploadModalOpen}
+          />
         )}
       </div>
 
@@ -223,6 +193,12 @@ export default function Assessments({ course, group }) {
         />
       )}
 
+      <UploadFileModal
+        isOpen={uploadModalOpen}
+        onClose={() => setUploadModalOpen(false)}
+        onUpload={handleUploadFile}
+      />
+
       <Modal
         isOpen={deleteConfirmation !== null}
         onClose={() => setDeleteConfirmation(null)}
@@ -242,6 +218,7 @@ export default function Assessments({ course, group }) {
           <p>¿Está seguro de que desea eliminar la evaluación seleccionada?</p>
         </div>
       </Modal>
+
     </div>
   );
 }

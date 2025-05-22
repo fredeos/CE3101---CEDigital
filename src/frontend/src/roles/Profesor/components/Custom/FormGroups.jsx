@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import Modal from "./Modal";
+import Modal from "../Modal";
 import { Users, Trash2, User } from "lucide-react";
-import "../styles/Grupo/FormGroups.css";
+import "../../styles/Grupo/FormGroups.css";
 
 export default function FormGroups({
   isOpen,

@@ -1,8 +1,8 @@
 import { useState } from "react"
-import { useAssessmentsData } from "../hooks/useAssessmentsData"
+import { useAssessmentsData } from "../../hooks/useAssessmentsData"
 import { Calendar, Clock, Upload, X } from "lucide-react"
-import Modal from "../components/Modal"
-import "../styles/Evaluaciones/FormAssignments.css"
+import Modal from "../Modal"
+import "../../styles/Evaluaciones/FormAssignments.css"
 
 export default function FormAssignment({ course, group, items, assessment, onClose }) {
   const { addAssessment, updateAssessment, uploadFile } = useAssessmentsData(course?.code, group?.groupId);
@@ -10,7 +10,7 @@ export default function FormAssignment({ course, group, items, assessment, onClo
   const [formData, setFormData] = useState({
     title: assessment?.title || "",
     itemId: assessment?.itemId || (items.length > 0 ? items[0].id : ""),
-    weight: assessment?.weight || 100,
+    weight: assessment?.weight || null,
     dueDate: assessment?.dueDate
       ? new Date(assessment.dueDate).toISOString().split("T")[0]
       : new Date().toISOString().split("T")[0],
@@ -26,7 +26,6 @@ export default function FormAssignment({ course, group, items, assessment, onClo
   const [formErrors, setFormErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
-  const [uploadProgress, setUploadProgress] = useState(0);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -36,12 +35,6 @@ export default function FormAssignment({ course, group, items, assessment, onClo
     }));
     if (formErrors[name]) {
       setFormErrors((prev) => ({ ...prev, [name]: null }));
-    }
-  };
-
-  const handleFileChange = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      setSelectedFile(e.target.files[0]);
     }
   };
 
@@ -77,8 +70,7 @@ export default function FormAssignment({ course, group, items, assessment, onClo
         }
       }
 
-      const dueDateObj = new Date(`${formData.dueDate}T${formData.dueTime}:00`);
-      const dueDate = dueDateObj.toISOString();
+      const dueDate = `${formData.dueDate}T${formData.dueTime}:00.000Z`;
 
       const assessmentData = {
         ...formData,
@@ -95,7 +87,8 @@ export default function FormAssignment({ course, group, items, assessment, onClo
         result = await addAssessment(assessmentData);
         if (result.success) onClose(true, `Evaluación creada.`);
       }
-      if (!result.success) throw new Error(result.error || "Error al guardar");
+      if (!result.success) 
+        throw new Error(result.error || "Error al guardar");
     } catch (error) {
       setFormErrors((prev) => ({ ...prev, submit: error.message }));
       setIsSubmitting(false);
@@ -219,32 +212,6 @@ export default function FormAssignment({ course, group, items, assessment, onClo
             </div>
           </div>
         </div>
-        <div className="form-section">
-          <h3 className="section-title">Detalles de evaluación</h3>
-          <div className="form-group">
-            <label className="form-label">Especificaciones</label>
-            <div className="file-upload-container">
-              <label htmlFor="file-upload" className="file-upload-label">
-                <Upload size={16} />
-                <span>Cargar archivo</span>
-              </label>
-              <input
-                type="file"
-                id="file-upload"
-                onChange={handleFileChange}
-                className="file-upload-input"
-                accept=".pdf,.doc,.docx,.ppt,.pptx"
-              />
-              {selectedFile && <div className="selected-file-name">{selectedFile.name}</div>}
-            </div>
-          </div>
-        </div>
-        {isSubmitting && uploadProgress > 0 && (
-          <div className="upload-progress-container">
-            <div className="upload-progress-bar" style={{ width: `${uploadProgress}%` }}></div>
-            <div className="upload-progress-text">{uploadProgress}% Uploaded</div>
-          </div>
-        )}
         <div className="form-actions">
           <button type="button" className="btn-cancel" onClick={() => onClose(false)} disabled={isSubmitting}>
             Cancelar

@@ -355,17 +355,8 @@
   color: #003fb2;
 }
 
-.btn-view:hover {
-  background-color: #eef2ff;
-}
-
 .btn-delete {
   color: #ef4444;
-}
-
-.btn-delete:hover {
-  color: #ef4444;
-  background-color: #fee2e2;
 }
 
 .sr-only {
@@ -523,7 +514,6 @@
 
 .upload-dropzone.has-file {
   border-style: solid;
-  border-color: #4f46e5;
   background-color: #eef2ff;
 }
 
@@ -596,7 +586,6 @@
   cursor: pointer;
 }
 
-/* Create Folder Modal Specific Styles */
 .create-folder-modal {
   max-width: 24rem;
 }

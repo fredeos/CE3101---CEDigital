@@ -94,17 +94,20 @@
   font-weight: 500;
   color: #495057;
   border-bottom: 2px solid #dee2e6;
+  font-size: 0.875rem;
 }
 
 .data-table td {
   padding: 12px 15px;
   border-bottom: 1px solid #dee2e6;
   vertical-align: middle;
+  font-size: small;
 }
 
 .data-table tr:hover {
   background: #f8f9fa;
 }
+
 
 .file-link {
   display: flex;
@@ -138,24 +141,12 @@
   color: #1976d2;
 }
 
-.icon-btn.edit:hover {
-  background: #e3f2fd;
-}
-
 .icon-btn.delete {
   color: #d32f2f;
 }
 
-.icon-btn.delete:hover {
-  background: #ffebee;
-}
-
 .icon-btn.groups {
   color: #4caf50;
-}
-
-.icon-btn.groups:hover {
-  background: #e8f5e9;
 }
 
 /* Estados vacíos */
