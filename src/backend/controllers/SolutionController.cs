@@ -8,7 +8,7 @@ using backend.DTO;
 namespace backend.controllers
 {
     [ApiController]
-    [Route("api")]
+    [Route("api/submissions")]
     public class SolutionController(CEDigitalService db_ap, IWebHostEnvironment env) : ControllerBase
     {
         private readonly CEDigitalService db = db_ap;
@@ -17,7 +17,7 @@ namespace backend.controllers
         // ------------------------------------------ Metodos GET ------------------------------------------
 
         // ------------------------------------------ Metodos POST ------------------------------------------
-        [HttpPost("group/{group_id}/{student_id}/submit/assignment/{assignment_id}")]
+        [HttpPost("submit/{group_id}/{student_id}/{assignment_id}")]
         public async Task<ActionResult<Solution>> UploadSolution(int group_id, int student_id, int assignment_id, IFormFile submission_file)
         {
             // Buscar que exista la evaluacion para el grupo indicado

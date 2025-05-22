@@ -109,6 +109,11 @@ CREATE TABLE Academic.AssignmentSubmissions (
 	published_flag INT DEFAULT(0) -- 0: no publicado, 1:publicado
 );
 
+USE CEDigital;
+GO
+
+SELECT * FROM Academic.AssignmentSubmissions;
+
 CREATE TABLE Academic.StudentSubmissions (
     student_id INT NOT NULL, -- FK
     submission_id INT NOT NULL, -- FK

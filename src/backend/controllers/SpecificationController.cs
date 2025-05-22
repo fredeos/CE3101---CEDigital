@@ -8,14 +8,14 @@ using backend.DTO;
 namespace backend.controllers{
 
     [ApiController]
-    [Route("api")]
+    [Route("api/specifications")]
     public class SpecificationController(CEDigitalService db_ap, IWebHostEnvironment env) : ControllerBase
     {
         private readonly CEDigitalService db = db_ap;
         private readonly IWebHostEnvironment _env = env;
 
         // ------------------------------------------ Metodos GET ------------------------------------------
-        [HttpGet("specifications/group/{group_id}/{assignment_id}/{specification_id}")]
+        [HttpGet("download/{group_id}/{assignment_id}/{specification_id}")]
         public IActionResult DownloadSpecification(int group_id, int assignment_id, int specification_id)
         {
             string sql_query = $@"
@@ -38,7 +38,7 @@ namespace backend.controllers{
             return PhysicalFile(specification.Path!, content_type, specification.Name + "." + specification.Extension);
         }
 
-        [HttpGet("specifications/group/{group_id}/{assignment_id}/recent")]
+        [HttpGet("download/{group_id}/{assignment_id}/recent")]
         public IActionResult DownloadLastSpecification(int group_id, int assignment_id)
         {
             string sql_query = $@"
@@ -62,7 +62,7 @@ namespace backend.controllers{
         }
 
         // ------------------------------------------ Metodos POST ------------------------------------------
-        [HttpPost("group/{group_id}/assigment/{assignment_id}/add/specification")]
+        [HttpPost("upload/{group_id}/{assignment_id}")]
         public async Task<ActionResult<Specification>> UploadSpecification(int group_id, int assignment_id, IFormFile spec_file)
         {
             if (spec_file == null)
