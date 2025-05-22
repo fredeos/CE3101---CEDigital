@@ -106,7 +106,7 @@ namespace backend.controllers
 
             int otherItemsTotal = db.sql_db!.SELECT<int>(checkQuery).FirstOrDefault();
             int newTotal = otherItemsTotal + updatedRubric.Percentage;
-
+            Console.WriteLine($"Total sin este rubro: {otherItemsTotal}%, Nuevo: {updatedRubric.Percentage}%, Total: {newTotal}%");
             if (newTotal > 100)
             {
                 return BadRequest($"No se puede actualizar. El porcentaje total excedería el 100% (Actual sin este rubro: {otherItemsTotal}%, Nuevo: {updatedRubric.Percentage}%)");
