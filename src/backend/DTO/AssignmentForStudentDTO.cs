@@ -10,6 +10,6 @@ namespace backend.DTO
         public float? TotalPercentage { get; set; }
         public float? EarnedPercentage { get; set; }
         public float? EarnedGrade { get; set; }
-        required public int ShowPercentage { get; set; }
+        public int? ShowPercentage { get; set; }
     }
 }

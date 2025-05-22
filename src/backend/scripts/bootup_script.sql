@@ -87,7 +87,7 @@ CREATE TABLE Academic.Assignments (
     name NVARCHAR(50) NOT NULL,
     percentage FLOAT(5) NOT NULL,
     turnin_date DATETIME,
-    individual_flag INT NOT NULL DEFAULT(0) -- 0: individual, 1: group
+    individual_flag INT NOT NULL DEFAULT(0), -- 0: individual, 1: group
 );
 
 CREATE TABLE Academic.StudentAssignments (
@@ -106,8 +106,12 @@ CREATE TABLE Academic.AssignmentSubmissions (
     submitted_file INT NULL, -- FK
     feedback_file INT NULL, -- FK
     submission_date DATETIME NULL DEFAULT(GETDATE()),
-	published_flag INT DEFAULT(0) -- 0: not published, 1:published
+	published_flag INT DEFAULT(0) -- 0: no publicado, 1:publicado
 );
+
+SELECT * FROM Academic.AssignmentSubmissions;
+SELECT * FROM Academic.StudentSubmissions;
+SELECT * FROM Files.SubmissionFiles;
 
 CREATE TABLE Academic.StudentSubmissions (
     student_id INT NOT NULL, -- FK

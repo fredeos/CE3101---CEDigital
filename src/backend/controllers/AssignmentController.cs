@@ -216,23 +216,37 @@ namespace backend.controllers
                 // Buscar todas las asignaciones de cada rubrica para el estudiante en cuestion
                 string sql_query2 = $@"
                 SELECT  A.id as {nameof(AssignmentForStudentDTO.ID)}, A.name as {nameof(AssignmentForStudentDTO.Name)},
-                        A.turnin_date as {nameof(AssignmentForStudentDTO.DueDate)}, A.percentage as {nameof(AssignmentForStudentDTO.TotalPercentage)},
-                        SUB.grade as {nameof(AssignmentForStudentDTO.EarnedGrade)}, SUB.published_flag as {nameof(AssignmentForStudentDTO.ShowPercentage)}
-                FROM (Academic.StudentSubmissions as SS JOIN Academic.AssignmentSubmissions as SUB ON SS.submission_id = SUB.id )
-                    JOIN Academic.Assignments as A ON A.id = SUB.assignment_id 
-                WHERE SS.student_id = {student_id} AND A.rubric_id = {rubric.ID}";
+                        A.percentage as {nameof(AssignmentForStudentDTO.TotalPercentage)}, A.turnin_date as {nameof(AssignmentForStudentDTO.DueDate)}
+                FROM Academic.Assignments as A JOIN Academic.StudentAssignments as S
+                ON A.id = S.assignment_id
+                WHERE S.student_id = {student_id} AND A.rubric_id = {rubric.ID}";
                 var assignments = db.sql_db!.SELECT<AssignmentForStudentDTO>(sql_query2);
+
+                // Buscar si existen un entregable para cada asignacion
                 assignments.ForEach(a =>
                 {
-                    if (a.EarnedGrade != null)
+                    a.ShowPercentage = 0;
+                    string sql_query3 = $@"
+                    SELECT SUB.grade as {nameof(AssignmentSubmission.grade)}, SUB.published_flag as {nameof(AssignmentSubmission.Published)}
+                    FROM Academic.AssigmentSubmissions as SUB JOIN Academic.Assignments as A
+                    ON SUB.assignment_id = A.id
+                    WHERE SUB.assignment_id = {a.ID}";
+                    var assignment_submission = db.sql_db!.SELECT<AssignmentSubmission>(sql_query3).FirstOrDefault();
+                    if (assignment_submission != null)
                     {
-                        a.EarnedPercentage = (a.EarnedGrade / 100) * a.TotalPercentage;
-                    }
-                    if (a.ShowPercentage == 1 && !show_rubric_percentage)
-                    {
-                        show_rubric_percentage = true;
-                    }
+                        a.EarnedGrade = assignment_submission.grade;
+                        a.ShowPercentage = assignment_submission.Published;
+                        if (a.EarnedGrade != null)
+                        {
+                            a.EarnedPercentage = (a.EarnedGrade / 100) * a.TotalPercentage;
+                        }
+                        if (a.ShowPercentage == 1 && !show_rubric_percentage)
+                        {
+                            show_rubric_percentage = true;
+                        }
+                    } 
                 });
+
                 rubric.Assignments.AddRange(assignments);
                 if (show_rubric_percentage)
                 {

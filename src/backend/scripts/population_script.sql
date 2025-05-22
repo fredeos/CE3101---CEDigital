@@ -77,6 +77,16 @@ VALUES
 (4, 'Tarea 2', 2.00 , '2025-05-24 23:50:00.500', 0), 
 (4, 'Tarea 3', 8.00 , '2025-05-25 23:50:00.500', 1);
 
+SELECT * FROM Academic.Assignments;
+
+INSERT INTO Academic.StudentAssignments (student_id, assignment_id)
+VALUES
+(2023087683, 3), (2023087683, 4), (2023087683, 5),
+(2023074492, 3), (2023074492, 4), (2023074492, 5),
+(2021476501, 3), (2021476501, 4), (2021476501, 5),
+(2021430403, 3), (2021430403, 4), (2021430403, 5),
+(2021032537, 3), (2021032537, 4), (2021032537, 5);
+ 
 INSERT INTO Academic.AssignmentGroups (assignment_id, group_num)
 VALUES
 (5, 1);
@@ -84,6 +94,7 @@ VALUES
 INSERT INTO Academic.AssignmentStudentGroups (student_id, group_id)
 VALUES
 (2023087683, 1), (2023074492,1), (2021476501,1), (2021430403,1), (2021032537,1);
+
 
 INSERT INTO Academic.AssignmentSubmissions (assignment_id, student_id, group_id, grade, commentary, 
 submitted_file, feedback_file, submission_date)
