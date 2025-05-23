@@ -1,5 +1,7 @@
+using System.Runtime.Serialization;
 using backend.DTO;
 using backend.models;
+using Swashbuckle.AspNetCore.Annotations;
 
 
 namespace backend.DTO
@@ -36,6 +38,8 @@ namespace backend.DTO
         required public string Name { get; set; }
 
         public string? Category { get; set; } // Rubric Name
+
+        public int? ShowGrades { get; set; } // Esta propiedad solo se usa del lado del backend
 
         public float? TotalPercentage { get; set; }
 

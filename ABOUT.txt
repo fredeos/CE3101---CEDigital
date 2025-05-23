@@ -16,6 +16,13 @@
           1. Create a new IIS web site(and application pool)
           2. Define a physical directory for the server files. Any directory in the root "C:\Sites\<dotnetsite>" (configure
           access permisions of the application pool of the site and IIS program)
-          3. Within the 'src/backend' directoy execute the dotnet publis command: dotnet publish -c Release -o "C:\Sites\<dotnetsite>"
+          3. Within the 'src/backend' directory execute the dotnet publish command: dotnet publish -c Release -o "C:\Sites\<dotnetsite>"
           4. Restart the site and access it via any of its http methods
     > Frontend:
+        + Requirements: IIS installation, Node.js + React components
+        + Steps:
+            1. Create a new IIS web site(and application pool)
+            2. Define a physical directory for the server files. Any directory in the root "C:\Sites\<dotnetsite>" (configure
+          access permisions of the application pool of the site and IIS program)
+            3. Within the 'src/frontend' exucute the react publish command:
+            4. Restart the site and access it via any of the urls

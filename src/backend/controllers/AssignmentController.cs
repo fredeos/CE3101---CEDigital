@@ -331,17 +331,20 @@ namespace backend.controllers
 
             // Buscar la la entrega de la evaluacion
             string sql_query4 = @$"
-            SELECT SUB.grade as {nameof(StudentViewFullAssignmentDTO.EarnedScore)}, SUB.commentary as {nameof(StudentViewFullAssignmentDTO.Commentary)}
+            SELECT  SUB.grade as {nameof(StudentViewFullAssignmentDTO.EarnedScore)}, 
+                    SUB.commentary as {nameof(StudentViewFullAssignmentDTO.Commentary)},
+                    SUB.published_flag as {nameof(StudentViewFullAssignmentDTO.ShowGrades)}
             FROM Academic.Assignments as A JOIN Academic.AssignmentSubmissions as SUB
             ON SUB.assignment_id = A.id
             WHERE SUB.assignment_id = {assignment_id} {context_condition}; ";
 
             var assignment_complement = db.sql_db!.SELECT<StudentViewFullAssignmentDTO>(sql_query4).FirstOrDefault();
             if (assignment_complement != null)
-            {
-                fullassignment.EarnedScore = assignment_complement.EarnedScore;
-                if (fullassignment.EarnedScore != null)
-                {
+            {   
+                fullassignment.ShowGrades = assignment_complement.ShowGrades;
+                if (assignment_complement.EarnedScore != null && fullassignment.ShowGrades > 0)
+                {   
+                    fullassignment.EarnedScore = assignment_complement.EarnedScore;
                     fullassignment.EarnedPercentage = fullassignment.EarnedScore / fullassignment.MaxScore * fullassignment.TotalPercentage;
                 }
                 fullassignment.Commentary = assignment_complement.Commentary;
