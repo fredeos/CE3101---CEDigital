@@ -15,6 +15,25 @@ namespace backend.controllers
         private readonly IWebHostEnvironment _env = env;
 
         // ------------------------------------------ Metodos GET ------------------------------------------
+        [HttpGet("download/{feedback_id}")]
+        public IActionResult DownloadFeedback(int feedback_id)
+        {
+            string sql_query = @$"
+            SELECT  F.id as {nameof(Feedback.ID)}, F.submission_id as {nameof(Feedback.AssigmentSubmissionID)},
+                    F.file_name as {nameof(Feedback.Name)}, F.file_type as {nameof(Feedback.Extension)},
+                    F.size as {nameof(Feedback.Size)}, F.feedback_file as {nameof(Feedback.Path)},
+                    F.upload_date as {nameof(Feedback.UploadDate)}
+            FROM Files.FeedbackFiles as F
+            WHERE F.id = {feedback_id}";
+
+            var feedback_file = db.sql_db!.SELECT<Feedback>(sql_query).FirstOrDefault();
+            if (feedback_file == null) {
+                return NotFound($"Feedback file(ID={feedback_id}) not found");
+            }
+
+            string content_type = "application/octet-stream";
+            return PhysicalFile(feedback_file.Path!, content_type, feedback_file.Name + "." + feedback_file.Extension);
+        }
 
         // ------------------------------------------ Metodos POST ------------------------------------------
         [HttpPost("upload/{group_id}/{assignment_id}/{submission_id}")]

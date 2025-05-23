@@ -15,9 +15,29 @@ namespace backend.controllers
         private readonly IWebHostEnvironment _env = env;
 
         // ------------------------------------------ Metodos GET ------------------------------------------
+        [HttpGet("download/{submissionfile_id}")]
+        public IActionResult DownloadSolution(int submissionfile_id)
+        {
+            string sql_query = @$"
+            SELECT  F.id as {nameof(Solution.ID)}, F.submission_id as {nameof(Solution.AssigmentSubmissionID)},
+                    F.file_name as {nameof(Solution.Name)}, F.file_type as {nameof(Solution.Extension)},
+                    F.size as {nameof(Solution.Size)}, F.submission_file as {nameof(Solution.Path)},
+                    F.upload_date as {nameof(Solution.UploadDate)}
+            FROM Files.SubmissionFiles as F
+            WHERE F.id = {submissionfile_id}";
+
+            var submission = db.sql_db!.SELECT<Solution>(sql_query).FirstOrDefault();
+            if (submission == null) {
+                return NotFound($"Submmited file(ID={submissionfile_id}) not found");
+            }
+
+            string content_type = "application/octet-stream";
+            return PhysicalFile(submission.Path!, content_type, submission.Name + "." + submission.Extension);
+        }
+
 
         // ------------------------------------------ Metodos POST ------------------------------------------
-        [HttpPost("submit/{group_id}/{student_id}/{assignment_id}")]
+        [HttpPost("upload/{group_id}/{student_id}/{assignment_id}")]
         public async Task<ActionResult<Solution>> UploadSolution(int group_id, int student_id, int assignment_id, IFormFile submission_file)
         {
             // Buscar que exista la evaluacion para el grupo indicado

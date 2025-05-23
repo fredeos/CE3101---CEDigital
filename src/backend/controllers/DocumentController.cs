@@ -32,7 +32,7 @@ namespace backend.controllers
             if (document == null)
             {
                 Console.WriteLine($"(HTTP)(GET={nameof(DownloadFile)}) File (ID={file_id}) not found in group (ID={group_id})");
-                return BadRequest($"File (ID={file_id}) not found in group (ID={group_id})");
+                return NotFound($"File (ID={file_id}) not found in group (ID={group_id})");
             }
             string content_type = "application/octet-stream";
             return PhysicalFile(document.Path, content_type, document.Name + "." + document.Extension);
