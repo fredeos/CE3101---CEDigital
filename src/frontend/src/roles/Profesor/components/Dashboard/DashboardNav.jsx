@@ -1,6 +1,8 @@
 import { Newspaper, User, Users, FileText, List, ClipboardCheck, FileCheck, BarChart3, ChevronLeft } from "lucide-react"
 
 export default function DashboardNav({ activeTab, onTabChange, onBackToSelection, professor }) {
+  
+  // Modulos a usar dentro del activeTab del dashboard
   const navItems = [
     { id: "news", label: "Noticias", icon: Newspaper },
     { id: "group", label: "Grupo", icon: Users },
@@ -11,9 +13,11 @@ export default function DashboardNav({ activeTab, onTabChange, onBackToSelection
     { id: "grades", label: "Notas", icon: BarChart3 },
   ]
 
+  // Componente de barra de navegacion del dashboard
   return (
     <nav className="dashboard-nav">
-
+      
+      {/* Boton para volver */}
       <div className="btn-back-container">
         <button className="btn-back" onClick={onBackToSelection}>
           <ChevronLeft size={18} />
@@ -21,6 +25,7 @@ export default function DashboardNav({ activeTab, onTabChange, onBackToSelection
         </button>
       </div>
 
+      {/* Opciones del activeTab */}
       <ul className="nav-list">
         {navItems.map((item) => (
           <li key={item.id} className="nav-item">
@@ -35,7 +40,7 @@ export default function DashboardNav({ activeTab, onTabChange, onBackToSelection
         ))}
       </ul>
 
-
+      {/* Informacion del profesor */}
       <div className="professor-info">
         <User size={20} />
         <span>{professor.firstName} {professor.firstLastName}</span>

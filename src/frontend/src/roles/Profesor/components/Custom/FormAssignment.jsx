@@ -103,6 +103,7 @@ export default function FormAssignment({ course, group, items, assessment, onClo
       type="default"
     >
       <form onSubmit={handleSubmit} className="assessment-form">
+        
         <div className="form-section">
           <h3 className="section-title">Información básica</h3>
           <div className="form-group">
@@ -120,6 +121,7 @@ export default function FormAssignment({ course, group, items, assessment, onClo
             />
             {formErrors.title && <div className="error-message">{formErrors.title}</div>}
           </div>
+          
           <div className="form-group">
             <label htmlFor="itemId" className="form-label">
               Asignar a rubro *
@@ -140,6 +142,7 @@ export default function FormAssignment({ course, group, items, assessment, onClo
             </select>
             {formErrors.itemId && <div className="error-message">{formErrors.itemId}</div>}
           </div>
+          
           <div className="form-group">
             <label htmlFor="weight" className="form-label">
               Peso (%) *
@@ -156,7 +159,9 @@ export default function FormAssignment({ course, group, items, assessment, onClo
             />
             {formErrors.weight && <div className="error-message">{formErrors.weight}</div>}
           </div>
+          
           <div className="form-row">
+            
             <div className="form-group">
               <label htmlFor="dueDate" className="form-label">
                 Fecha de entrega *
@@ -175,6 +180,7 @@ export default function FormAssignment({ course, group, items, assessment, onClo
               </div>
               {formErrors.dueDate && <div className="error-message">{formErrors.dueDate}</div>}
             </div>
+            
             <div className="form-group">
               <label htmlFor="dueTime" className="form-label">
                 Hora límite *
@@ -195,6 +201,7 @@ export default function FormAssignment({ course, group, items, assessment, onClo
             </div>
           </div>
         </div>
+        
         <div className="form-section">
           <h3 className="section-title">Tipo de evaluación</h3>
           <div className="form-group">
@@ -212,6 +219,7 @@ export default function FormAssignment({ course, group, items, assessment, onClo
             </div>
           </div>
         </div>
+        
         <div className="form-actions">
           <button type="button" className="btn-cancel" onClick={() => onClose(false)} disabled={isSubmitting}>
             Cancelar
@@ -220,6 +228,7 @@ export default function FormAssignment({ course, group, items, assessment, onClo
             {isSubmitting ? "Guardando..." : assessment ? "Actualizar" : "Crear"}
           </button>
         </div>
+        
         {formErrors.submit && <div className="error-message">{formErrors.submit}</div>}
       </form>
     </Modal>

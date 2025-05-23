@@ -8,6 +8,7 @@ export const generateStudentReport = (students = [], course = {}, group = {}) =>
         return;
     }
 
+    // Crea objeto de jsPDF para crearlo
     const doc = new jsPDF();
 
     // Título

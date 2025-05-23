@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react"
 
+// Funcion principal para manejar la lista de estudiantes del grupo (conexiones con la API)
 export function useStudentsData(courseId, groupId) {
   const [students, setStudents] = useState([])
   const [isLoading, setIsLoading] = useState(true)
@@ -16,7 +17,7 @@ export function useStudentsData(courseId, groupId) {
       setIsLoading(true)
       try {
 
-        // // Funcion para obtener la lista de estudiantes por medio del ID del grupo
+        // Obtiene la lista de estudiantes por medio del ID del grupo
         const response = await fetch(
           `http://localhost:5039/api/group/students/${groupId}`
         )

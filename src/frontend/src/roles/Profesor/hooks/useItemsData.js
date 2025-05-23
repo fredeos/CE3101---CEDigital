@@ -1,10 +1,32 @@
 import { useState, useEffect } from "react"
 
-export function useItemsData(courseCode, groupId) {
-  const [items, setItems] = useState([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState(null)
+// Adapta un rubro recibido del backend al formato del frontend
+function adaptItem(item) {
+  return {
+    id: item.id ?? item.ID,
+    name: item.name ?? item.Name,
+    percentage: item.percentage ?? item.Percentage,
+    groupId: item.groupID ?? item.GroupID,
+  }
+}
 
+// Construye el payload para crear o actualizar un rubro
+function buildItemPayload(data, groupId, id = null) {
+  return {
+    ...(id && { id }),
+    groupID: groupId,
+    name: data.name,
+    percentage: data.percentage,
+  }
+}
+
+// Funcion principal para manejar rubros/items (conexiones con la API)
+export function useItemsData(courseCode, groupId) {
+  const [items, setItems] = useState([])           // Estado para los rubros
+  const [isLoading, setIsLoading] = useState(true) // Estado de carga
+  const [error, setError] = useState(null)         // Estado de error
+
+  // Obtiene los rubros del grupo cuando cambia el groupId
   useEffect(() => {
     const fetchItems = async () => {
       if (!groupId) {
@@ -12,45 +34,30 @@ export function useItemsData(courseCode, groupId) {
         setIsLoading(false)
         return
       }
-
       setIsLoading(true)
       try {
-        const response = await fetch(
-          `http://localhost:5039/api/rubric/${groupId}`
-        )
+        // Llama a la API para obtener rubros del grupo
+        const response = await fetch(`http://localhost:5039/api/rubric/${groupId}`)
         if (!response.ok) throw new Error("No se pudieron obtener los rubros")
         const data = await response.json()
-        // Adaptar los datos al formato esperado por el componente
-        const adapted = data.map((item) => ({
-          id: item.id ?? item.ID,
-          name: item.name ?? item.Name,
-          percentage: item.percentage ?? item.Percentage,
-          groupId: item.groupID ?? item.GroupID,
-        }))
-        setItems(adapted)
+        // Adapta los datos al formato esperado
+        setItems(data.map(adaptItem))
         setIsLoading(false)
       } catch (err) {
         setError("Failed to load items")
         setIsLoading(false)
       }
     }
-
     fetchItems()
   }, [groupId])
 
   // Crear un nuevo rubro
   const addItem = async (newItem) => {
     try {
-      const payload = {
-        groupID: groupId,
-        name: newItem.name,
-        percentage: newItem.percentage,
-      }
+      const payload = buildItemPayload(newItem, groupId)
       const response = await fetch("http://localhost:5039/api/add/rubric", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       })
       if (!response.ok) {
@@ -59,14 +66,8 @@ export function useItemsData(courseCode, groupId) {
         return { success: false, error: errorMsg }
       }
       const created = await response.json()
-      // Recargar la lista
-      await new Promise((resolve) => setTimeout(resolve, 200))
-      setItems((prev) => [...prev, {
-        id: created.id ?? created.ID,
-        name: created.name ?? created.Name,
-        percentage: created.percentage ?? created.Percentage,
-        groupId: created.groupID ?? created.GroupID,
-      }])
+      // Agrega el nuevo rubro a la lista
+      setItems((prev) => [...prev, adaptItem(created)])
       return { success: true, item: created }
     } catch (err) {
       setError("Failed to add item")
@@ -77,17 +78,10 @@ export function useItemsData(courseCode, groupId) {
   // Actualizar un rubro existente
   const updateItem = async (id, updatedData) => {
     try {
-      const payload = {
-        id: id,
-        groupID: groupId,
-        name: updatedData.name,
-        percentage: updatedData.percentage,
-      }
+      const payload = buildItemPayload(updatedData, groupId, id)
       const response = await fetch(`http://localhost:5039/api/modified/rubric/${id}`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       })
       if (!response.ok) {
@@ -96,16 +90,10 @@ export function useItemsData(courseCode, groupId) {
         return { success: false, error: errorMsg }
       }
       const updated = await response.json()
+      // Actualiza el rubro en la lista
       setItems((prev) =>
         prev.map((item) =>
-          item.id === id
-            ? {
-                id: updated.id ?? updated.ID,
-                name: updated.name ?? updated.Name,
-                percentage: updated.percentage ?? updated.Percentage,
-                groupId: updated.groupID ?? updated.GroupID,
-              }
-            : item
+          item.id === id ? adaptItem(updated) : item
         )
       )
       return { success: true }
@@ -126,6 +114,7 @@ export function useItemsData(courseCode, groupId) {
         setError(errorMsg)
         return { success: false, error: errorMsg }
       }
+      // Elimina el rubro de la lista
       setItems((prev) => prev.filter((item) => item.id !== id))
       return { success: true }
     } catch (err) {
@@ -134,11 +123,12 @@ export function useItemsData(courseCode, groupId) {
     }
   }
 
-  // Calcular el porcentaje total
+  // Calcular el porcentaje total de todos los rubros
   const calculateTotalPercentage = () => {
     return items.reduce((total, item) => total + Number(item.percentage), 0)
   }
 
+  // Retorna estados y funciones principales del hook
   return {
     items,
     isLoading,

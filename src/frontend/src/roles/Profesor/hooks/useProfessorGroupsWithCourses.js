@@ -10,7 +10,7 @@ export function useProfessorGroupsWithCourses() {
   useEffect(() => {
     if (!professor) return
 
-    // Funcion para obtener los grupos de un curso asignado a profesor por medio del idCard
+    // Obtiene los grupos de un curso asignado a profesor por medio del idCard
     const fetchData = async () => {
       setIsLoading(true)
       try {

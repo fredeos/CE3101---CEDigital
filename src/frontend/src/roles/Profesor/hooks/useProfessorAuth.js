@@ -9,7 +9,7 @@ export function useProfessorAuth() {
     checkAuth();
   }, []);
 
-  // Funcion para verificar la autenticación del profesor
+  // Verifica la autenticación del profesor
   const login = async (credentials) => {
     setError(null);
     try {
@@ -43,7 +43,7 @@ export function useProfessorAuth() {
     }
   };
 
-  // Funcion para limpiar los datos del profesor en el localStorage y simular cerrar sesion
+  // Limpiar los datos del profesor en el localStorage y simular cerrar sesion
   const logout = () => {
     localStorage.removeItem("professorAuth");
     setProfessor(null);

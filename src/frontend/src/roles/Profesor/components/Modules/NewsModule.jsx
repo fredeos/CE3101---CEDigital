@@ -4,8 +4,14 @@ import { Edit, Trash2, Calendar, User } from "lucide-react";
 import Modal from "../Modal";
 import "../../styles/Noticias/News.css";
 
+// Refactorizar y modularizar componentes en funciones
+
 export default function NewsModule({ course, group, professor }) {
+
+  // Hook para obtener y manejar noticias del grupo
   const { news, isLoading, addNews, updateNews, removeNews } = useGroupNews(group?.id);
+
+  // Estados locales para formulario, edicion y eliminacion
   const [showForm, setShowForm] = useState(false);
   const [editingNews, setEditingNews] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -14,12 +20,14 @@ export default function NewsModule({ course, group, professor }) {
 
   const filteredNews = news;
 
+  // Mostrar formulario para agregar noticia
   const handleAddClick = () => {
     setEditingNews(null);
     setFormData({ title: "", message: "", professorFullName: "" });
     setShowForm(true);
   };
 
+  // Mostrar formulario para editar noticia
   const handleEditClick = (newsItem) => {
     setEditingNews(newsItem);
     setFormData({
@@ -30,18 +38,20 @@ export default function NewsModule({ course, group, professor }) {
     setShowForm(true);
   };
 
+  // Mostrar modal para confirmar eliminación
   const handleDeleteClick = (id) => {
     setNewsToDelete(id);
     setShowDeleteModal(true);
   };
 
+  // Confirmar eliminación de noticia
   const confirmDelete = async () => {
     const success = await removeNews(newsToDelete);
     if (success) window.location.reload();
     else alert("Error al eliminar la noticia");
     setShowDeleteModal(false);
   };
-
+  // Manejar cambios en el formulario
   const handleFormChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -50,6 +60,7 @@ export default function NewsModule({ course, group, professor }) {
     }));
   };
 
+  // Guardar noticia (nueva o editada)
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     if (!professor || !group) return;
@@ -77,7 +88,8 @@ export default function NewsModule({ course, group, professor }) {
       alert("Error al guardar la noticia");
     }
   };
-
+  
+  // Formatea la fecha para mostrarla
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString();
@@ -90,6 +102,7 @@ export default function NewsModule({ course, group, professor }) {
   return (
     <div className="dashboard-module">
       {showForm ? (
+        // Formulario para agregar o editar noticia
         <div className="news-form">
           <h2 className="module-title">{editingNews ? "Editar noticias" : "Añadir noticias"}</h2>
           <form onSubmit={handleFormSubmit}>
@@ -133,12 +146,14 @@ export default function NewsModule({ course, group, professor }) {
         </div>
       ) : (
         <>
+          {/* Encabezado y boton para anadir noticia */}
           <div className="module-header">
             <h2 className="module-title">Noticias del grupo</h2>
             <button className="btn-add-news" onClick={handleAddClick}>
               Añadir noticia
             </button>
           </div>
+          {/* Lista de noticias o mensaje vacío */}
           {filteredNews.length === 0 ? (
             <div className="empty-state">
               No hay noticias disponibles
@@ -175,13 +190,13 @@ export default function NewsModule({ course, group, professor }) {
           )}
         </>
       )}
-
+      {/* Modal de confirmación para eliminar noticia */}
       <Modal
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
         title="Confirmar eliminación"
       >
-        <p>¿Seguro que desea eliminar esta noticia?</p>
+        <p>¿Está seguro de que desea eliminar esta noticia?</p>
         <div className="modal-actions">
           <button className="btn-cancel" onClick={() => setShowDeleteModal(false)}>
             Cancelar

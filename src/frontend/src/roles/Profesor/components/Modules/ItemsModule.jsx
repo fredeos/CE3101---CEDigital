@@ -4,10 +4,12 @@ import { Plus, Edit, Trash2, AlertTriangle, Check, X, PercentIcon, List } from "
 import Modal from "../Modal"
 import "../../styles/Rubros/Items.css"
 
+// Refactorizar y modularizar componentes en funciones
+
 export default function ItemsModule({ course, group }) {
+  // Hook para manejar rubros del grupo
   const {
     items,
-    isLoading,
     error,
     addItem,
     updateItem,
@@ -15,6 +17,7 @@ export default function ItemsModule({ course, group }) {
     calculateTotalPercentage
   } = useItemsData(course?.code, group?.groupId);
 
+  // Estados locales para formulario, edición, mensajes y confirmación
   const [showForm, setShowForm] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [formData, setFormData] = useState({ name: "", percentage: "" });
@@ -22,9 +25,11 @@ export default function ItemsModule({ course, group }) {
   const [deleteConfirmation, setDeleteConfirmation] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
 
+  // Calcula el porcentaje total de los rubros
   const totalPercentage = calculateTotalPercentage();
   const isValidTotal = totalPercentage === 100;
 
+  // Mostrar formulario para agregar rubro
   const handleAddClick = () => {
     setEditingItem(null);
     setFormData({ name: "", percentage: "" });
@@ -32,6 +37,7 @@ export default function ItemsModule({ course, group }) {
     setShowForm(true);
   };
 
+  // Mostrar formulario para editar rubro
   const handleEditClick = (item) => {
     setEditingItem(item);
     setFormData({ name: item.name, percentage: item.percentage });
@@ -39,10 +45,12 @@ export default function ItemsModule({ course, group }) {
     setShowForm(true);
   };
 
+  // Mostrar modal de confirmación para eliminar rubro
   const handleDeleteClick = (item) => {
     setDeleteConfirmation(item);
   };
 
+  // Confirmar eliminación de rubro
   const handleConfirmDelete = async () => {
     if (deleteConfirmation) {
       const result = await deleteItem(deleteConfirmation.id);
@@ -54,6 +62,7 @@ export default function ItemsModule({ course, group }) {
     }
   };
 
+  // Manejar cambios en el formulario
   const handleFormChange = (e) => {
     const { name, value } = e.target;
     if (name === "percentage") {
@@ -67,17 +76,16 @@ export default function ItemsModule({ course, group }) {
     }));
   };
 
+  // Valida los datos del formulario antes de guardar
   const validateForm = () => {
     if (!formData.name.trim()) {
       setFormError("El nombre del rubro es obligatorio.")
       return false
     }
-
     if (formData.percentage === "" || isNaN(formData.percentage)) {
       setFormError("El porcentaje debe ser un número válido.")
       return false
     }
-
     if (formData.percentage < 1 || formData.percentage > 100) {
       setFormError("El porcentaje debe estar entre 1 y 100.")
       return false
@@ -90,9 +98,6 @@ export default function ItemsModule({ course, group }) {
     } else {
       newTotal = totalPercentage + formData.percentage
     }
-
-    console.log(newTotal)
-
     if (newTotal > 100) {
       setFormError(`El porcentaje total supera el 100% (${newTotal}%). Ajuste el valor.`)
       return false
@@ -101,17 +106,27 @@ export default function ItemsModule({ course, group }) {
     return true
   }
 
-
+  // Guardar rubro (nuevo o editado)
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    if (!validateForm()) return;
+    
+    if (!validateForm()) 
+      return;
+   
     let result;
+    
     if (editingItem) {
       result = await updateItem(editingItem.id, formData);
-      if (result.success) setSuccessMessage("Rubro actualizado exitosamente.");
+
+      if (result.success) 
+        setSuccessMessage("Rubro actualizado exitosamente.");
+
     } else {
       result = await addItem(formData);
-      if (result.success) setSuccessMessage("Rubro creado exitosamente.");
+      
+      if (result.success) 
+        setSuccessMessage("Rubro creado exitosamente.");
+
     }
     if (result.success) {
       setShowForm(false);
@@ -121,12 +136,14 @@ export default function ItemsModule({ course, group }) {
     }
   };
 
+  // Cancelar formulario
   const handleCancelClick = () => {
     setShowForm(false);
     setEditingItem(null);
     setFormError(null);
   };
 
+  // Mostrar error si ocurre
   if (error) {
     return (
       <div className="items-module">
@@ -137,13 +154,14 @@ export default function ItemsModule({ course, group }) {
 
   return (
     <div className="dashboard-module">
-
+      {/* Mensaje de éxito */}
       {successMessage && (
         <div className="success-message">
           {successMessage}
         </div>
       )}
 
+      {/* Advertencia si el total no es 100% */}
       {!isValidTotal && items.length > 0 && (
         <div className="warning-message">
           <AlertTriangle size={16} />
@@ -151,6 +169,7 @@ export default function ItemsModule({ course, group }) {
         </div>
       )}
 
+      {/* Formulario para agregar o editar rubro */}
       {showForm ? (
         <div className="items-form">
           <h3 className="form-title">{editingItem ? "Actualizar rubro" : "Añadir rubro"}</h3>
@@ -196,7 +215,6 @@ export default function ItemsModule({ course, group }) {
                 : totalPercentage + (formData.percentage || 0)}
               %
             </div>
-
             <div className="form-actions">
               <button type="button" className="btn-cancel" onClick={handleCancelClick}>
                 Cancelar
@@ -209,6 +227,8 @@ export default function ItemsModule({ course, group }) {
         </div>
       ) : (
         <>
+
+          {/* Encabezado y botón para añadir rubro */}
           <div className="items-header">
             <div className="items-title-section">
               <h2 className="items-title">Rubros del grupo</h2>
@@ -217,6 +237,8 @@ export default function ItemsModule({ course, group }) {
               Añadir rubro
             </button>
           </div>
+
+          {/* Lista de rubros o mensaje vacío */}
           {items.length === 0 ? (
             <div className="empty-state">
               <p className="empty-state-text">No hay rubros creados en este momento.</p>
@@ -260,6 +282,7 @@ export default function ItemsModule({ course, group }) {
         </>
       )}
 
+      {/* Modal de confirmación para eliminar rubro */}
       <Modal
         isOpen={deleteConfirmation !== null}
         onClose={() => setDeleteConfirmation(null)}
@@ -277,7 +300,6 @@ export default function ItemsModule({ course, group }) {
       >
         <div className="delete-modal-content">
           <p>¿Está seguro de que desea eliminar el rubro seleccionado?</p>
-          <p>Esta acción no se puede deshacer y puede afectar los cálculos de calificaciones.</p>
         </div>
       </Modal>
     </div>

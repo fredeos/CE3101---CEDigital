@@ -95,7 +95,6 @@
   color: #b91c1c;
 }
 
-/* Form Styles */
 .items-form {
   background-color: white;
   border-radius: 0.5rem;
@@ -156,7 +155,6 @@
   margin-top: 1.25rem;
 }
 
-/* Success Message */
 .success-message {
   display: flex;
   align-items: center;
@@ -169,7 +167,6 @@
   font-size: 0.875rem;
 }
 
-/* Warning Message */
 .warning-message {
   display: flex;
   align-items: center;
@@ -182,7 +179,6 @@
   font-size: 0.875rem;
 }
 
-/* Loading and Error States */
 .empty-state,
 .loading-state {
   padding: 2rem;

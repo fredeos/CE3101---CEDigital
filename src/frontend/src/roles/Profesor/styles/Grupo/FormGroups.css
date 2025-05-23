@@ -1,4 +1,3 @@
-/* Estilos generales */
 .groups-management {
   display: flex;
   flex-direction: column;
@@ -20,7 +19,6 @@
   padding: 10px 0;
 }
 
-/* Formulario de creación de grupos */
 .create-group-section {
   background: #f8f9fa;
   padding: 20px;
@@ -48,7 +46,6 @@
   font-size: 14px;
 }
 
-/* Listas de estudiantes */
 .available-students,
 .selected-members {
   margin: 15px 0;
@@ -109,7 +106,6 @@
   background: #ffebee;
 }
 
-/* Botón crear grupo */
 .btn-create-group {
   background: #007bff;
   color: white;
@@ -127,7 +123,6 @@
   background: #0069d9;
 }
 
-/* Grupos existentes */
 .existing-groups-section {
   background: #f8f9fa;
   padding: 20px;
@@ -186,7 +181,6 @@
   gap: 8px;
 }
 
-/* Iconos */
 .group-icon,
 .member-icon {
   color: #6c757d;

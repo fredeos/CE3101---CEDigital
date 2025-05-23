@@ -25,6 +25,7 @@ export function UploadFileModal({ isOpen, onClose, onUpload }) {
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Cargar archivo" type="default">
       <form onSubmit={handleSubmit}>
+        
         <div className="file-upload-container">
           <label className="file-upload-label">
             Selecciona un archivo
@@ -38,6 +39,7 @@ export function UploadFileModal({ isOpen, onClose, onUpload }) {
           </label>
           {selectedFile && <div className="selected-file-name">{selectedFile.name}</div>}
         </div>
+        
         <div className="form-actions">
           <button type="button" className="btn-cancel" onClick={onClose}>
             Cancelar
@@ -45,6 +47,7 @@ export function UploadFileModal({ isOpen, onClose, onUpload }) {
           <button type="submit" className="btn-submit" disabled={!selectedFile}>
             Subir
           </button>
+        
         </div>
       </form>
     </Modal>

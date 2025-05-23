@@ -19,13 +19,6 @@ export default function GroupModule({ course, group }) {
     setShowDownloadModal(false);
   };
 
-  const filteredStudents = students.filter(
-    (student) =>
-      student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      student.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      student.email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
   if (isLoading) {
     return (
       <div className="group-module">
@@ -55,16 +48,6 @@ export default function GroupModule({ course, group }) {
       <div className="group-header">
         <h1 className="group-title">Estudiantes matriculados</h1>
         <div className="group-actions">
-          <div className="search-container">
-            <Search size={18} className="search-icon" />
-            <input
-              type="text"
-              placeholder="Buscar estudiante"
-              className="search-input"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
           <button className="btn-download" onClick={() => setShowDownloadModal(true)} disabled={students.length === 0}>
             <Download size={16} />
             PDF

@@ -36,8 +36,8 @@ function ProfessorLogin() {
     }
   };
 
+  // Render principal del log in
   return (
-
     <div className="login-container-profesor">
 
       {/* Notificacion de inicio de sesion */}
