@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
+using System.IO;
 
 using backend.models;
 using backend.services;
@@ -92,7 +93,8 @@ namespace backend.controllers
                     var inserted = db.sql_db!.INSERT<Document>(sql_query2, document);
                     if (inserted != null)
                     { // Solo conserva los que se guardaron exitosamente en la base de datos
-                        FileDTO inserted_file = new(){
+                        FileDTO inserted_file = new()
+                        {
                             FileID = inserted.ID,
                             ParentID = inserted.FolderID,
                             FileName = inserted.Name,
@@ -116,6 +118,70 @@ namespace backend.controllers
             }
 
             return CreatedAtAction(nameof(UploadFile), new { group_id, folder_id }, documents);
+        }
+
+        // ------------------------------------------ Metodos PUT ------------------------------------------
+        [HttpPut("update/{file_id}")]
+        public ActionResult<FileDTO> UpdateDocument(int file_id, [FromBody] FileDTO file)
+        {
+            if (file_id != file.FileID)
+            {
+                return BadRequest($"Given file_id({file_id}) doesn't match the id of the file object(ID={file.FileID})");
+            }
+            // Actualizar la instancia
+            string sql_query = @$"
+            UPDATE Files.Documents
+            SET folder_id = @{nameof(FileDTO.ParentID)}, file_name = @{nameof(FileDTO.FileName)}, upload_date = getdate()
+            OUTPUT  INSERTED.id as {nameof(FileDTO.FileID)}, INSERTED.folder_id as {nameof(FileDTO.ParentID)},
+                    INSERTED.file_name as {nameof(FileDTO.FileName)}, INSERTED.file_type as {nameof(FileDTO.FileType)},
+                    INSERTED.size as {nameof(FileDTO.FileSize)}, INSERTED.upload_date as {nameof(FileDTO.UploadDate)}
+            WHERE id = {file_id}; ";
+
+            var updated = db.sql_db!.UPDATE<FileDTO>(sql_query, file).FirstOrDefault();
+            if (updated == null)
+            {
+                return NotFound();
+            }
+            return Ok(updated);
+        }
+
+
+        // ------------------------------------------ Metodos DELETE ------------------------------------------
+        [HttpDelete("delete/{file_id}")]
+        public ActionResult<FileDTO> DeleteDocument(int file_id)
+        {
+            // Remover el archivo de la base de datos
+            string sql_query = @$"
+            DELETE FROM Files.Documents
+            OUTPUT  DELETED.id as {nameof(Document.ID)}, DELETED.folder_id as {nameof(Document.FolderID)},
+                    DELETED.file_name as {nameof(Document.Name)}, DELETED.file_type as {nameof(Document.Extension)},
+                    DELETED.size as {nameof(Document.Size)}, DELETED.filepath as {nameof(Document.Path)},
+                    DELETED.upload_date as {nameof(Document.CreationDate)}
+            WHERE id = {file_id}; ";
+
+            var deleted = db.sql_db!.DELETE<Document>(sql_query);
+            // Remover el archivo fisico segun indica el registro borrado
+            List<FileDTO> files = [];
+            foreach (var document in deleted)
+            {
+                FileDTO file = new()
+                {
+                    FileID = document.ID,
+                    ParentID = document.FolderID,
+                    FileName = document.Name,
+                    FileType = document.Extension,
+                    FileSize = document.Size,
+                    UploadDate = document.CreationDate
+                };
+                files.Add(file);
+
+                if (System.IO.File.Exists(document.Path))
+                {
+                    System.IO.File.Delete(document.Path);
+                }
+            }
+
+            return Ok(files);
         }
 
     }
