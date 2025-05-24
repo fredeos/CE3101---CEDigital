@@ -1,27 +1,38 @@
 import { useNavigate } from "react-router-dom";
-import "../styles/DashboardAdmin.css";  // Asegurate de crear este CSS
+import "../styles/DashboardAdmin.css";
+import { useState } from "react";
 
 function DashboardAdmin() {
   const navigate = useNavigate();
+  const [menuOpen, setMenuOpen] = useState(true);
+
+  const handleLogout = () => {
+    
+    navigate("/cedigital-admin");
+  };
 
   return (
-    <div className="dashboard-admin">
-      <header className="dashboard-header">
-        <h1>CEDigital</h1>
-        <p>Bienvenido/a al panel del administrador</p>
-      </header>
+    <div className="dashboard-container">
+      <aside className={`sidebar ${menuOpen ? "open" : "collapsed"}`}>
+        <button className="toggle-btn" onClick={() => setMenuOpen(!menuOpen)}>
+          ☰
+        </button>
+        <h2>CEDigital</h2>
+        <ul>
+          <li onClick={() => navigate("/cedigital-admin/micuenta")}>👤 Mi Cuenta</li>
+          <li onClick={() => navigate("/cedigital-admin/cursos")}>📘 Gestión de Cursos</li>
+          <li onClick={() => navigate("/cedigital-admin/semestre")}>🧮 Inicializar Semestre</li>
+          <li onClick={() => navigate("/cedigital-admin/semestres")}>📆 Ver Semestres</li>
+          <li className="logout" onClick={handleLogout}>🚪 Cerrar Sesión</li>
+        </ul>
+      </aside>
 
-      <div className="dashboard-cards">
-        <div className="dashboard-card" onClick={() => navigate("/cedigital-admin/cursos")}>
-          <h3>📘 Gestión de Cursos</h3>
-          <p>Visualiza, crea o deshabilita cursos del sistema.</p>
-        </div>
-
-        <div className="dashboard-card" onClick={() => navigate("/cedigital-admin/semestre")}>
-          <h3>🧮 Inicializar Semestre</h3>
-          <p>Configura los grupos, profesores y evaluaciones del semestre.</p>
-        </div>
-      </div>
+      <main className="dashboard-main">
+        <header className="dashboard-header">
+          <h1>Bienvenido/a al panel del administrador</h1>
+        </header>
+        <p>Selecciona una opción del menú para comenzar.</p>
+      </main>
     </div>
   );
 }

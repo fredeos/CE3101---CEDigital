@@ -1,57 +1,65 @@
-.dashboard-admin {
-  font-family: "Segoe UI", sans-serif;
-  padding: 2rem;
-  background-color: #f9f9f9;
-  min-height: 100vh;
-}
-
-.dashboard-header {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.dashboard-header h1 {
-  font-size: 2.5rem;
-  color: #004aad;
-  font-family:monospace; 
-  
-}
-
-.dashboard-header p {
-  font-size: 1.2rem;
-  color: #555;
-}
-
-.dashboard-cards {
+.dashboard-container {
   display: flex;
-  justify-content: center;
-  gap: 2rem;
-  flex-wrap: wrap;
+  height: 100vh;
+  font-family:'Times New Roman', Times, serif;
 }
 
-.dashboard-card {
-  background-color: #ffffff;
-  border: 2px solid #e0e0e0;
-  border-radius: 16px;
-  padding: 1.5rem;
-  width: 280px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+/* Sidebar */
+.sidebar {
+  background-color: #222222;
+  color: white;
+  width: 240px;
+  padding: 1rem;
   transition: all 0.3s ease;
+}
+
+.sidebar.collapsed {
+  width: 60px;
+}
+
+.sidebar h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar li {
+  padding: 0.8rem 0;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.sidebar li:hover {
+  background-color: #912400;
+}
+
+.sidebar .logout {
+  margin-top: 2rem;
+  color: #ffc0cb;
+}
+
+.toggle-btn {
+  
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
   cursor: pointer;
 }
 
-.dashboard-card:hover {
-  transform: translateY(-5px);
-  border-color: #004aad;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+/* Main content */
+.dashboard-main {
+  flex: 1;
+  padding: 2rem;
+  background-color: #f0f4f8;
 }
 
-.dashboard-card h3 {
+.dashboard-header h1 {
   margin: 0;
-  color: #004aad;
-}
-
-.dashboard-card p {
-  color: #444;
-  margin-top: 0.5rem;
+  color: #333;
 }

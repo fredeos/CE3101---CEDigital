@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "../Services/api";
 import "../styles/IniciarSemestre.css"; 
+import { useNavigate } from "react-router-dom";
 
 function IniciarSemestre() {
   const [year, setYear] = useState("");
@@ -136,6 +137,12 @@ function IniciarSemestre() {
   }
 };
 
+const navigate = useNavigate();
+
+const handleVolver = () => {
+  navigate("/cedigital-admin/dashboard");
+};
+
 
 
   return (
@@ -246,6 +253,12 @@ function IniciarSemestre() {
         <button type="submit">Matricular</button>
       </form>
     )}
+
+
+    <button className="boton-volver-dashboard" onClick={handleVolver}>
+      ← Volver al Dashboard
+      </button>
+
 
     </div>
   );

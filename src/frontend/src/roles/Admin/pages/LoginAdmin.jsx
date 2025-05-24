@@ -13,7 +13,7 @@ function AdminLogin() {
   try {
     const res = await api.get(`/login/admins/${email}/${password}`);
     console.log("✅ Login exitoso:", res.data);
-    alert(`Bienvenido/a ${res.data.Fname}`);
+    localStorage.setItem("admin", JSON.stringify(res.data));
     navigate("/cedigital-admin/dashboard");
   } catch (err) {
     console.error("❌ Login fallido:", err);
@@ -24,12 +24,12 @@ function AdminLogin() {
   return (
     <div className="admin-login-container">
       <form className="login-form" onSubmit={handleLogin}>
-        <h1>CE Digital</h1>
+        <h1>CEDigital</h1>
         <p>Ingrese sus credenciales para continuar</p>
 
         <div className="demo-credentials">
-          <strong>Email:</strong> admin@cedigital.com<br /> 
-          <strong>Password:</strong> 1234
+          <strong>Email:</strong> admin@itcr.ac.cr<br /> 
+          <strong>Password:</strong> admin
         </div>
 
         <label htmlFor="email">Correo Institucional</label>
@@ -37,7 +37,7 @@ function AdminLogin() {
           type="email"
           required
           id="email"
-          placeholder="admin@cedigital.com"
+          placeholder="admin@itcr.ac.cr"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
@@ -53,7 +53,6 @@ function AdminLogin() {
         />
 
         <button type="submit">Iniciar sesión</button>
-        <a href="#" className="forgot-password">¿Olvidó su contraseña?</a>
       </form>
     </div>
   );

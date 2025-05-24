@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import api from "../Services/api"
 import "../styles/GestionCursos.css"; 
+import { useNavigate } from "react-router-dom";
+
 
 function GestionCursos() {
   const [cursos, setCursos] = useState([]);
@@ -15,6 +17,7 @@ function GestionCursos() {
   useEffect(() => {
     cargarCursos();
   }, []);
+
 
   const cargarCursos = async () => {
     try {
@@ -53,6 +56,13 @@ function GestionCursos() {
     setFormData(curso);
     setModoEdicion(true);
   };
+
+  const navigate = useNavigate();
+
+const handleVolver = () => {
+  navigate("/cedigital-admin/dashboard");
+};
+
 
   return (
     <div className="cursos-container">
@@ -118,6 +128,11 @@ function GestionCursos() {
           ))}
         </tbody>
       </table>
+      
+      <button className="volver" onClick={handleVolver}>
+      ← Volver al Dashboard
+      </button>
+
     </div>
   );
 }
