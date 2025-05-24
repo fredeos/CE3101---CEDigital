@@ -9,7 +9,7 @@ export default function DashboardNav({ activeTab, onTabChange, onBackToSelection
     { id: "documents", label: "Documentos", icon: FileText },
     { id: "items", label: "Rubros", icon: List },
     { id: "assessments", label: "Asignaciones", icon: ClipboardCheck },
-    { id: "deliverables", label: "Entregables", icon: FileCheck },
+    { id: "submissions", label: "Entregables", icon: FileCheck },
     { id: "grades", label: "Notas", icon: BarChart3 },
   ]
 

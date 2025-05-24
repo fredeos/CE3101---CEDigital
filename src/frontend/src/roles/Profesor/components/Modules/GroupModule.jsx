@@ -68,7 +68,7 @@ export default function GroupModule({ course, group }) {
             </tr>
           </thead>
           <tbody>
-            {filteredStudents.map((student) => (
+            {students.map((student) => (
               <tr key={student.id}>
                 <td>{student.id}</td>
                 <td>{student.name}</td>

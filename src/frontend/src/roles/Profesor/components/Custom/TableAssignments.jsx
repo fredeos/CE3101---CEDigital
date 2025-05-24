@@ -1,4 +1,3 @@
-import { useAssignmentSpecification } from "../../hooks/useSpecificationData"
 import { Edit, Trash2, Users, Upload } from "lucide-react"
 
 export default function TableAssessments({
@@ -11,6 +10,7 @@ export default function TableAssessments({
     setGroupAssessmentSelected,
     setUploadAssessment,
     setUploadModalOpen,
+    getSpecificationDownloadUrl
 }) {
     return (
         <div className="data-table-container">
@@ -28,7 +28,7 @@ export default function TableAssessments({
                 </thead>
                 <tbody>
                     {assessments.map((assessment) => {
-                        const { fileUrl, fileName } = useAssignmentSpecification(groupId, assessment.id)
+                        const fileUrl = getSpecificationDownloadUrl(groupId, assessment.id)
                         return (
                             <tr key={assessment.id}>
                                 <td className="title-cell"><span>{assessment.title}</span></td>
@@ -50,10 +50,10 @@ export default function TableAssessments({
                                 <td>
                                     <div className="actions-cell">
                                         <button className="icon-btn edit" onClick={() => handleEditClick(assessment)} title="Editar">
-                                            <Edit size={16} />
+                                            <Edit size={18} />
                                         </button>
                                         <button className="icon-btn delete" onClick={() => handleDeleteClick(assessment)} title="Eliminar">
-                                            <Trash2 size={16} />
+                                            <Trash2 size={18} />
                                         </button>
                                         {assessment.isGroupAssessment && (
                                             <button
@@ -61,7 +61,7 @@ export default function TableAssessments({
                                                 onClick={() => setGroupAssessmentSelected(assessment)}
                                                 title="Formar grupos"
                                             >
-                                                <Users size={16} />
+                                                <Users size={18} />
                                             </button>
                                         )}
                                         <button
