@@ -262,6 +262,7 @@ namespace backend.controllers
 
             return Ok(rubrics_list);
         }
+        
 
         [HttpGet("assigments/{assignment_id}/forstudent/{student_id}")]
         public ActionResult<StudentViewFullAssignmentDTO> GetFullAssignmentInformation(int assignment_id, int student_id)
@@ -539,51 +540,60 @@ namespace backend.controllers
                     $"SELECT id FROM Academic.AssignmentSubmissions WHERE assignment_id = {assignment_id}"
                 );
 
-                foreach (var submissionId in submissionIds)
+                if (submissionIds.Any())
                 {
-                    // 2. Eliminar SubmissionFiles relacionados
-                    db.sql_db!.DELETE<object>(
-                        $"DELETE FROM Files.SubmissionFiles WHERE submission_id = {submissionId}"
+                    // 1.1 Romper la relación de archivos en AssignmentSubmissions
+                    db.sql_db!.UPDATE<object>(
+                        $"UPDATE Academic.AssignmentSubmissions SET submitted_file = NULL, feedback_file = NULL WHERE assignment_id = {assignment_id}",
+                        new { }
                     );
 
-                    // 3. Eliminar FeedbackFiles relacionados
-                    db.sql_db!.DELETE<object>(
-                        $"DELETE FROM Files.FeedbackFiles WHERE submission_id = {submissionId}"
-                    );
+                    foreach (var submissionId in submissionIds)
+                    {
+                        // 1.2 Eliminar StudentSubmissions relacionados
+                        db.sql_db!.DELETE<object>(
+                            $"DELETE FROM Academic.StudentSubmissions WHERE submission_id = {submissionId}"
+                        );
 
-                    // 4. Eliminar StudentSubmissions relacionados
+                        // 1.3 Eliminar SubmissionFiles relacionados
+                        db.sql_db!.DELETE<object>(
+                            $"DELETE FROM Files.SubmissionFiles WHERE submission_id = {submissionId}"
+                        );
+
+                        // 1.4 Eliminar FeedbackFiles relacionados
+                        db.sql_db!.DELETE<object>(
+                            $"DELETE FROM Files.FeedbackFiles WHERE submission_id = {submissionId}"
+                        );
+                    }
+
+                    // 1.5 Eliminar AssignmentSubmissions de la asignación
                     db.sql_db!.DELETE<object>(
-                        $"DELETE FROM Academic.StudentSubmissions WHERE submission_id = {submissionId}"
+                        $"DELETE FROM Academic.AssignmentSubmissions WHERE assignment_id = {assignment_id}"
                     );
                 }
 
-                // 5. Eliminar AssignmentSubmissions de la asignación
-                db.sql_db!.DELETE<object>(
-                    $"DELETE FROM Academic.AssignmentSubmissions WHERE assignment_id = {assignment_id}"
-                );
-
-                // 6. Eliminar StudentAssignments para la asignación
+                // 2. Eliminar StudentAssignments para la asignación
                 db.sql_db!.DELETE<object>(
                     $"DELETE FROM Academic.StudentAssignments WHERE assignment_id = {assignment_id}"
                 );
 
-                // 7. Eliminar AssignmentStudentGroups para los grupos de la asignación
+                // 3. Eliminar AssignmentStudentGroups para los grupos de la asignación
                 db.sql_db!.DELETE<object>(
                     $"DELETE FROM Academic.AssignmentStudentGroups WHERE group_id IN " +
                     $"(SELECT id FROM Academic.AssignmentGroups WHERE assignment_id = {assignment_id})"
                 );
 
-                // 8. Eliminar AssignmentGroups para la asignación
+                // 4. Eliminar AssignmentGroups para la asignación
                 db.sql_db!.DELETE<object>(
                     $"DELETE FROM Academic.AssignmentGroups WHERE assignment_id = {assignment_id}"
                 );
 
-                // 9. Eliminar Specifications para la asignación
+                // 5. Eliminar Specifications para la asignación
                 db.sql_db!.DELETE<object>(
                     $"DELETE FROM Files.Specifications WHERE assignment_id = {assignment_id}"
                 );
 
-                // 10. Eliminar la asignación
+                // 6. Eliminar la asignación
                 var deletedAssignments = db.sql_db!.DELETE<Assignment>(
                     $"DELETE FROM Academic.Assignments " +
                     $"OUTPUT DELETED.id AS {nameof(Assignment.ID)}, " +

@@ -82,7 +82,17 @@ namespace backend.controllers
             string query = $@"
                 UPDATE Academic.AssignmentSubmissions
                 SET grade = @Grade, commentary = @Commentary
-                OUTPUT inserted.*
+                OUTPUT 
+                    inserted.id as {nameof(AssignmentSubmissionDTO.ID)},
+                    inserted.assignment_id as {nameof(AssignmentSubmissionDTO.AssignmentID)},
+                    inserted.student_id as {nameof(AssignmentSubmissionDTO.StudentID)},
+                    inserted.group_id as {nameof(AssignmentSubmissionDTO.GroupID)},
+                    inserted.grade as {nameof(AssignmentSubmissionDTO.Grade)},
+                    inserted.commentary as {nameof(AssignmentSubmissionDTO.Commentary)},
+                    inserted.submitted_file as {nameof(AssignmentSubmissionDTO.SubmittedFile)},
+                    inserted.feedback_file as {nameof(AssignmentSubmissionDTO.FeedbackFile)},
+                    inserted.submission_date as {nameof(AssignmentSubmissionDTO.SubmissionDate)},
+                    inserted.published_flag as {nameof(AssignmentSubmissionDTO.PublishedFlag)}
                 WHERE id = @ID;
             ";
 
@@ -99,28 +109,46 @@ namespace backend.controllers
 
             return Ok(updated.First());
         }
+
+        /// <summary>
+        /// Actualiza el estado de publicación de una entrega de un assignment específico.
+        /// </summary>
+        /// <param name="submission_id"></param>
+        /// <param name="updateDto"></param>
+        /// <returns></returns>
+        
+        [HttpPatch("AssignmentSubmission/{submission_id}/publish")]
+        public IActionResult UpdatePublishedFlag(int submission_id, [FromBody] UpdatePublishedFlagDTO updateDto)
+        {
+            string query = $@"
+                UPDATE Academic.AssignmentSubmissions
+                SET published_flag = @PublishedFlag
+                OUTPUT 
+                    inserted.id as {nameof(AssignmentSubmissionDTO.ID)},
+                    inserted.assignment_id as {nameof(AssignmentSubmissionDTO.AssignmentID)},
+                    inserted.student_id as {nameof(AssignmentSubmissionDTO.StudentID)},
+                    inserted.group_id as {nameof(AssignmentSubmissionDTO.GroupID)},
+                    inserted.grade as {nameof(AssignmentSubmissionDTO.Grade)},
+                    inserted.commentary as {nameof(AssignmentSubmissionDTO.Commentary)},
+                    inserted.submitted_file as {nameof(AssignmentSubmissionDTO.SubmittedFile)},
+                    inserted.feedback_file as {nameof(AssignmentSubmissionDTO.FeedbackFile)},
+                    inserted.submission_date as {nameof(AssignmentSubmissionDTO.SubmissionDate)},
+                    inserted.published_flag as {nameof(AssignmentSubmissionDTO.PublishedFlag)}
+                WHERE id = @ID;
+            ";
+
+            var updateObj = new AssignmentSubmissionDTO {
+                ID = submission_id,
+                PublishedFlag = updateDto.PublishedFlag
+            };
+
+            var updated = db.sql_db!.UPDATE<AssignmentSubmissionDTO>(query, updateObj);
+
+            if (updated == null || updated.Count == 0)
+                return NotFound();
+
+            return Ok(updated.First());
+        }
     }
 
-    // DTO para el update
-    public class UpdateAssignmentSubmissionDTO
-    {
-        public decimal? Grade { get; set; }
-        public string? Commentary { get; set; }
-    }
-
-    // DTO for AssignmentSubmission
-    public class AssignmentSubmissionDTO
-    {
-        public int ID { get; set; }
-        public int AssignmentID { get; set; }
-        public int? StudentID { get; set; }
-        public int? GroupID { get; set; }
-        public decimal? Grade { get; set; }
-        public string? Commentary { get; set; }
-        public string? SubmittedFile { get; set; }
-        public string? FeedbackFile { get; set; }
-        public DateTime SubmissionDate { get; set; }
-        public int PublishedFlag { get; set; }
-        public string? StudentFullName { get; set; } // Nuevo campo
-    }
 }

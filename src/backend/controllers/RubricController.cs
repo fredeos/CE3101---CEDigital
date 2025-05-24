@@ -157,22 +157,31 @@ namespace backend.controllers
                         $"SELECT id FROM Academic.AssignmentSubmissions WHERE assignment_id = {assignmentId}"
                     );
 
-                    foreach (var submissionId in submissionIds)
+                    if (submissionIds.Any())
                     {
-                        // 3. Eliminar SubmissionFiles relacionados con este submission
-                        db.sql_db!.DELETE<object>(
-                            $"DELETE FROM Files.SubmissionFiles WHERE submission_id = {submissionId}"
+                        // 2.1 Romper la relación de archivos en AssignmentSubmissions
+                        db.sql_db!.UPDATE<object>(
+                            $"UPDATE Academic.AssignmentSubmissions SET submitted_file = NULL, feedback_file = NULL WHERE assignment_id = {assignmentId}",
+                            new { }
                         );
 
-                        // 4. Eliminar FeedbackFiles relacionados con este submission
-                        db.sql_db!.DELETE<object>(
-                            $"DELETE FROM Files.FeedbackFiles WHERE submission_id = {submissionId}"
-                        );
+                        foreach (var submissionId in submissionIds)
+                        {
+                            // 3. Eliminar StudentSubmissions relacionados con este submission
+                            db.sql_db!.DELETE<object>(
+                                $"DELETE FROM Academic.StudentSubmissions WHERE submission_id = {submissionId}"
+                            );
 
-                        // 5. Eliminar StudentSubmissions relacionados con este submission
-                        db.sql_db!.DELETE<object>(
-                            $"DELETE FROM Academic.StudentSubmissions WHERE submission_id = {submissionId}"
-                        );
+                            // 4. Eliminar SubmissionFiles relacionados con este submission
+                            db.sql_db!.DELETE<object>(
+                                $"DELETE FROM Files.SubmissionFiles WHERE submission_id = {submissionId}"
+                            );
+
+                            // 5. Eliminar FeedbackFiles relacionados con este submission
+                            db.sql_db!.DELETE<object>(
+                                $"DELETE FROM Files.FeedbackFiles WHERE submission_id = {submissionId}"
+                            );
+                        }
                     }
 
                     // 6. Eliminar los AssignmentSubmissions de esta asignación
