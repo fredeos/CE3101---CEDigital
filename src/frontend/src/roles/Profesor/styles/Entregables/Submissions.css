@@ -1,0 +1,13 @@
+.btn-grade {
+    padding: 0.5rem 0.75rem;
+    border-radius: 10px;
+    font-size: 0.875rem;
+    color: #000000;
+    cursor: pointer;
+    line-height: 1rem;
+    border: 1px solid #cfcfcf;
+}
+
+.btn-grade:hover {
+    background-color: #cecece;
+}

@@ -17,6 +17,7 @@ export default function Assessments({ course, group }) {
     deleteAssessment,
     uploadFile,
     reload,
+    getSpecificationDownloadUrl
   } = useAssessmentsData(course?.code, group?.id);
 
   const { items, isLoading: itemsLoading, error: itemsError } = useItemsData(course?.id, group?.id);
@@ -32,6 +33,8 @@ export default function Assessments({ course, group }) {
   const [uploadModalOpen, setUploadModalOpen] = useState(false)
   const [uploadAssessment, setUploadAssessment] = useState(null)
   const [localAssessments, setLocalAssessments] = useState(assessments);
+
+  
   useEffect(() => {
     if (items && items.length > 0 && !selectedItem) {
       setSelectedItem(items[0]);
@@ -169,6 +172,7 @@ export default function Assessments({ course, group }) {
             setGroupAssessmentSelected={setGroupAssessmentSelected}
             setUploadAssessment={setUploadAssessment}
             setUploadModalOpen={setUploadModalOpen}
+            getSpecificationDownloadUrl={getSpecificationDownloadUrl}
           />
         )}
       </div>

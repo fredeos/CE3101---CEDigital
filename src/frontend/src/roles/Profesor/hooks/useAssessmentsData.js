@@ -36,7 +36,7 @@ export function useAssessmentsData(courseCode, groupId) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [reloadFlag, setReloadFlag] = useState(false);
-  
+
   // FunciOn para forzar recarga de datos
   const reload = () => setReloadFlag(flag => !flag);
 
@@ -52,22 +52,22 @@ export function useAssessmentsData(courseCode, groupId) {
       setIsLoading(true);
 
       // Obtiene los rubros del grupo
-      try { 
+      try {
         const rubricsRes = await fetch(`http://localhost:5039/api/rubric/${groupId}`);
 
-        if (!rubricsRes.ok) 
+        if (!rubricsRes.ok)
           throw new Error("No se pudieron obtener los rubros");
 
         const rubrics = await rubricsRes.json();
 
         let allAssignments = [];
 
-         // Por cada rubro, obtiene sus tareas
+        // Por cada rubro, obtiene sus tareas
         for (const rubric of rubrics) {
           const rubricId = rubric.id ?? rubric.ID;
           const assignmentsRes = await fetch(`http://localhost:5039/api/assignments/by-rubric/${rubricId}`);
-          
-          if (!assignmentsRes.ok) 
+
+          if (!assignmentsRes.ok)
             continue;
 
           const assignments = await assignmentsRes.json();
@@ -150,13 +150,13 @@ export function useAssessmentsData(courseCode, groupId) {
 
   // Sube un archivo de especificación para una tarea
   const uploadFile = async (file, groupId, assignmentId) => {
-    
-    if (!file || !groupId || !assignmentId) 
+
+    if (!file || !groupId || !assignmentId)
       return { success: false, error: "Faltan datos" };
 
     const formData = new FormData();
     formData.append("spec_file", file);
-    
+
     try {
       const response = await fetch(
         `http://localhost:5039/api/group/${groupId}/assigment/${assignmentId}/add/specification`,
@@ -172,6 +172,12 @@ export function useAssessmentsData(courseCode, groupId) {
     }
   };
 
+  // Devuelve la URL de descarga de la especificación y el nombre sugerido
+  const getSpecificationDownloadUrl = (groupId, assignmentId) => {
+    if (!groupId || !assignmentId) return null;
+    return `http://localhost:5039/api/specifications/download/${groupId}/${assignmentId}/recent`;
+  }
+
   // Retorna los datos y funciones principales del hook
   return {
     assessments,
@@ -182,5 +188,6 @@ export function useAssessmentsData(courseCode, groupId) {
     deleteAssessment,
     uploadFile,
     reload,
+    getSpecificationDownloadUrl
   };
 }

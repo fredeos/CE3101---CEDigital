@@ -16,6 +16,7 @@ import "../styles/Modal.css"
 import "../styles/Rubros/Items.css"
 import "../styles/Evaluaciones/Assignments.css"
 import "../styles/Documentos/Documents.css"
+import "../styles/Entregables/Submissions.css"
 
 // Importa modulos funcionales del dashboard
 import NewsModule from "../components/Modules/NewsModule"
@@ -23,7 +24,7 @@ import GroupModule from "../components/Modules/GroupModule"
 import ItemsModule from "../components/Modules/ItemsModule"
 import AssignmentsModule from "../components/Modules/AssignmentsModule"
 //import DocumentsModule from "../components/Modules/DocumentModule"
-//import RatingsModule from "../components/Modules/RatingsModule" 
+import SubmissionsModule from "../components/Modules/SubmissionsModule" 
 //import GradesModule from "../components/Modules/GradesModule" 
 
 // Funcion auxiliar para obtener parámetros de la URL
@@ -159,12 +160,12 @@ export default function ProfessorDashboard() {
         return <ItemsModule course={selectedCourse} group={selectedGroup} />
       case "assessments":
         return <AssignmentsModule course={selectedCourse} group={selectedGroup} />
-/*       case "documents":
-        return <DocumentsModule /> 
-      case "deliverables":
-        return <RatingsModule  /> 
-      case "grades":
-        return <GradesModule  />  */
+      //case "documents":
+      //  return <DocumentsModule /> 
+      case "submissions":
+        return <SubmissionsModule  course={selectedCourse} group={selectedGroup}/> 
+      //case "grades":
+      //  return <GradesModule  />
       default:
         return <DefaultModule course={selectedCourse} group={selectedGroup} />
     }
