@@ -11,85 +11,70 @@ const FileExplorer = ({ onBack }) => {
     const navigate = useNavigate();
 
     // Ejemplo de como estará los datos estructurados enviados por la api
-    const fileSystem = [
-        
-        {
-            "fileID": 25,
-            "parentID": 21,
-            "fileName": "Apuntes",
-            "fileType": "folder",
-            "fileSize": 0,
-            "uploadDate": "2025-05-19T22:19:52.557"
-        },
-        {
-            "fileID": 21,
-            "parentID": -1,
-            "fileName": "Documentos públicos",
-            "fileType": "folder",
-            "fileSize": 0,
-            "uploadDate": "2025-05-19T22:19:52.557"
-        },
-        {
-            "fileID": 22,
-            "parentID": -1,
-            "fileName": "Examenes",
-            "fileType": "folder",
-            "fileSize": 0,
-            "uploadDate": "2025-05-19T22:19:52.557"
-        },
-        {
-            "fileID": 23,
-            "parentID": -1,
-            "fileName": "Proyectos",
-            "fileType": "folder",
-            "fileSize": 0,
-            "uploadDate": "2025-05-19T22:19:52.557"
-        },
-        {
-            "fileID": 24,
-            "parentID": -1,
-            "fileName": "Tareas",
-            "fileType": "folder",
-            "fileSize": 0,
-            "uploadDate": "2025-05-19T22:19:52.557"
-        },
-        {
-            "fileID": 4,
-            "parentID": 21,
-            "fileName": "quiz",
-            "fileType": "pdf",
-            "fileSize": 194352,
-            "uploadDate": "2025-05-20T18:23:27.267"
-        }
-    ]
-        
+    const [fileSystem, setFileSystem] = useState([])
+    
     // Estado para monitorear el folder actual
     const [currentFolderId, setCurrentFolderId] = useState(-1)
+    const [rootFolderID, setRootFolderId] = useState(-1)  // se almacena el id de la carpeta root (que es diferente al id inicial -1)
 
-    
+    // se manejan errores
+    const [error, setError] = useState(null);
+
     // Itera cada objeto en filesSystem y toma el que tiene el id buscado
     const findItemById = (currentFolder_id) => {
-        return fileSystem.find((item) => item.fileID === currentFolder_id)
-        
+        return fileSystem.find((item) => item.fileID === currentFolder_id)   
     }
 
     // Obtiene el folder actual (el objeto con los datos)
-    const currentFolder = findItemById(currentFolderId)
-
-    // Se obtiene los hijos (objetos) de la carpeta actual (carpetas y archivos)
-    const folderItems = fileSystem.filter((archivoCarpeta) => archivoCarpeta.parentID === currentFolderId)
+    const [currentFolder,setCurrentFolder] = useState(null);
     
+    // Realiza la solicitud al servidor para obtener las carpetas y archivos dentro de una carpeta en un curso
+    const fetchDocuments = async () => {
+        try {
+            const currentCourse = AlmacenarInfo.getItem('currentCourse');
+            const encodedCourseId = encodeURIComponent(currentCourse.id);   // se obtiene el id del grupo del curso
+            const encodedCurrentFolderId = encodeURIComponent(currentFolderId);  // se obtiene el id del estudiante
+            const response = await fetch(`http://localhost:5039/api/folders/${encodedCourseId}/${encodedCurrentFolderId}/files`);
+            
+            if (!response.ok) {
+                // Manejo específico por código de estado
+                if (response.status > 301) {
+                    throw new Error('Error al cargar el registro de evaluaciones del curso');
+                }
+            }else{
+                const data = await response.json();  // se obtiene la respuesta en  formato Json del servidor
+                console.log(data);
+                setFileSystem(data);
+            }
+            
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            
+        }
+    }
+
+    // Maneja la solicitud al servido apenas se despliega la vista
+    useEffect(() => {
+        setError(null);
+        fetchDocuments();
+    },[currentFolderId]);
 
     // Cambia la carpeta actual, para simular la salida o la entrada en una carpeta
     const navigateToFolder = (folderId) => {
-        setCurrentFolderId(folderId)
+        // EL ORDEN EN EL QUE SE EJECUTAN ES IMPORTANTE AQUÍ, SINO DA ERROR
+        const currentFolderInfo = findItemById(folderId)
+        setCurrentFolder(currentFolderInfo);
+        setCurrentFolderId(folderId)  // se establece como folder actual el folder que fue presionado (será el padre de los archivos o carpetas que aparecerán)
+
+        // -1 es un id inicial para solictar el root, al primer cambio de carpeta se sabrá el id como tal de la carpeta root, y se mantendrá
+        setRootFolderId(rootFolderID === -1? currentFolderInfo.parentID: rootFolderID); 
+    
     }
 
     // Cambia la carpeta actual, por el padre de la que es actual, para simular la salida de una carpeta (regresarse)
     const navigateToParent = () => {
-        if (currentFolder.parentID) {
-            setCurrentFolderId(currentFolder.parentID)
-        }
+        setCurrentFolderId(currentFolder.parentID)
     }
 
     // Converso de Formato de tamaño de archivo
@@ -102,9 +87,7 @@ const FileExplorer = ({ onBack }) => {
     // Para abrir archivos enviados por el api
     const handleFileClick = (file) => {
     console.log(`Opening file: ${file.fileName}`)
-    // In a real app, this would open the file in the browser or download it
-    // For browser-compatible files like PDFs, you might use:
-    // window.open(fileUrl, '_blank')
+
     }
 
     // Se obtiene el tipo de icono según el tipo de archivo
@@ -164,7 +147,7 @@ const FileExplorer = ({ onBack }) => {
 
                     <CardContent className="card-content-container-documents">
                         {/* Encabezado que muestra la carpeta actual y el boton para salir de una carpeta*/}
-                        {currentFolderId !== -1?
+                        {currentFolderId !== -1 && currentFolderId !== rootFolderID?
                         <div className="nav-container-documents">
                             <ArrowRight className="h-3 w-6" />
                             <u className="user-name-documents">{currentFolder.fileName}</u>
@@ -180,11 +163,11 @@ const FileExplorer = ({ onBack }) => {
                         }
 
                         {/* Manejo de vista de carpetas */}
-                        {folderItems.filter((item) => item.fileType === "folder").length > 0 && (
+                        {fileSystem.filter((item) => item.fileType === "folder").length > 0 && (
                         <div className="folders-section-documents">
                             <h3 className="folders-title-documents">Carpetas</h3>
                             <div className="folders-grid-documents">
-                                {folderItems.filter((item) => item.fileType === "folder").map((folder) => (
+                                {fileSystem.filter((item) => item.fileType === "folder").map((folder) => (
                                     <Button
                                         key={folder.fileID}
                                         variant="outline"
@@ -200,15 +183,15 @@ const FileExplorer = ({ onBack }) => {
                         )}
 
                         {/* Manejo de vista de archivos */}
-                        {folderItems.filter((item) => item.fileType !== "folder").length > 0 && (
+                        {fileSystem.filter((item) => item.fileType !== "folder").length > 0 && (
                         <div className="files-section-documents">
                             <h3 className="files-title-documents">Archivos</h3>
                             <div className="files-list-documents">
-                                {folderItems.filter((item) => item.fileType !== "folder")
+                                {fileSystem.filter((item) => item.fileType !== "folder")
                                     .map((file, index) => (
                                     <div
                                         key={file.fileID}
-                                        className={`file-item-documents ${index !== folderItems.filter((item) => item.fileType !== "folder").length - 1 ? "border-b" : ""}`}
+                                        className={`file-item-documents ${index !== fileSystem.filter((item) => item.fileType !== "folder").length - 1 ? "border-b" : ""}`}
                                     >
                                         <div className="file-info-documents">
                                             {getFileIcon(file.fileType)}
@@ -246,7 +229,7 @@ const FileExplorer = ({ onBack }) => {
                         )}
 
                         {/* Cuando la carpeta está vacía */}
-                        {folderItems.length === 0 && (
+                        {fileSystem.length === 0 && (
                             <div className="empty-folder-documents">Esta carpeta está vacía.</div>
                         )}
                     </CardContent>

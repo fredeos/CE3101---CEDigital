@@ -35,8 +35,8 @@ const AssignmentsView = ({ onBack }) => {
                     throw new Error('Error al cargar el registro de evaluaciones del curso');
                     }
                 }else{
-                    const data = await response.json();
-                    setAssignmentCategories(data);
+                    const data = await response.json();  // se obtiene la respuesta en formato Json del servidor
+                    setAssignmentCategories(data);   // se almacena de forma temporal la información enviada para ser mostrada en la vista
                 }
                 
             } catch (err) {
