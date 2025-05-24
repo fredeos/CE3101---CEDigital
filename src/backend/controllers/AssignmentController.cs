@@ -302,7 +302,6 @@ namespace backend.controllers
             });
             rubrics_list.AddRange(rubrics);
 
-            //bool show_rubric_percentage = false;
             foreach (var rubric in rubrics_list) // Buscar las asignaciones en cada rubro 
             {   
                 // Buscar todas las asignaciones de cada rubrica para el estudiante en cuestion
@@ -334,6 +333,7 @@ namespace backend.controllers
                         }
                     } 
                 });
+
 
                 if (rubric.Assignments == null)
                 {

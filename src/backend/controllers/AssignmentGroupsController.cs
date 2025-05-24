@@ -59,6 +59,7 @@ namespace backend.controllers
 
             // 4. Asignar estudiantes al grupo
             var sqlStudent = @"INSERT INTO Academic.AssignmentStudentGroups (student_id, group_id)
+                        OUTPUT INSERTED.student_id, INSERTED.group_id
                        VALUES (@StudentID, @GroupID)";
             foreach (var studentId in dto.StudentIDs)
             {
@@ -83,31 +84,46 @@ namespace backend.controllers
                 db.sql_db!.DELETE<object>(
                     $"DELETE FROM Academic.AssignmentStudentGroups WHERE group_id = {groupId}"
                 );
+
                 // 2. Se obtiene el ID de la asignación
                 int assignment_id = db.sql_db!.SELECT<int>($"SELECT assignment_id FROM Academic.AssignmentGroups WHERE id = {groupId};")[0];
-                
-                // 3. Se obtiene el ID de la de las AssignmentSubmissions
-                int assignmentSubmissionId = db.sql_db!.SELECT<int>($"SELECT id FROM Academic.AssignmentSubmissions WHERE group_id = {groupId} AND assignment_id = {assignment_id};")[0];
 
-                // 4. Eliminar SubmissionFiles relacionados
-                db.sql_db!.DELETE<object>(
-                    $"DELETE FROM Files.SubmissionFiles WHERE submission_id = {assignmentSubmissionId}"
+                // 3. Se obtienen los IDs de las AssignmentSubmissions para este grupo
+                var assignmentSubmissionIds = db.sql_db!.SELECT<int>(
+                    $"SELECT id FROM Academic.AssignmentSubmissions WHERE group_id = {groupId} AND assignment_id = {assignment_id};"
                 );
 
-                // 5. Eliminar FeedbackFiles relacionados
-                db.sql_db!.DELETE<object>(
-                    $"DELETE FROM Files.FeedbackFiles WHERE submission_id = {assignmentSubmissionId}"
-                );
+                if (assignmentSubmissionIds.Any())
+                {
+                    // 3.1 Romper la relación de archivos en AssignmentSubmissions
+                    db.sql_db!.UPDATE<object>(
+                        $"UPDATE Academic.AssignmentSubmissions SET submitted_file = NULL, feedback_file = NULL WHERE group_id = {groupId} AND assignment_id = {assignment_id}",
+                        new { }
+                    );
 
-                // 6. Eliminar StudentSubmissions relacionados
-                db.sql_db!.DELETE<object>(
-                    $"DELETE FROM Academic.StudentSubmissions WHERE submission_id = {assignmentSubmissionId}"
-                );
-                
-                // 7. Eliminar AssignmentSubmissions relacionados (si existen)
-                db.sql_db!.DELETE<object>(
-                    $"DELETE FROM Academic.AssignmentSubmissions WHERE group_id = {groupId} AND assignment_id = {assignment_id}"
-                );
+                    foreach (var assignmentSubmissionId in assignmentSubmissionIds)
+                    {
+                        // 4. Eliminar SubmissionFiles relacionados
+                        db.sql_db!.DELETE<object>(
+                            $"DELETE FROM Files.SubmissionFiles WHERE submission_id = {assignmentSubmissionId}"
+                        );
+
+                        // 5. Eliminar FeedbackFiles relacionados
+                        db.sql_db!.DELETE<object>(
+                            $"DELETE FROM Files.FeedbackFiles WHERE submission_id = {assignmentSubmissionId}"
+                        );
+
+                        // 6. Eliminar StudentSubmissions relacionados
+                        db.sql_db!.DELETE<object>(
+                            $"DELETE FROM Academic.StudentSubmissions WHERE submission_id = {assignmentSubmissionId}"
+                        );
+                    }
+
+                    // 7. Eliminar AssignmentSubmissions relacionados (si existen)
+                    db.sql_db!.DELETE<object>(
+                        $"DELETE FROM Academic.AssignmentSubmissions WHERE group_id = {groupId} AND assignment_id = {assignment_id}"
+                    );
+                }
 
                 // 8. Eliminar el grupo
                 var deletedGroups = db.sql_db!.DELETE<AssignmentGroups>(
