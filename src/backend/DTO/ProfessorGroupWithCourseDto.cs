@@ -8,6 +8,8 @@ namespace backend.DTO
         public int GroupId { get; set; }        // Group.ID
         public int GroupNumber { get; set; }    // Group.Number
         public int SemesterId { get; set; }     // Group.Semester_ID
+        public int SemesterYear { get; set; }   // Semesters.year
+        public int SemesterPeriod { get; set; } // Semesters.period
 
         // Datos del Curso (de la tabla Course)
         required public string CourseCode { get; set; }  // Course.Code

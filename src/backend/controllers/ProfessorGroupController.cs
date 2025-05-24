@@ -25,11 +25,13 @@ namespace backend.controllers
         [HttpGet("professors/groups-with-courses/{professorIdCard}")]
         public ActionResult<IEnumerable<ProfessorGroupWithCourseDto>> GetProfessorGroupsWithCourses(int professorIdCard)
         {
-            String query = @$"
+           String query = @$"
                 SELECT 
                     g.ID AS {nameof(ProfessorGroupWithCourseDto.GroupId)},
                     g.num AS {nameof(ProfessorGroupWithCourseDto.GroupNumber)},
                     g.Semester_ID AS {nameof(ProfessorGroupWithCourseDto.SemesterId)},
+                    s.year AS {nameof(ProfessorGroupWithCourseDto.SemesterYear)},
+                    s.period AS {nameof(ProfessorGroupWithCourseDto.SemesterPeriod)},
                     c.Code AS {nameof(ProfessorGroupWithCourseDto.CourseCode)},
                     c.course_name AS {nameof(ProfessorGroupWithCourseDto.CourseName)},
                     c.Credits AS {nameof(ProfessorGroupWithCourseDto.Credits)},
@@ -40,6 +42,8 @@ namespace backend.controllers
                     Academic.Groups g ON pg.group_id = g.ID
                 INNER JOIN 
                     Academic.Courses c ON g.course_code = c.Code
+                INNER JOIN
+                    Academic.Semesters s ON g.Semester_ID = s.id
                 WHERE 
                     pg.professor_id = {professorIdCard}";
 
