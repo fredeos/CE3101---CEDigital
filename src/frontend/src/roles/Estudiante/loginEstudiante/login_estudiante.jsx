@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -8,6 +9,9 @@ import './login_estudiante.css'
 import {AlmacenarInfo} from '../sessionStorage/sessionStorage.js'
 
 const Login = () => {
+
+    const navigate = useNavigate();
+
     // Se guarda la información que se coloca en la entrada del formulario cada vez que hay un cambio en este
     const [formData, setFormData] = useState({
         email: "",
@@ -67,8 +71,9 @@ const Login = () => {
                 data.password = ""; // se elimina información sensible
                 data.phoneNumber = "";
                 AlmacenarInfo.setItem('studentInfo',data);
-                const currentUser = AlmacenarInfo.getItem('studentInfo');
-                console.log(currentUser); 
+
+                // se pasa a la ventana de incio, pues el login fue exitoso
+                navigate("/inicio-estudiantes")
             }
             
         } catch (err) {
@@ -124,7 +129,7 @@ const Login = () => {
                                     required
                                 />
                             </div>
-                            <Button type="submit" className="submit-button" disabled={isLoading}>
+                            <Button type="submit" className="submit-button" disabled={isLoading} onSubmit={handleSubmit}>
                                 {isLoading ? "Iniciando sesión..." : "Iniciar sesión"}
                             </Button>
                         </div>

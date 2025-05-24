@@ -11,7 +11,7 @@
     padding: 1rem 1.5rem;
 }
 
-.header-container {
+.header-container-categories {
     width: 100%;
     margin-left: auto;
     margin-right: auto;
@@ -20,47 +20,48 @@
     align-items: center;
 }
 
-.header-title {
+.header-title-categories {
     font-weight: 700;
     font-size: 1.25rem;
     color: #1e293b;
 }
 
-.user-info {
+.user-info-categories {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    flex-direction: row;
 }
 
-.user-details {
+.user-details-categories {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
 }
 
-.user-name {
+.user-name-categories {
     font-weight: 500;
 }
 
-.user-email {
+.user-email-categories {
     font-size: 0.875rem;
     color: #64748b;
 }
 
-.user-icon {
+.user-icon-categories {
     background-color: #f1f5f9;
     padding: 0.5rem;
     border-radius: 9999px;
 }
 
-.icon {
+.icon-categories {
     height: 1.25rem;
     width: 1.25rem;
     color: #475569;
 }
 
 /* Contenido principal en la tarjeta de evaluaciones */
-.main-content {
+.main-content-categories {
     width: 100%;
     max-width: 95%;
     margin-left: auto;
@@ -68,7 +69,7 @@
     padding: 2rem 1rem;
 }
 
-.back-button {
+.back-button-categories {
     margin-bottom: 1rem;
     display: flex;
     align-items: center;
@@ -76,42 +77,42 @@
     color: #475569;
 }
 
-.back-button:hover {
+.back-button-categories:hover {
     color: #0f172a;
 }
 
-.button-icon {
+.button-icon-categories {
     height: 1rem;
     width: 1rem;
 }
 
-.assignments-card {
+.assignments-card-categories {
     width: 100%;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     gap: 0;
 
 }
 
-.card-header {
+.card-header-categories {
     background-color: #f8fafc;
     border-bottom: 1px solid #e2e8f0;
 }
 
-.card-title {
+.card-title-categories {
     font-size: 1.5rem;
     font-weight: 700;
 }
 
-.card-content {
+.card-content-categories {
     padding: 1.5rem;
 }
 
 /* Estilos del elemento accordion */
-.accordion {
+.accordion-categories {
     width: 100%;
 }
 
-.accordion-trigger {
+.accordion-trigger-categories {
     padding: 1rem 0.25rem;
 }
 
@@ -146,29 +147,29 @@
     }
 }
 
-.earned {
+.earned-percentage-categories {
     font-weight: 500;
     margin-right: 0.3rem;
 }
 
-.total {
+.total-percentage-categories {
     color: #64748b;
 }
 
-.accordion-content {
+.accordion-content-categories {
     padding-top: 0.5rem;
     padding-bottom: 1rem;
     padding-left: 0.25rem;
     padding-right: 0.25rem;
 }
 
-.assignments-list {
+.assignments-list-categories {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
 }
 
-.assignment-button {
+.assignment-button-categories {
     width: 100%;
     justify-content: space-between;
     text-align: left;
@@ -176,39 +177,39 @@
     padding: 0.75rem 1rem;
 }
 
-.assignment-button:hover {
+.assignment-button-categories:hover {
     background-color: #f8fafc;
 }
 
-.assignment-info {
+.assignment-info-categories {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
 }
 
-.assignment-title {
+.assignment-title-categories {
     display: flex;
     align-items: center;
 }
 
-.assignment-icon {
+.assignment-icon-categories {
     height: 1rem;
     width: 1rem;
     margin-right: 0.5rem;
     color: #64748b;
 }
 
-.name {
+.name-assigment-categories {
     font-weight: 500;
 }
 
-.limit-date {
+.limit-date-assigment-categories {
     font-size: 0.875rem;
     color: #64748b;
     margin-top: 0.25rem;
 }
 
-.assignment-grade {
+.assignment-grade-categories {
     display: flex;
     flex-direction: flex;
     align-items: flex-end;
@@ -217,36 +218,28 @@
 }
 
 /* Estilo de la nota final*/
-.final-grade-header {
+
+.final-grade-header-categories {
     margin-top: 1.5rem;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     justify-content: space-between;
+    align-items: center;
     margin-bottom: 0.75rem;
+    gap: 0.5rem;
+    width: 100%;
 }
 
-@media (min-width: 640px) {
-    .final-grade-header {
-        flex-direction: row;
-        align-items: center;
-    }
-}
 
-.grade-title {
+.grade-title-categories {
     font-size: 1.25rem;
     font-weight: 700;
 }
 
-.grade-display {
+.grade-display-categories {
     display: flex;
     align-items: center;
     margin-top: 0.5rem;
     font-size: 1.125rem;
     margin-right: 0.75rem;
-}
-
-@media (min-width: 640px) {
-    .grade-display {
-        margin-top: 0;
-    }
 }

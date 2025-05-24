@@ -19,12 +19,18 @@ body {
 /* Estilos del header */
 .curso-header {
   background-color: white;
-  border-bottom: 1px solid var(--border-color);
-  height: 4rem;
+  border-bottom: 1px solid #e2e8f0;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  padding: 1rem 1.5rem;
+}
+
+.dashboard-header-curso-content {
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 0 1.5rem;
+  align-items: center;
 }
 
 .header-logo {
@@ -46,32 +52,44 @@ body {
 }
 
 /* Estilo para la información del usuario arriba a la derecha*/
-.user-info {
+.user-info-container-dashboard {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.user-info-dashboard {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
 }
 
-.user-name {
+.user-name-dashboard {
   font-weight: 500;
-  font-size: 0.875rem;
-  line-height: 1.25rem;
 }
 
-.user-email {
-  font-size: 0.75rem;
-  line-height: 1rem;
-  color: var(--muted-foreground);
+.user-email-dashboard {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: hsl(var(--muted-foreground));
 }
+
+.dashboard-user-avatar {
+  background-color: rgb(241 245 249);
+  padding: 0.5rem;
+  border-radius: 9999px;
+}
+ 
 
 /*Estilo del boton de volver*/
 .dashboard-back-button-container{
   display: flex;
   align-items: flex-start;
-  padding-left: 20px;
+  padding-left: 40px;
 }
 
 .dashboard-back-button {
+  margin-top: 1rem;
   margin-bottom: 1rem;
   display: flex;
   align-items: flex-start;

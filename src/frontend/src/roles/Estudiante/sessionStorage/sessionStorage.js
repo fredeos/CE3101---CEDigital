@@ -47,7 +47,11 @@ export const AlmacenarInfo = {
     }
 };
 
-/* Estructura de la información del estudiante (item = 'studentInfo')
+/*
+
+////////////////////////////  GUIA PARA LAS ESTRUCTURAS DE DATOS QUE SE ALMACENAN EN EL LOCAL STORAGE ///////////////
+
+Estructura de la información del estudiante (item = 'studentInfo')
 {
     "studentID": numID,
     "idCard": Cédula,
@@ -59,7 +63,7 @@ export const AlmacenarInfo = {
     "password": "1234"
 }
 
-Estructura de la información de los cursos del estudiante (item = 'semestreCursos')
+Estructura de la información de los cursos del estudiante (esto no se guarda)
 
 {
     "semesterID": int,
@@ -79,6 +83,60 @@ Estructura de la información de los cursos del estudiante (item = 'semestreCurs
     ]
 }
 
+Estructura de la información del curso actual que seleccionó el estudiante (item = 'currentCourse')
+
+ {
+    "id": int,
+    "groupNum": int,
+    "courseName": "name course"
+}
+
+Estructura de la información de los rubros y evaluaciones (No se almacena)
+
+{
+    "id": 1,
+    "name": "Proyecto de investigación",
+    "totalPercentage": 5,
+    "earnedPercentage": null,
+    "assignments": []
+},
+{
+    "id": 2,
+    "name": "Pruebas cortas",
+    "totalPercentage": 10,
+    "earnedPercentage": null,
+    "assignments": []
+},
+{
+    "id": 4,
+    "name": "Tareas",
+    "totalPercentage": 10,
+    "earnedPercentage": null,
+    "assignments": [
+        {
+            "id": 3,
+            "name": "Tarea 1",
+            "dueDate": "2025-05-23T23:50:00.5",
+            "totalPercentage": 2,
+            "earnedPercentage": null,
+            "earnedGrade": null,
+            "showPercentage": 0
+        },
+        {
+            "id": 4,
+            "name": "Tarea 2",
+            "dueDate": "2025-05-24T23:50:00.5",
+            "totalPercentage": 2,
+            "earnedPercentage": null,
+            "earnedGrade": null,
+            "showPercentage": 0
+        }
+    ]
+}
+
+Estructura de la información de una asignación específica (item = 'currentAssignmentID')
+
+'currentAssignmentID' = id
 
 */
 

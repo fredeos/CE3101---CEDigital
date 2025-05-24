@@ -1,143 +1,84 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { Navigate, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft, ArrowRight, User, Folder, FileText, Download, ExternalLink, ArrowUp } from "lucide-react"
 import "./documentos_curso.css"
+import {AlmacenarInfo} from '../sessionStorage/sessionStorage.js'
 
 const FileExplorer = ({ onBack }) => {
-    // Ejemplo de info del usuario
-    const user = {
-        name: "Alex Johnson",
-        email: "alex.johnson@university.edu",
-        studentId: "U2023456",
-    }
+
+    const navigate = useNavigate();
 
     // Ejemplo de como estará los datos estructurados enviados por la api
     const fileSystem = [
+        
         {
-            id: "root",
-            type: "folder",
-            name: "Course Materials",
-            items: ["folder1", "folder2", "file1", "file2"],
-            parent: null,
+            "fileID": 25,
+            "parentID": 21,
+            "fileName": "Apuntes",
+            "fileType": "folder",
+            "fileSize": 0,
+            "uploadDate": "2025-05-19T22:19:52.557"
         },
         {
-            id: "folder1",
-            type: "folder",
-            name: "Assignments",
-            parent: "root",
-            items: ["folder3", "file3", "file4"],
+            "fileID": 21,
+            "parentID": -1,
+            "fileName": "Documentos públicos",
+            "fileType": "folder",
+            "fileSize": 0,
+            "uploadDate": "2025-05-19T22:19:52.557"
         },
         {
-            id: "folder2",
-            type: "folder",
-            name: "Lecture Notes",
-            parent: "root",
-            items: ["file5", "file6", "file7"],
+            "fileID": 22,
+            "parentID": -1,
+            "fileName": "Examenes",
+            "fileType": "folder",
+            "fileSize": 0,
+            "uploadDate": "2025-05-19T22:19:52.557"
         },
         {
-            id: "folder3",
-            type: "folder",
-            name: "Assignment 1 Resources",
-            parent: "folder1",
-            items: ["file8", "file9"],
+            "fileID": 23,
+            "parentID": -1,
+            "fileName": "Proyectos",
+            "fileType": "folder",
+            "fileSize": 0,
+            "uploadDate": "2025-05-19T22:19:52.557"
         },
         {
-            id: "file1",
-            type: "file",
-            name: "Course Syllabus.pdf",
-            fileType: "pdf",
-            size: "245 KB",
-            uploadDate: "2025-01-15",
-            parent: "root",
+            "fileID": 24,
+            "parentID": -1,
+            "fileName": "Tareas",
+            "fileType": "folder",
+            "fileSize": 0,
+            "uploadDate": "2025-05-19T22:19:52.557"
         },
         {
-            id: "file2",
-            type: "file",
-            name: "Schedule.xlsx",
-            fileType: "excel",
-            size: "132 KB",
-            uploadDate: "2025-01-15",
-            parent: "root",
-        },
-        {
-            id: "file3",
-            type: "file",
-            name: "Assignment 1.pdf",
-            fileType: "pdf",
-            size: "320 KB",
-            uploadDate: "2025-01-20",
-            parent: "folder1",
-        },
-        {
-            id: "file4",
-            type: "file",
-            name: "Assignment 2.pdf",
-            fileType: "pdf",
-            size: "290 KB",
-            uploadDate: "2025-02-05",
-            parent: "folder1",
-        },
-        {
-            id: "file5",
-            type: "file",
-            name: "Lecture 1 - Introduction.pptx",
-            fileType: "powerpoint",
-            size: "1.2 MB",
-            uploadDate: "2025-01-18",
-            parent: "folder2",
-        },
-        {
-            id: "file6",
-            type: "file",
-            name: "Lecture 2 - Fundamentals.pptx",
-            fileType: "powerpoint",
-            size: "1.5 MB",
-            uploadDate: "2025-01-25",
-            parent: "folder2",
-        },
-        {
-            id: "file7",
-            type: "file",
-            name: "Lecture Notes - Week 1.pdf",
-            fileType: "pdf",
-            size: "450 KB",
-            uploadDate: "2025-01-19",
-            parent: "folder2",
-        },
-        {
-            id: "file8",
-            type: "file",
-            name: "Assignment 1 Template.docx",
-            fileType: "word",
-            size: "125 KB",
-            uploadDate: "2025-01-20",
-            parent: "folder3",
-        },
-        {
-            id: "file9",
-            type: "file",
-            name: "Dataset for Assignment 1.csv",
-            fileType: "csv",
-            size: "540 KB",
-            uploadDate: "2025-01-20",
-            parent: "folder3",
-        },
+            "fileID": 4,
+            "parentID": 21,
+            "fileName": "quiz",
+            "fileType": "pdf",
+            "fileSize": 194352,
+            "uploadDate": "2025-05-20T18:23:27.267"
+        }
     ]
-
+        
     // Estado para monitorear el folder actual
-    const [currentFolderId, setCurrentFolderId] = useState("root")
+    const [currentFolderId, setCurrentFolderId] = useState(-1)
 
-    // Encuentra un objeto en la lista de objetos de archivos y carpetas
-    const findItemById = (id) => {
-        return fileSystem.find((item) => item.id === id)
+    
+    // Itera cada objeto en filesSystem y toma el que tiene el id buscado
+    const findItemById = (currentFolder_id) => {
+        return fileSystem.find((item) => item.fileID === currentFolder_id)
+        
     }
 
     // Obtiene el folder actual (el objeto con los datos)
     const currentFolder = findItemById(currentFolderId)
 
-    // Get items in current folder
-    const folderItems = currentFolder.items.map((id) => findItemById(id))
+    // Se obtiene los hijos (objetos) de la carpeta actual (carpetas y archivos)
+    const folderItems = fileSystem.filter((archivoCarpeta) => archivoCarpeta.parentID === currentFolderId)
+    
 
     // Cambia la carpeta actual, para simular la salida o la entrada en una carpeta
     const navigateToFolder = (folderId) => {
@@ -146,14 +87,21 @@ const FileExplorer = ({ onBack }) => {
 
     // Cambia la carpeta actual, por el padre de la que es actual, para simular la salida de una carpeta (regresarse)
     const navigateToParent = () => {
-        if (currentFolder.parent) {
-            setCurrentFolderId(currentFolder.parent)
+        if (currentFolder.parentID) {
+            setCurrentFolderId(currentFolder.parentID)
         }
+    }
+
+    // Converso de Formato de tamaño de archivo
+    const formatFileSize = (bytes) => {
+        if (bytes < 1024) return bytes + " Bytes"
+        else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + " KB"
+        else return (bytes / 1048576).toFixed(1) + " MB"
     }
 
     // Para abrir archivos enviados por el api
     const handleFileClick = (file) => {
-    console.log(`Opening file: ${file.name}`)
+    console.log(`Opening file: ${file.fileName}`)
     // In a real app, this would open the file in the browser or download it
     // For browser-compatible files like PDFs, you might use:
     // window.open(fileUrl, '_blank')
@@ -183,65 +131,68 @@ const FileExplorer = ({ onBack }) => {
     return (
         <div className="file-explorer-container">
             {/* Header */}
-            <header className="header">
-                <div className="header-content">
-                    <div className="header-title">CE-Digital</div>
+            <header className="header-documents">
+                <div className="header-content-documents">
+                    <div className="header-title-documents">CE-Digital</div>
                     <div className="flex items-center gap-2">
-                        <div className="user-info">
-                            <span className="user-name">{user.name}</span>
-                            <span className="user-email">{user.email}</span>
+                        <div className="user-info-documents">
+                            <span className="user-name-documents">{AlmacenarInfo.getItem('studentInfo').firstName} {AlmacenarInfo.getItem('studentInfo').firstLastName}</span>
+                            <span className="user-email-documents">{AlmacenarInfo.getItem('studentInfo').email}</span>
                         </div>
-                        <div className="user-avatar">
+                        <div className="user-avatar-documents">
                             <User className="h-5 w-5 text-slate-600" />
                         </div>
                     </div>
                 </div>
             </header>
 
-            <div className="container mx-auto py-8 px-4">
+            <div className="container mx-auto py-8 px-15">
                 {/* Boton para volver */}
                 <Button
                     variant="ghost"
-                    className="back-button"
-                    
-                    >{/*onClick={onBack}*/}
+                    className="back-button-documents"
+                    onClick = {() => navigate(-1)}
+                    >
                     <ArrowLeft className="h-4 w-4" />
                     Volver
                 </Button>
 
-                <Card className="card">
-                    <CardHeader className="card-header">
-                        <CardTitle className="card-title">Nombre del curso</CardTitle>
+                <Card className="card-documents">
+                    <CardHeader className="card-header-documents">
+                        <CardTitle className="card-title-documents">Documentos - {AlmacenarInfo.getItem('currentCourse').courseName}</CardTitle>
                     </CardHeader>
 
-                    <CardContent className="card-content-container">
+                    <CardContent className="card-content-container-documents">
                         {/* Encabezado que muestra la carpeta actual y el boton para salir de una carpeta*/}
-                        <div className="nav-container">
+                        {currentFolderId !== -1?
+                        <div className="nav-container-documents">
                             <ArrowRight className="h-3 w-6" />
-                            <u className="user-name">{currentFolder.name}</u>
+                            <u className="user-name-documents">{currentFolder.fileName}</u>
 
-                            {currentFolder.parent && (
-                                <Button variant="ghost" size="sm" className="up-button" onClick={navigateToParent}>
+                            {(currentFolderId !== -1) && (
+                                <Button variant="ghost" size="sm" className="up-button-documents" onClick={navigateToParent}>
                                     <ArrowUp className="h-4 w-4 mr-1" />
                                     Anterior
                                 </Button>
                             )}
                         </div>
+                        : ""
+                        }
 
                         {/* Manejo de vista de carpetas */}
-                        {folderItems.filter((item) => item.type === "folder").length > 0 && (
-                        <div className="folders-section">
-                            <h3 className="folders-title">Folders</h3>
-                            <div className="folders-grid">
-                                {folderItems.filter((item) => item.type === "folder").map((folder) => (
+                        {folderItems.filter((item) => item.fileType === "folder").length > 0 && (
+                        <div className="folders-section-documents">
+                            <h3 className="folders-title-documents">Carpetas</h3>
+                            <div className="folders-grid-documents">
+                                {folderItems.filter((item) => item.fileType === "folder").map((folder) => (
                                     <Button
-                                        key={folder.id}
+                                        key={folder.fileID}
                                         variant="outline"
-                                        className="folder-button"
-                                        onClick={() => navigateToFolder(folder.id)}
+                                        className="folder-button-documents"
+                                        onClick={() => navigateToFolder(folder.fileID)}
                                     >
                                         <Folder className="h-5 w-5 mr-2 text-blue-500" />
-                                        <span>{folder.name}</span>
+                                        <span>{folder.fileName}</span>
                                     </Button>
                                 ))}
                             </div>
@@ -249,49 +200,46 @@ const FileExplorer = ({ onBack }) => {
                         )}
 
                         {/* Manejo de vista de archivos */}
-                        {folderItems.filter((item) => item.type === "file").length > 0 && (
-                        <div className="files-section">
-                            <h3 className="files-title">Files</h3>
-                            <div className="files-list">
-                            {folderItems
-                                .filter((item) => item.type === "file")
-                                .map((file, index) => (
-                                <div
-                                    key={file.id}
-                                    className={`file-item ${
-                                    index !== folderItems.filter((item) => item.type === "file").length - 1 ? "border-b" : ""
-                                    }`}
-                                >
-                                    <div className="file-info">
-                                        {getFileIcon(file.fileType)}
-                                        <span className="ml-2">{file.name}</span>
-                                        <span className="file-size">{file.size}</span>
+                        {folderItems.filter((item) => item.fileType !== "folder").length > 0 && (
+                        <div className="files-section-documents">
+                            <h3 className="files-title-documents">Archivos</h3>
+                            <div className="files-list-documents">
+                                {folderItems.filter((item) => item.fileType !== "folder")
+                                    .map((file, index) => (
+                                    <div
+                                        key={file.fileID}
+                                        className={`file-item-documents ${index !== folderItems.filter((item) => item.fileType !== "folder").length - 1 ? "border-b" : ""}`}
+                                    >
+                                        <div className="file-info-documents">
+                                            {getFileIcon(file.fileType)}
+                                            <span className="ml-2">{file.fileName}</span>
+                                            <span className="file-size-documents">{formatFileSize(file.fileSize)}</span>
+                                        </div>
+                                        <div className="flex items-center">
+                                            <span className="file-date-documents"> Subido: {new Date(file.uploadDate).toLocaleDateString()} {new Date(file.uploadDate).toLocaleTimeString()}</span>
+                                            {isViewableInBrowser(file.fileType) ? (
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    className="file-action-button-documents"
+                                                    onClick={() => handleFileClick(file)}
+                                                    >
+                                                    <ExternalLink className="h-4 w-4 mr-1" />
+                                                    Abrir
+                                                </Button>
+                                            ) : (
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    className="file-action-button-documents"
+                                                    onClick={() => handleFileClick(file)}
+                                                    >
+                                                    <Download className="h-4 w-4 mr-1" />
+                                                    Descargar
+                                                </Button>
+                                            )}
+                                        </div>
                                     </div>
-                                    <div className="flex items-center">
-                                        <span className="file-date">{file.uploadDate}</span>
-                                        {isViewableInBrowser(file.fileType) ? (
-                                            <Button
-                                                variant="ghost"
-                                                size="sm"
-                                                className="file-action-button"
-                                                onClick={() => handleFileClick(file)}
-                                                >
-                                                <ExternalLink className="h-4 w-4 mr-1" />
-                                                Open
-                                            </Button>
-                                        ) : (
-                                            <Button
-                                                variant="ghost"
-                                                size="sm"
-                                                className="file-action-button"
-                                                onClick={() => handleFileClick(file)}
-                                                >
-                                                <Download className="h-4 w-4 mr-1" />
-                                                Download
-                                            </Button>
-                                        )}
-                                    </div>
-                                </div>
                                 ))}
                             </div>
                         </div>
@@ -299,7 +247,7 @@ const FileExplorer = ({ onBack }) => {
 
                         {/* Cuando la carpeta está vacía */}
                         {folderItems.length === 0 && (
-                        <div className="empty-folder">This folder is empty.</div>
+                            <div className="empty-folder-documents">Esta carpeta está vacía.</div>
                         )}
                     </CardContent>
                 </Card>

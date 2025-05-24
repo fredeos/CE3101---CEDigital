@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import { useNavigate } from 'react-router-dom';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -8,15 +9,22 @@ import {AlmacenarInfo} from '../sessionStorage/sessionStorage.js'
 
 const StudentRecord = ({ onBack }) => {
 
+  const navigate = useNavigate();
+
   // Se guarda la información de semestres y cursos del estudiante temporalmente
   const [academicRecord, setAcademicRecord] = useState([])
-  
+
   // se manejan errores
   const [error, setError] = useState(null);
+  
+  /*
+  useEffect(() => {
+    console.log(academicRecord);
+  },[academicRecord])
+  */
 
   useEffect(() => {
     setError(null);
-    
     const fetchAcademicRecord = async () => {
       try {
         const studentInfo = AlmacenarInfo.getItem('studentInfo');
@@ -35,7 +43,6 @@ const StudentRecord = ({ onBack }) => {
         }
         
       } catch (err) {
-          showNotification("Ha ocurrido un error en el servidor. Por favor intente de nuevo más tarde.", true)
           setError(err.message);
       } finally {
           
@@ -69,22 +76,23 @@ const StudentRecord = ({ onBack }) => {
       return acc; // ¡Importante! Retornar el acumulador en cada iteración.
     }, {});
 
-    // Convertir el objeto a array y actualizar el estado
+    // Convertir el objeto a array para mostrarlo y almacenar la información en localStorage
     setAcademicRecord(Object.values(groupedBySemester));
-    AlmacenarInfo.setItem('semestreCursos',groupedBySemester); // guarda la información de los curso por semestres en un localStorage
+    //AlmacenarInfo.setItem('semesterCourses',Object.values(groupedBySemester)); // guarda la información de los curso por semestres en un localStorage
+
   };
-
-
-  // Function to handle course click - in a real app, this would navigate to the course page
-  const handleCourseClick = (courseId) => {
-    console.log(`Navigating to course: ${courseId}`)
-    // In a real app: navigate(`/courses/${courseId}`) or similar
+ 
+  // Función para manejar el click sobre algun curso en específico y navegar a la siguiente vista
+  const handleCourseClick = (semesterID_in, courseId_in) => {
+    const semester = academicRecord.find(sem => sem.semesterID === semesterID_in);  // se halla el semestre concreto y sus cursos
+    const course = semester.courses.find(course_t => course_t.id === courseId_in);  // se halla el curso concreto buscado de ese semestre buscado
+    AlmacenarInfo.setItem('currentCourse', course); // se almacena la información del curso que el usuario presionó
+    navigate('/dashboard-curso-estudiantes');
   }
 
   // Function to handle back button click
   const handleBackClick = () => {
-    console.log("Going back to previous view")
-    if (onBack) onBack()
+    navigate(-1);
   }
 
   return (
@@ -111,7 +119,7 @@ const StudentRecord = ({ onBack }) => {
           onClick={handleBackClick}
         >
           <ArrowLeft className="h-4 w-4" />
-          Back
+          Cerrar sesión
         </Button>
         <CardHeader className="student-record-card-header">
           <CardTitle className="student-record-card-title">Cursos</CardTitle>
@@ -135,7 +143,7 @@ const StudentRecord = ({ onBack }) => {
                           key={course.id}
                           variant="outline"
                           className="student-record-course-button"
-                          onClick={() => handleCourseClick(course.id)}
+                          onClick={() => handleCourseClick(semester.semesterID, course.id)}
                         >
                           <div className="student-record-course-info">
                             <span className="student-record-course-name">{course.courseName}</span>

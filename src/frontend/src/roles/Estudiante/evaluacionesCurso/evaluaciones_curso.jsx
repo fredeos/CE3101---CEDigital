@@ -1,237 +1,152 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { Navigate, useNavigate } from "react-router-dom";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft, User, FileText } from "lucide-react"
 import "./evaluaciones_curso.css"
+import {AlmacenarInfo} from '../sessionStorage/sessionStorage.js'
 
 const AssignmentsView = ({ onBack }) => {
-    // Ejemplo de datos del usuario
-    const user = {
-        name: "Alex Piedra",
-        email: "alex.piedra@estudiantec.cr",
-        studentId: "U2023456",
-    }
+
+    const navigate = useNavigate();
 
     // Ejemplo de estructura de datos que será enviada por el api
-    const [assignmentCategories, setAssignmentCategories] = useState([
-        {
-        id: "proyectos",
-        name: "Proyectos",
-        totalPercentage: 35,
-        earnedPercentage: 27,
-        showPercentage: true,
-        assignments: [
-            {
-                id: "Proyecto 1",
-                name: "Proyecto 1: Diseño de base de datos",
-                dueDate: "2025-02-15",
-                totalPercentage: 15,
-                earnedPercentage: 13,
-                showPercentage: true
-            },
-            {
-                id: "proyecto2",
-                name: "Proyecto 2: Implementación de API",
-                dueDate: "2025-03-20",
-                totalPercentage: 20,
-                earnedPercentage: 14,
-                showPercentage: true
-            }
-        ]},
-        {
-        id: "quices",
-        name: "Quices",
-        totalPercentage: 15,
-        earnedPercentage: 12,
-        showPercentage: true,
-        assignments: [
-            {
-                id: "quiz1",
-                name: "Quiz 1: Diagrama conceptual",
-                dueDate: "2025-01-25",
-                totalPercentage: 5,
-                earnedPercentage: 4,
-                showPercentage: true
-            },
-            {
-                id: "quiz2",
-                name: "Quiz 2: Mapeo al diagrama relacional",
-                dueDate: "2025-02-25",
-                totalPercentage: 5,
-                earnedPercentage: 4,
-                showPercentage: true
-            },
-            {
-                id: "quiz3",
-                name: "Quiz 3:  Diagrama relacional",
-                dueDate: "2025-03-25",
-                totalPercentage: 5,
-                earnedPercentage: 4,
-                showPercentage: false
-            }
-        ]},
-        {
-        id: "examenes",
-        name: "Exámenes",
-        totalPercentage: 30,
-        earnedPercentage: 24,
-        showPorcentage: false,
-        assignments: [
-            {
-                id: "examen1",
-                name: "Examen 1",
-                dueDate: "2025-03-01",
-                totalPercentage: 15,
-                earnedPercentage: 12,
-                showPercentage: false
-            },
-            {
-                id: "examen2",
-                name: "Examen 2",
-                dueDate: "2025-05-15",
-                totalPercentage: 15,
-                earnedPercentage: 12,
-                showPercentage: false
-            }
-        ]},
-        {
-        id: "tareas",
-        name: "Tareas",
-        totalPercentage: 20,
-        earnedPercentage: 18,
-        showPercentage: false,
-        assignments: [
-            {
-                id: "tarea1",
-                name: "Tarea 1",
-                dueDate: "2025-01-20",
-                totalPercentage: 5,
-                earnedPercentage: 5,
-                showPercentage: false
-            },
-            {
-                id: "tarea2",
-                name: "Tarea 2",
-                dueDate: "2025-02-10",
-                totalPercentage: 5,
-                earnedPercentage: 4.5,
-                showPercentage: true
-            },
-            {
-                id: "tarea3",
-                name: "Tarea 3",
-                dueDate: "2025-03-10",
-                totalPercentage: 5,
-                earnedPercentage: 4.5,
-                showPercentage: false
-            },
-            {
-                id: "tarea4",
-                name: "Tarea 4",
-                dueDate: "2025-04-10",
-                totalPercentage: 5,
-                earnedPercentage: 4,
-                showPercentage: false
-            }
-        ]}
-    ])
+    const [assignmentCategories, setAssignmentCategories] = useState([])
 
-    // Calculate total grade
-    const totalCoursePercentage = assignmentCategories.reduce((total, category) => total + category.totalPercentage, 0)
+    // se manejan errores
+    const [error, setError] = useState(null);
+        
+    // Maneja la solicitud de la información apenas se despliega la vista
+    useEffect(() => {
+        setError(null);
+        const fetchAssigmentCategories = async () => {
+            try {
+                const currentCourse = AlmacenarInfo.getItem('currentCourse');
+                const studentInfo = AlmacenarInfo.getItem('studentInfo');
+                const encodedCourseId = encodeURIComponent(currentCourse.id);   // se obtiene el id del grupo del curso
+                const encodedStudentId = encodeURIComponent(studentInfo.studentID);  // se obtiene el id del estudiante
+
+                const response = await fetch(`http://localhost:5039/api/assignments/group/${encodedCourseId}/student/${encodedStudentId}`);
+                
+                if (!response.ok) {
+                    // Manejo específico por código de estado
+                    if (response.status === 404) {
+                    throw new Error('Error al cargar el registro de evaluaciones del curso');
+                    }
+                }else{
+                    const data = await response.json();
+                    setAssignmentCategories(data);
+                }
+                
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                
+          }
+        }
+    
+        fetchAssigmentCategories();
+    },[]);
+
+
+    // Calcular la nota final del curso para mostrarla
     const totalEarnedPercentage = assignmentCategories.reduce((total, category) => total + category.earnedPercentage, 0)
 
-    // Función para manejar las evaluaciones dentro de los rubros
+    // Función para manejar el click sobre alguna evaluación en específico y navegar a la siguiente vista (información de la evaluación)
     const handleAssignmentClick = (assignmentId) => {
-        console.log(`Navigating to assignment: ${assignmentId}`)
+        AlmacenarInfo.setItem('currentAssignmentID', assignmentId); // se almacena la información del curso que el usuario presionó
+        console.log(AlmacenarInfo.getItem('currentAssignmentID'));  // Se almacena el ID nada mas, que es solo lo necesario
+        navigate("/asignacion-curso-estudiantes");
     }
-
+    
     return (
         <div className="assignments-view-container">
-        {/* Header */}
-        <header className="assignments-view-header">
-            <div className="header-container">
-            <div className="header-title">CE-Digital</div>
-            <div className="user-info">
-                <div className="user-details">
-                    <span className="user-name">{user.name}</span>
-                    <span className="user-email">{user.email}</span>
-                </div>
-                <div className="user-icon">
-                    <User className="icon" />
-                </div>
-            </div>
-            </div>
-        </header>
-        
-        <div className="main-content">
-            {/* Botón para volver */}
-            <Button
-                variant="ghost"
-                className="back-button"
-                onClick={onBack}
-            >
-                <ArrowLeft className="button-icon" />
-                Volver
-            </Button>
-
-            <Card className="assignments-card">
-                <CardHeader className="card-header">
-                    <CardTitle className="card-title">Evaluaciones</CardTitle>
-                </CardHeader>
-                <CardContent className="card-content">
-                    <Accordion type="multiple" className="accordion">
-                        {assignmentCategories.map((category) => (
-                        <AccordionItem key={category.id} value={category.id}>
-                            <AccordionTrigger className="accordion-trigger">
-                                <div className="category-header">
-                                    <div className="category-name">{category.name}</div>
-                                    <div className="category-percentage">
-                                        <span className="earned">{category.showPercentage ? category.earnedPercentage : "--"}</span>
-                                        <span className="total"> / {category.totalPercentage}</span>
-                                    </div>
-                                </div>
-                            </AccordionTrigger>
-                            <AccordionContent className="accordion-content">
-                                <div className="assignments-list">
-                                    {category.assignments.map((assignment) => (
-                                        <Button
-                                            key={assignment.id}
-                                            variant="outline"
-                                            className="assignment-button"
-                                            onClick={() => handleAssignmentClick(assignment.id)}
-                                        >
-                                            <div className="assignment-info">
-                                                <div className="assignment-title">
-                                                    <FileText className="assignment-icon" />
-                                                    <span className="name">{assignment.name}</span>
-                                                </div>
-                                                <span className="limit-date">Fecha límite: {assignment.dueDate}</span>
-                                            </div>
-                                            <div className="assignment-grade">
-                                                <span className="earned">{assignment.showPercentage ? assignment.earnedPercentage : "--"}</span>
-                                                <span className="total"> / {assignment.totalPercentage}</span>
-                                            </div>
-                                        </Button>
-                                    ))}
-                                </div>
-                            </AccordionContent>
-                        </AccordionItem>
-                        ))}
-                    </Accordion>
-
-                    {/* Nota final */}
-                    <div className="final-grade-header">
-                        <div className="grade-title">Nota final</div>
-                        <div className="grade-display">
-                            <span className="earned">{totalEarnedPercentage}</span>
-                            <span className="total"> / {totalCoursePercentage}</span>
+            {/* Headers */}
+            <header className="assignments-view-header">
+                <div className="header-container-categories">
+                    <div className="header-title-categories">CE-Digital</div>
+                    <div className="user-info-categories">
+                        <div className="user-details-categories">
+                            <span className="user-name-categories">{AlmacenarInfo.getItem('studentInfo').firstName} {AlmacenarInfo.getItem('studentInfo').firstLastName}</span>
+                            <span className="user-email-categories">{AlmacenarInfo.getItem('studentInfo').email}</span>
+                        </div>
+                        <div className="user-icon-categories">
+                            <User className="icon-categories" />
                         </div>
                     </div>
-                    
-                </CardContent>
-            </Card>
-        </div>
+                </div>
+            </header>
+            
+            <div className="main-content-categories">
+                {/* Botón para volver */}
+                <Button
+                    variant="ghost"
+                    className="back-button-categories"
+                    onClick = {() => navigate(-1)}
+                >
+                    <ArrowLeft className="button-icon-categories" />
+                    Volver
+                </Button>
+
+                <Card className="assignments-card-categories">
+                    <CardHeader className="card-header-categories">
+                        <CardTitle className="card-title-categories"> Evaluaciones - {AlmacenarInfo.getItem('currentCourse').courseName} </CardTitle>
+                    </CardHeader>
+                    <CardContent className="card-content-categories">
+                        <Accordion type="multiple" className="accordion-categories">
+                            {/* Se intera sobre los rubros de evaluación (Assignment Categories)*/}
+                            {assignmentCategories.map((category) => (
+                                <AccordionItem key={category.id} value={category.id}>
+                                    <AccordionTrigger className="accordion-trigger-categories">
+                                        <div className="category-header">
+                                            <div className="category-name">{category.name}</div>
+                                            <div className="category-percentage">
+                                                <span className="earned-percentage-categories">{category.earnedPercentage ? category.earnedPercentage : "--"}</span>
+                                                <span className="total-percentage-categories"> / {category.totalPercentage}</span>
+                                            </div>
+                                        </div>
+                                    </AccordionTrigger>
+                                    <AccordionContent className="accordion-content-categories">
+                                        <div className="assignments-list-categories">
+                                            {category.assignments.map((assignment) => (
+                                                <Button
+                                                    key={assignment.id}
+                                                    variant="outline"
+                                                    className="assignment-button-categories"
+                                                    onClick={() => handleAssignmentClick(assignment.id)}
+                                                >
+                                                    <div className="assignment-info-categories">
+                                                        <div className="assignment-title-categories">
+                                                            <FileText className="assignment-icon-categories" />
+                                                            <span className="name-assigment-categories">{assignment.name}</span>
+                                                        </div>
+                                                        <span className="limit-date-assigment-categories">Fecha límite: {new Date(assignment.dueDate).toLocaleDateString()} {new Date(assignment.dueDate).toLocaleTimeString()}</span>
+                                                    </div>
+                                                    <div className="assignment-grade-categories">
+                                                        <span className="earned-percentage-categories">{assignment.showPercentage ? assignment.earnedPercentage : "--"}</span>
+                                                        <span className="total-percentage-categories"> / {assignment.totalPercentage}</span>
+                                                    </div>
+                                                </Button>
+                                            ))}
+                                        </div>
+                                    </AccordionContent>
+                                </AccordionItem>
+                                ))}
+                            </Accordion>
+
+                        {/* Nota final */}
+                        <div className="final-grade-header-categories">
+                            <div className="grade-title-categories">Nota final</div>
+                            <div className="grade-display-categories">
+                                <span className="earned-percentage-categories">{totalEarnedPercentage}</span>
+                                <span className="total-percentage-categories"> / 100</span>
+                            </div>
+                        </div>
+                        
+                    </CardContent>
+                </Card>
+            </div>
         </div>
     )
 }
