@@ -35,6 +35,44 @@ namespace backend.controllers
             return PhysicalFile(feedback_file.Path!, content_type, feedback_file.Name + "." + feedback_file.Extension);
         }
 
+
+        /// <summary>
+        /// Descargar el archivo de retroalimentacion asociado a una entrega.
+        /// </summary>
+        /// <param name="submission_id"></param>
+        /// <returns></returns>
+        [HttpGet("download/by-submission/{submission_id}")]
+        public IActionResult DownloadFeedbackBySubmission(int submission_id)
+        {
+            // 1. Obtener el ID del feedback asociado a la entrega
+            string sql_query_feedback_id = @$"
+                SELECT feedback_file as FeedbackID
+                FROM Academic.AssignmentSubmissions
+                WHERE id = {submission_id}";
+
+            var feedback_id_obj = db.sql_db!.SELECT<dynamic>(sql_query_feedback_id).FirstOrDefault();
+            if (feedback_id_obj == null || feedback_id_obj?.FeedbackID == null)
+                return NotFound($"No feedback associated with submission_id={submission_id}");
+
+            int feedback_id = feedback_id_obj?.FeedbackID;
+
+            // 2. Obtener el archivo de feedback usando ese ID
+            string sql_query = @$"
+                SELECT F.id as {nameof(Feedback.ID)}, F.submission_id as {nameof(Feedback.AssigmentSubmissionID)},
+                    F.file_name as {nameof(Feedback.Name)}, F.file_type as {nameof(Feedback.Extension)},
+                    F.size as {nameof(Feedback.Size)}, F.feedback_file as {nameof(Feedback.Path)},
+                    F.upload_date as {nameof(Feedback.UploadDate)}
+                FROM Files.FeedbackFiles as F
+                WHERE F.id = {feedback_id}";
+
+            var feedback_file = db.sql_db!.SELECT<Feedback>(sql_query).FirstOrDefault();
+            if (feedback_file == null)
+                return NotFound($"Feedback file(ID={feedback_id}) not found");
+
+            string content_type = "application/octet-stream";
+            return PhysicalFile(feedback_file.Path!, content_type, feedback_file.Name + "." + feedback_file.Extension);
+        }
+
         // ------------------------------------------ Metodos POST ------------------------------------------
         [HttpPost("upload/{group_id}/{assignment_id}/{submission_id}")]
         public async Task<ActionResult<Feedback>> UploadFeedback(int group_id, int assignment_id, int submission_id, IFormFile feedback_file)

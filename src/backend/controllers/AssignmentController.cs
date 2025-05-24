@@ -193,6 +193,14 @@ namespace backend.controllers
             }
         }
 
+        /// <summary>
+        /// Obtiene las calificaciones de un rubro para un estudiante específico, considerando 
+        /// las notas obtenidas en las asignaciones.
+        /// </summary>
+        /// <param name="student_id"></param>
+        /// <param name="group_id"></param>
+        /// <returns></returns>
+        
         [HttpGet("assignments/group/{group_id}/student/{student_id}")]
         public ActionResult<IEnumerable<RubricWithAssignmentsDTO>> GetAssignmentsPerRubricForStudent(int student_id, int group_id)
         {
@@ -247,12 +255,18 @@ namespace backend.controllers
                     } 
                 });
 
+                if (rubric.Assignments == null)
+                {
+                    rubric.Assignments = new List<AssignmentForStudentDTO>();
+                }
+
                 rubric.Assignments.AddRange(assignments);
                 if (show_rubric_percentage)
                 {
+                    rubric.EarnedPercentage = 0;
                     foreach (var assignment in rubric.Assignments)
                     {
-                        if (assignment.EarnedGrade != null)
+                        if (assignment.EarnedGrade != null && assignment.ShowPercentage == 1)
                         {
                             rubric.EarnedPercentage += assignment.EarnedPercentage;
                         }
@@ -262,8 +276,94 @@ namespace backend.controllers
 
             return Ok(rubrics_list);
         }
+
+        /// <summary>
+        /// Obtiene el reporte de calificaciones por estudiante para un grupo específico.
+        /// Incluye las asignaciones y sus respectivas calificaciones.
+        /// </summary>
+        /// <param name="student_id"></param>
+        /// <param name="group_id"></param>
+        /// <returns></returns>
+        
+        [HttpGet("assignments/GradeReportPerStudent/{group_id}/{student_id}")]
+        public ActionResult<IEnumerable<RubricWithAssignmentsDTO>> GradeReportPerStudent(int student_id, int group_id)
+        {
+            List<RubricWithAssignmentsDTO> rubrics_list = [];
+            // Buscar todas las rubricas del grupo
+            string sql_query1 = $@"
+            SELECT  R.id as {nameof(RubricWithAssignmentsDTO.ID)}, R.rubric_name as {nameof(RubricWithAssignmentsDTO.Name)},
+                    R.percentage as {nameof(RubricWithAssignmentsDTO.TotalPercentage)}
+            FROM Academic.Groups as G JOIN Academic.Rubrics as R ON G.id = R.group_id
+            WHERE G.id = {group_id}; ";
+            var rubrics = db.sql_db!.SELECT<RubricWithAssignmentsDTO>(sql_query1);
+            rubrics.ForEach(r =>
+            {
+                r.Assignments = [];
+            });
+            rubrics_list.AddRange(rubrics);
+
+            //bool show_rubric_percentage = false;
+            foreach (var rubric in rubrics_list) // Buscar las asignaciones en cada rubro 
+            {   
+                // Buscar todas las asignaciones de cada rubrica para el estudiante en cuestion
+                string sql_query2 = $@"
+                SELECT  A.id as {nameof(AssignmentForStudentDTO.ID)}, A.name as {nameof(AssignmentForStudentDTO.Name)},
+                        A.percentage as {nameof(AssignmentForStudentDTO.TotalPercentage)}, A.turnin_date as {nameof(AssignmentForStudentDTO.DueDate)}
+                FROM Academic.Assignments as A JOIN Academic.StudentAssignments as S
+                ON A.id = S.assignment_id
+                WHERE S.student_id = {student_id} AND A.rubric_id = {rubric.ID}";
+                var assignments = db.sql_db!.SELECT<AssignmentForStudentDTO>(sql_query2);
+
+                // Buscar si existen un entregable para cada asignacion
+                assignments.ForEach(a =>
+                {
+                    a.ShowPercentage = 0;
+                    string sql_query3 = $@"
+                    SELECT SUB.grade as {nameof(AssignmentSubmission.grade)}, SUB.published_flag as {nameof(AssignmentSubmission.Published)}
+                    FROM (Academic.AssignmentSubmissions as SUB JOIN Academic.StudentSubmissions as SS ON SS.submission_id = SUB.id)
+                    JOIN Academic.Assignments as A ON SUB.assignment_id = A.id
+                    WHERE SUB.assignment_id = {a.ID} AND SS.student_id = {student_id}";
+                    var assignment_submission = db.sql_db!.SELECT<AssignmentSubmission>(sql_query3).FirstOrDefault();
+                    if (assignment_submission != null)
+                    {
+                        a.EarnedGrade = assignment_submission.grade;
+                        a.ShowPercentage = assignment_submission.Published;
+                        if (a.EarnedGrade != null)
+                        {
+                            a.EarnedPercentage = (a.EarnedGrade / 100) * a.TotalPercentage;
+                        }
+                    } 
+                });
+
+                if (rubric.Assignments == null)
+                {
+                    rubric.Assignments = new List<AssignmentForStudentDTO>();
+                }
+                
+                rubric.Assignments.AddRange(assignments);
+
+                rubric.EarnedPercentage = 0;
+                foreach (var assignment in rubric.Assignments)
+                {
+                    if (assignment.EarnedGrade != null)
+                    {
+                        rubric.EarnedPercentage += assignment.EarnedPercentage;
+                    }
+                }
+            }
+
+            return Ok(rubrics_list);
+        }
         
 
+        /// <summary>
+        /// Obtiene la información completa de una asignación para un estudiante específico.
+        /// Incluye detalles como la fecha de entrega, calificaciones, retroalimentación y especificaciones.
+        /// </summary>
+        /// <param name="assignment_id"></param>
+        /// <param name="student_id"></param>
+        /// <returns></returns>
+        
         [HttpGet("assigments/{assignment_id}/forstudent/{student_id}")]
         public ActionResult<StudentViewFullAssignmentDTO> GetFullAssignmentInformation(int assignment_id, int student_id)
         {
