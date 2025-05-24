@@ -18,6 +18,66 @@ namespace backend.controllers
             public int Number { get; set; }
             public List<int> StudentIDs { get; set; } = [];
         }
+        
+        /// <summary>
+        /// Obtiene todos los grupos de una asignación específica.
+        /// Primero obtiene todos los grupos de la asignación y luego busca los estudiantes
+        /// </summary>
+        /// <param name="assignmentId"></param>
+        /// <returns></returns>
+        
+        [HttpGet("by-assignment/{assignmentId}")]
+        public IActionResult GetGroupsByAssignment(int assignmentId)
+        {
+            // 1. Obtener todos los grupos de la asignación
+            var sqlGroups = $@"
+                SELECT id, group_num 
+                FROM Academic.AssignmentGroups 
+                WHERE assignment_id = {assignmentId}";
+            var groups = db.sql_db!.SELECT<dynamic>(sqlGroups);
+
+            if (groups.Count == 0)
+                return NotFound("No hay grupos para esta asignación.");
+
+            // 2. Obtener todos los estudiantes de esos grupos
+            var groupIds = string.Join(",", groups.Select(g => g.id));
+            var sqlStudents = $@"
+                SELECT student_id, group_id 
+                FROM Academic.AssignmentStudentGroups 
+                WHERE group_id IN ({groupIds})";
+            var studentGroupLinks = db.sql_db!.SELECT<dynamic>(sqlStudents);
+
+            // 3. Obtener IDs únicos de estudiantes
+            var studentIds = studentGroupLinks.Select(sg => (int)sg.student_id).Distinct().ToList();
+
+            // 4. Consultar Mongo para obtener los datos de los estudiantes
+            var mongoStudentsAll = db.mongo_db!.find<dynamic>(
+                "Students",
+                s => true // Obtener todos los estudiantes
+            );
+            var mongoStudents = mongoStudentsAll
+                .Where(s => studentIds.Contains((int)s.id))
+                .ToList();
+
+            // 5. Armar la respuesta
+            var result = groups.Select(g => new {
+                GroupID = g.id,
+                Number = g.group_num,
+                Students = studentGroupLinks
+                    .Where(sg => sg.group_id == g.id)
+                    .Select(sg => {
+                        var student = mongoStudents.FirstOrDefault(ms => ms.id == sg.student_id);
+                        return student == null ? null : new {
+                            ID = student.id,
+                            FullName = $"{student.Fname} {student.Lname1} {student.Lname2}"
+                        };
+                    })
+                    .Where(s => s != null)
+                    .ToList()
+            });
+
+            return Ok(result);
+        }
 
         /// <summary>
         /// Crea un grupo de estudiantes para una asignación específica.
@@ -26,7 +86,7 @@ namespace backend.controllers
         /// </summary>
         /// <param name="dto"></param>
         /// <returns></returns>
-    
+
         [HttpPost]
         public IActionResult CreateGroupWithStudents([FromBody] CreateGroupWithStudentsDto dto)
         {
