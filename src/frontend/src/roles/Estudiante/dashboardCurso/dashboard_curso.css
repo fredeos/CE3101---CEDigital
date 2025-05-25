@@ -1,0 +1,219 @@
+
+/*Se modifica el body para el dashboard*/
+body {
+  margin: 0;
+  display: block;
+  place-items: stretch;
+  min-width: 100%;
+  min-height: 100vh;
+}
+
+/* Estilos generales del dashboard */
+.curso-dashboard{
+  min-height: 100vh;
+  background-color: var(--muted-40);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Estilos del header */
+.curso-header {
+  background-color: white;
+  border-bottom: 1px solid #e2e8f0;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  padding: 1rem 1.5rem;
+}
+
+.dashboard-header-curso-content {
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.header-logo-icon {
+  height: 1.5rem;
+  width: 1.5rem;
+  color: #2563eb; /* blue-600 */
+}
+
+.header-title {
+  font-weight: 700;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
+
+/* Estilo para la información del usuario arriba a la derecha*/
+.user-info-container-dashboard {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.user-info-dashboard {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.user-name-dashboard {
+  font-weight: 500;
+}
+
+.user-email-dashboard {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.dashboard-user-avatar {
+  background-color: rgb(241 245 249);
+  padding: 0.5rem;
+  border-radius: 9999px;
+}
+ 
+
+/*Estilo del boton de volver*/
+.dashboard-back-button-container{
+  display: flex;
+  align-items: flex-start;
+  padding-left: 40px;
+}
+
+.dashboard-back-button {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.25rem;
+  color: rgb(71 85 105);
+
+}
+
+/* Estilos del contenido principal */
+.curso-main {
+  flex: 1;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.main-container {
+  width: 100%;
+  max-width: 72rem; /* 6xl */
+}
+
+.dashboard-title {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+/* Estilos de la grilla de opciones */
+.options-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .options-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .options-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Estilos de las tarjetas de opción */
+.option-card {
+  transition: box-shadow 0.3s ease;
+  cursor: pointer;
+  border-width: 2px;
+}
+
+.option-card:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border-color: #bfdbfe; /* blue-200 */
+}
+
+.card-content {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.icon-container {
+  border-radius: 9999px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.icon-container-blue {
+  background-color: #dbeafe; /* blue-100 */
+  color: #1d4ed8; /* blue-700 */
+}
+
+.icon-container-green {
+  background-color: #dcfce7; /* green-100 */
+  color: #15803d; /* green-700 */
+}
+
+.icon-container-purple {
+  background-color: #f3e8ff; /* purple-100 */
+  color: #7e22ce; /* purple-700 */
+}
+
+.icon-container-amber {
+  background-color: #fef3c7; /* amber-100 */
+  color: #b45309; /* amber-700 */
+}
+
+.icon-container-rose {
+  background-color: #ffe4e6; /* rose-100 */
+  color: #be123c; /* rose-700 */
+}
+
+.icon-container-cyan {
+  background-color: #cffafe; /* cyan-100 */
+  color: #0e7490; /* cyan-700 */
+}
+
+.icon-container-slate {
+  background-color: #f1f5f9; /* slate-100 */
+  color: #334155; /* slate-700 */
+}
+
+.option-icon {
+  height: 2rem;
+  width: 2rem;
+}
+
+.option-title {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.option-description {
+  color: var(--muted-foreground);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
