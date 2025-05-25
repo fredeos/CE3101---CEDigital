@@ -26,6 +26,19 @@ if (app.Environment.IsDevelopment()){
     app.UseSwaggerUI();
 }
 
+app.UseCors(builder => builder
+   .WithOrigins("http://localhost:5173", "http://localhost:8081")
+   .AllowAnyMethod()
+   .AllowAnyHeader()
+   .AllowCredentials());
+
+// app.UseCors(builder => builder
+//     .WithOrigins("http://localhost:5173", "http://localhost:5174")
+//     .AllowAnyMethod()
+//     .AllowAnyHeader()
+//     .AllowCredentials());
+ 
+
 app.UseHttpsRedirection();
 app.MapControllers();
 
