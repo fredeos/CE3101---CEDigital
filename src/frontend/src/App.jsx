@@ -10,12 +10,20 @@ import ProfessorLogin from './roles/Profesor/pages/Login';
 import estudianteRoutes from './routes/estudianteRoutes';
 import EstudianteLogin from './roles/Estudiante/loginEstudiante/login_estudiante';
 
+// Rutas de la vista admin
+import adminRoutes from './routes/adminRoutes';
+import AdminLogin from './roles/Admin/pages/LoginAdmin';
+
 
 function App() {
   return (
 
     <Routes>
-      {/* Rutas de la vista del administrador*/}
+      {/* Login administrador */}
+        <Route path="/cedigital-admin" element={<AdminLogin />} />
+        {adminRoutes.map((route) => (
+          <Route key={route.path} path={route.path} element={route.element} />
+        ))}
 
 
       {/* Rutas de la vista del profesor (ProfessorHome)*/}
