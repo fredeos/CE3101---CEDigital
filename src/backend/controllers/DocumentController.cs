@@ -35,8 +35,10 @@ namespace backend.controllers
                 Console.WriteLine($"(HTTP)(GET={nameof(DownloadFile)}) File (ID={file_id}) not found in group (ID={group_id})");
                 return NotFound($"File (ID={file_id}) not found in group (ID={group_id})");
             }
+
+            string true_document_path = Path.Combine(_env.WebRootPath ?? _env.ContentRootPath, document.Path);
             string content_type = "application/octet-stream";
-            return PhysicalFile(document.Path, content_type, document.Name + "." + document.Extension);
+            return PhysicalFile(true_document_path, content_type, document.Name + "." + document.Extension);
         }
 
         // ------------------------------------------ Metodos POST ------------------------------------------
@@ -50,13 +52,19 @@ namespace backend.controllers
                 return BadRequest("Server received no files or something went wrong");
             }
 
+            string folder_identification = $"F.id = {folder_id}";
+            if (folder_id <= 0)
+            {
+                folder_identification = "F.parent_id is NULL";
+            }
+
             // Validar que el grupo y la carpeta existen
             string sql_query1 = $@"
             SELECT  F.id as {nameof(Folder.ID)}, F.group_id as {nameof(Folder.GroupID)},
                     F.parent_id as {nameof(Folder.ParentFolderID)}, F.folder_name as {nameof(Folder.Name)},
                     F.upload_date as {nameof(Folder.CreationDate)}
             FROM Files.Folders as F JOIN Academic.Groups as G ON F.group_id = G.id
-            WHERE F.id = {folder_id} AND G.id = {group_id}; ";
+            WHERE {folder_identification} AND G.id = {group_id}; ";
 
             var folder = db.sql_db!.SELECT<Folder>(sql_query1).FirstOrDefault();
             if (folder == null)
@@ -66,7 +74,8 @@ namespace backend.controllers
             }
 
             // Guardar los archivos en el servidor
-            string documents_path = Path.Combine(_env.WebRootPath ?? _env.ContentRootPath, "content", "documents");
+            // string documents_path = Path.Combine(_env.WebRootPath ?? _env.ContentRootPath, "content", "documents");
+            string documents_path = Path.Combine("content", "documents");
             string sql_query2 = $@"
             INSERT INTO Files.Documents (folder_id, file_name, file_type, size, filepath)
             OUTPUT  INSERTED.id as {nameof(Document.ID)}, INSERTED.folder_id as {nameof(Document.FolderID)},
@@ -104,7 +113,7 @@ namespace backend.controllers
                         };
                         documents.Add(inserted_file);
 
-                        using (var stream = System.IO.File.Create(inserted.Path))
+                        using (var stream = System.IO.File.Create(Path.Combine(_env.WebRootPath ?? _env.ContentRootPath, inserted.Path)))
                         {
                             await file.CopyToAsync(stream);
                         }
@@ -135,12 +144,12 @@ namespace backend.controllers
             OUTPUT  INSERTED.id as {nameof(FileDTO.FileID)}, INSERTED.folder_id as {nameof(FileDTO.ParentID)},
                     INSERTED.file_name as {nameof(FileDTO.FileName)}, INSERTED.file_type as {nameof(FileDTO.FileType)},
                     INSERTED.size as {nameof(FileDTO.FileSize)}, INSERTED.upload_date as {nameof(FileDTO.UploadDate)}
-            WHERE id = {file_id}; ";
+            WHERE id = {file_id};  ";
 
             var updated = db.sql_db!.UPDATE<FileDTO>(sql_query, file).FirstOrDefault();
             if (updated == null)
             {
-                return NotFound();
+                return NotFound($"File(ID={file_id}) was not found in the database for updating");
             }
             return Ok(updated);
         }
@@ -175,9 +184,10 @@ namespace backend.controllers
                 };
                 files.Add(file);
 
-                if (System.IO.File.Exists(document.Path))
+                string path_to_file = Path.Combine(_env.WebRootPath ?? _env.ContentRootPath, document.Path);
+                if (System.IO.File.Exists(path_to_file))
                 {
-                    System.IO.File.Delete(document.Path);
+                    System.IO.File.Delete(path_to_file);
                 }
             }
 

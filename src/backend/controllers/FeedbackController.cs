@@ -31,8 +31,9 @@ namespace backend.controllers
                 return NotFound($"Feedback file(ID={feedback_id}) not found");
             }
 
+            string true_feedback_path = Path.Combine(_env.WebRootPath ?? _env.ContentRootPath, feedback_file.Path!);
             string content_type = "application/octet-stream";
-            return PhysicalFile(feedback_file.Path!, content_type, feedback_file.Name + "." + feedback_file.Extension);
+            return PhysicalFile(true_feedback_path, content_type, feedback_file.Name + "." + feedback_file.Extension);
         }
 
 
@@ -69,8 +70,9 @@ namespace backend.controllers
             if (feedback_file == null)
                 return NotFound($"Feedback file(ID={feedback_id}) not found");
 
+            string true_feedback_path = Path.Combine(_env.WebRootPath ?? _env.ContentRootPath, feedback_file.Path!);
             string content_type = "application/octet-stream";
-            return PhysicalFile(feedback_file.Path!, content_type, feedback_file.Name + "." + feedback_file.Extension);
+            return PhysicalFile(true_feedback_path, content_type, feedback_file.Name + "." + feedback_file.Extension);
         }
 
         // ------------------------------------------ Metodos POST ------------------------------------------
@@ -93,7 +95,7 @@ namespace backend.controllers
                 return NotFound($"Submission(ID={submission_id}) for assignment(ID={assignment_id}) not found in group(ID={group_id})");
             }
             // Crear un objeto de retroalimentacion para subir
-            string feedbacks_path = Path.Combine(_env.WebRootPath ?? _env.ContentRootPath, "content", "feedbacks");
+            string feedbacks_path = Path.Combine("content", "feedbacks");
             string extension = Path.GetExtension(feedback_file.FileName).Substring(1);
             int nameLen = feedback_file.FileName.Length;
             Feedback feedback = new(){
@@ -120,10 +122,10 @@ namespace backend.controllers
                 var inserted_file = db.sql_db!.INSERT<Feedback>(sql_query2, feedback);
                 if (inserted_file == null)
                 {
-                    return StatusCode(500, "Something went wron");
+                    return StatusCode(500, "Something went wrong");
                 }
 
-                using (var stream = System.IO.File.Create(inserted_file.Path!))
+                using (var stream = System.IO.File.Create(Path.Combine(_env.WebRootPath ?? _env.ContentRootPath, inserted_file.Path!)))
                 {
                     await feedback_file.CopyToAsync(stream);
                 }

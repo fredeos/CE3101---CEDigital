@@ -31,8 +31,9 @@ namespace backend.controllers
                 return NotFound($"Submmited file(ID={submissionfile_id}) not found");
             }
 
+            string true_submission_path = Path.Combine(_env.WebRootPath ?? _env.ContentRootPath, submission.Path!);
             string content_type = "application/octet-stream";
-            return PhysicalFile(submission.Path!, content_type, submission.Name + "." + submission.Extension);
+            return PhysicalFile(true_submission_path, content_type, submission.Name + "." + submission.Extension);
         }
 
 
@@ -85,7 +86,7 @@ namespace backend.controllers
                     db.sql_db!.INSERT<StudentSolution>(sql_query4, new() { StudentID = 0, AssignmentSubmissionID = 0 });
                 }
                 // Actualizar el campo de entrega al subir el entregable
-                string submissions_path = Path.Combine(_env.WebRootPath ?? _env.ContentRootPath, "content", "submissions");
+                string submissions_path = Path.Combine("content", "submissions");
                 string extension = Path.GetExtension(submission_file.FileName).Substring(1);
                 int nameLen = submission_file.FileName.Length;
                 Solution solution = new()
@@ -113,7 +114,7 @@ namespace backend.controllers
                     // Actualizar el entregable de la evaluacion
                     if (inserted != null)
                     {
-                        using (var stream = System.IO.File.Create(inserted.Path!))
+                        using (var stream = System.IO.File.Create(Path.Combine(_env.WebRootPath ?? _env.ContentRootPath, inserted.Path!)))
                         {
                             await submission_file.CopyToAsync(stream);
                         }
@@ -196,7 +197,7 @@ namespace backend.controllers
                         }
                     }
                     // Crear un objeto para el archivo por subir
-                    string submissions_path = Path.Combine(_env.WebRootPath ?? _env.ContentRootPath, "content", "submissions");
+                    string submissions_path = Path.Combine("content", "submissions");
                     string extension = Path.GetExtension(submission_file.FileName).Substring(1);
                     int nameLen = submission_file.FileName.Length;
                     Solution solution = new()
@@ -225,7 +226,7 @@ namespace backend.controllers
                         // Actualizar el espacio de entrega
                         if (inserted != null)
                         {
-                            using (var stream = System.IO.File.Create(inserted.Path!))
+                            using (var stream = System.IO.File.Create(Path.Combine(_env.WebRootPath ?? _env.ContentRootPath, inserted.Path!)))
                             {
                                 await submission_file.CopyToAsync(stream);
                             }

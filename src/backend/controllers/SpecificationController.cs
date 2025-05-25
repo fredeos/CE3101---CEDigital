@@ -34,8 +34,9 @@ namespace backend.controllers{
                 return NotFound($"Specification(ID={specification_id}) not found for assignment(ID={assignment_id}) on group(ID={group_id})");
             }
 
+            string true_specification_path = Path.Combine(_env.WebRootPath ?? _env.ContentRootPath, specification.Path!);
             string content_type = "application/octet-stream";
-            return PhysicalFile(specification.Path!, content_type, specification.Name + "." + specification.Extension);
+            return PhysicalFile(true_specification_path, content_type, specification.Name + "." + specification.Extension);
         }
 
         [HttpGet("download/{group_id}/{assignment_id}/recent")]
@@ -57,8 +58,10 @@ namespace backend.controllers{
             { 
                 return NotFound($"No available specifications for assignment(ID={assignment_id}) on group(ID={group_id})");
             }
+            
+            string true_specification_path = Path.Combine(_env.WebRootPath ?? _env.ContentRootPath, specification.Path!);
             string content_type = "application/octet-stream";
-            return PhysicalFile(specification.Path!, content_type, specification.Name + "." + specification.Extension);
+            return PhysicalFile(true_specification_path, content_type, specification.Name + "." + specification.Extension);
         }
 
         // ------------------------------------------ Metodos POST ------------------------------------------
@@ -87,7 +90,7 @@ namespace backend.controllers{
             }
 
             // Insertar la nueva especifacion
-            string specifications_path = Path.Combine(_env.WebRootPath ?? _env.ContentRootPath, "content", "specifications");
+            string specifications_path = Path.Combine("content", "specifications");
             string extension = Path.GetExtension(spec_file.FileName).Substring(1);
             int nameLen = spec_file.FileName.Length;
             Specification spec = new(){
@@ -113,7 +116,7 @@ namespace backend.controllers{
             if (inserted_file == null){
                 return StatusCode(500, "Internal server error");
             }
-            using (var stream = System.IO.File.Create(inserted_file.Path!)){
+            using (var stream = System.IO.File.Create(Path.Combine(_env.WebRootPath ?? _env.ContentRootPath, inserted_file.Path!))){
                 await spec_file.CopyToAsync(stream);
             }
 

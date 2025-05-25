@@ -10,9 +10,10 @@ namespace backend.controllers
 {
     [ApiController]
     [Route("api/folders")]
-    public class FolderController(CEDigitalService db_ap) : ControllerBase
+    public class FolderController(CEDigitalService db_ap, IWebHostEnvironment env) : ControllerBase
     {
         private readonly CEDigitalService db = db_ap;
+        private readonly IWebHostEnvironment _env = env;
 
         // ------------------------------------------ Metodos GET ------------------------------------------
         [HttpGet("{group_id}/{folder_id}/files")]
@@ -103,9 +104,17 @@ namespace backend.controllers
         public ActionResult<FileDTO> CreateFolder(int group_id, int parent_id, [FromBody] FileDTO folder)
         {
             // Validar que los atributos del objeto sean los mismos que los indicados en la ruta
-            if (parent_id != folder.ParentID)
+            string folder_identification = $"F.id = {parent_id}";
+            if (parent_id > 0)
             {
-                return BadRequest($"Given parent folder id({parent_id}) doesn't match the objet file parent({folder.ParentID})");    
+                if (parent_id != folder.ParentID)
+                {
+                    return BadRequest($"Given parent folder id({parent_id}) doesn't match the objet file parent({folder.ParentID})");
+                }
+            }
+            else
+            {
+                folder_identification = $"F.parent_id is NULL";
             }
 
             // Verificar que exista la carpeta indicada para en el grupo
@@ -115,13 +124,13 @@ namespace backend.controllers
                     {nameof(FileDTO.FileSize)} = 0, F.upload_date as {nameof(FileDTO.UploadDate)}
             FROM Files.Folders as F JOIN Academic.Groups as G
             ON F.group_id = G.id
-            WHERE F.group_id = {group_id} AND F.id = {parent_id}; ";
+            WHERE F.group_id = {group_id} AND {folder_identification}; ";
 
             var parent_folder = db.sql_db!.SELECT<FileDTO>(sql_query1).FirstOrDefault();
             if (parent_folder == null)
             {
                 return NotFound($"Parent folder(ID={parent_id}) not found in group(ID={group_id})");
-            } 
+            }
 
             // Insertar el objeto
             string sql_query2 = @$"
@@ -129,7 +138,7 @@ namespace backend.controllers
             OUTPUT  INSERTED.id as {nameof(FileDTO.FileID)}, INSERTED.parent_id as {nameof(FileDTO.ParentID)},
                     INSERTED.folder_name as {nameof(FileDTO.FileName)}, INSERTED.upload_date as {nameof(FileDTO.UploadDate)}
             VALUES
-            ({group_id}, @{nameof(FileDTO.ParentID)}, @{nameof(FileDTO.FileName)}); ";
+            ({group_id}, {parent_folder.FileID}, @{nameof(FileDTO.FileName)}); ";
 
             var inserted = db.sql_db!.INSERT<FileDTO>(sql_query2, folder);
             if (inserted == null)
@@ -210,9 +219,10 @@ namespace backend.controllers
             // Borrar todos los archivos fisicos relacionados a estos registros
             foreach (var file in deleted_files)
             {
-                if (System.IO.File.Exists(file.Path))
+                string path_to_file = Path.Combine(_env.WebRootPath ?? _env.ContentRootPath, file.Path);
+                if (System.IO.File.Exists(path_to_file))
                 {
-                    System.IO.File.Delete(file.Path);
+                    System.IO.File.Delete(path_to_file);
                 }
             }
 
