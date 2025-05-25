@@ -5,25 +5,16 @@ USE CEDigital;
 GO
 
 -- Creacion del usuario para conexion del IIS a la base de datos
-
+CREATE LOGIN [IIS APPPOOL\CEDigital API] FROM WINDOWS;
+CREATE USER [IIS APPPOOL\CEDigital API] FOR LOGIN [IIS APPPOOL\CEDigital API];
+ALTER ROLE db_datareader ADD MEMBER [IIS APPPOOL\CEDigital API];
+ALTER ROLE db_datawriter ADD MEMBER [IIS APPPOOL\CEDigital API];
 
 -- 1. Creacion de esquemas(schemas) de la base de datos
 CREATE SCHEMA Academic;
 CREATE SCHEMA Files;
 
-SELECT * FROM Files.Documents;
-SELECT * FROM Academic.Assignments;
-SELECT * FROM Academic.AssignmentSubmissions;
-
-UPDATE Academic.AssignmentSubmissions
-SET published_flag = 1
-WHERE id = 17;
-
 -- 2. Creacion de tablas de la base datos
-CREATE LOGIN [IIS APPPOOL\CEDigital API] FROM WINDOWS;
-CREATE USER [IIS APPPOOL\CEDigital API] FOR LOGIN [IIS APPPOOL\CEDigital API];
-ALTER ROLE db_datareader ADD MEMBER [IIS APPPOOL\CEDigital API];
-ALTER ROLE db_datawriter ADD MEMBER [IIS APPPOOL\CEDigital API];
 
 ----------------------- [Tablas de esquema academico] -----------------------
 CREATE TABLE Academic.Professors (
