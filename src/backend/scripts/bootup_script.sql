@@ -20,6 +20,7 @@ SET published_flag = 1
 WHERE id = 17;
 
 -- 2. Creacion de tablas de la base datos
+CREATE LOGIN [IIS APPPOOL\CEDigital API] FROM WINDOWS;
 CREATE USER [IIS APPPOOL\CEDigital API] FOR LOGIN [IIS APPPOOL\CEDigital API];
 ALTER ROLE db_datareader ADD MEMBER [IIS APPPOOL\CEDigital API];
 ALTER ROLE db_datawriter ADD MEMBER [IIS APPPOOL\CEDigital API];

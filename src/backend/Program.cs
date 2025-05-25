@@ -31,7 +31,8 @@ app.MapControllers();
 
 var dbservice = app.Services.GetRequiredService<CEDigitalService>();
 dbservice.sql_db = new SQLContext();
-dbservice.sql_db.Configure("LAPTOP-FREDE","CEDigital");
+dbservice.sql_db.Configure("LocalSQL","CEDigital");
+// dbservice.sql_db.Configure("LAPTOP-FREDE","CEDigital");
 // dbservice.sql_db.Configure("CARLOSCL","CEDigital");
 
 dbservice.mongo_db = new MongoContext();
