@@ -46,7 +46,7 @@ const AssignmentDetailView = ({ onBack }) => {
                 if (!response.ok) {
                     // Manejo específico por código de estado
                     if (response.status === 404) {
-                    throw new Error('Error al cargar el registro de evaluaciones del curso');
+                        throw new Error('Error al cargar el registro de evaluaciones del curso');
                     }
                 }else{
                     const data = await response.json();
@@ -66,6 +66,8 @@ const AssignmentDetailView = ({ onBack }) => {
     // Estado para subir archivo
     const [dragActive, setDragActive] = useState(false)
     const [uploadedFile, setUploadedFile] = useState(null)
+
+    const [selectedFileUpload, setSelectedFileUpload] = useState(null)
 
     // Manejador de los eventos del drag
     const handleDrag = (e) => {
@@ -93,12 +95,13 @@ const AssignmentDetailView = ({ onBack }) => {
         e.preventDefault()
         if (e.target.files && e.target.files[0]) {
             handleFile(e.target.files[0])
+            //setSelectedFileUpload(e.target.files[0])
         }
     }
 
-    // Maneja el envio del archivo a la api
+    // Se muestra el archivo que se arrastró o seleccionó
     const handleFile = (file) => {
-        console.log("File selected:", file.name)
+        setSelectedFileUpload(file)
         setUploadedFile({
             name: file.name,
             size: formatFileSize(file.size),
@@ -106,18 +109,60 @@ const AssignmentDetailView = ({ onBack }) => {
         })
         // Se carga el archivo al servidor aqui
     }
-   
-    // Maneja los archivos de feedback
-    const handleAttachmentClick = (attachment) => {
-        console.log(`Opening attachment: ${attachment.name}`)
-        // esto abrirá o descargará el archivo
+    
+    // Converso de Formato de tamaño de archivo
+    const formatFileSize = (bytes) => {
+        if (bytes < 1024) return bytes + " Bytes"
+        else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + " KB"
+        else return (bytes / 1048576).toFixed(1) + " MB"
     }
 
-    // Maneja los archivos adjuntos
-    const handleFeedbackClick = (feedback) => {
-        console.log(`Opening feedback: ${feedback.name}`)
-        // esto abrirá o descargará el archivo
+    // Se obtiene la url para descargar el documento que se quiere obtener
+    const getFileUrl = (assigmentID_in) => {
+        const currentCourse = AlmacenarInfo.getItem('currentCourse');  // esto es el grupo como tal del curso
+        const encodedCourseId = encodeURIComponent(currentCourse.id);   // se obtiene el id del grupo del curso
+        const encodedAssignmentID = encodeURIComponent(assigmentID_in);  // se obtiene el id del estudiante
+        return `http://localhost:5039/api/specifications/download/${encodedCourseId}/${encodedAssignmentID}/recent`;
     }
+
+    // Se obtiene la url para descargar el documento que se quiere obtener
+    const getFeedBackFileUrl = (feedbackID_in) => {
+        const encodedFeedBackID = encodeURIComponent(feedbackID_in);  // se obtiene el id del estudiante
+        return `http://localhost:5039/api/feedbacks/download/${encodedFeedBackID}/`;
+    }
+
+    const upLoadFileDropped = async () => {
+
+        const formData = new FormData();
+        formData.append("file", selectedFileUpload);
+
+        try {
+            const currentCourse = AlmacenarInfo.getItem('currentCourse');
+            const currentAssignmentId = AlmacenarInfo.getItem('currentAssignmentID');  // se obtiene el id directamente
+            const studentInfo = AlmacenarInfo.getItem('studentInfo');
+            const encodedCourseId = encodeURIComponent(currentCourse.id);   // se obtiene el id del grupo del curso
+            const encodedAssignmentId = encodeURIComponent(currentAssignmentId);   // se obtiene el id de la asignación encodificado
+            const encodedStudentId = encodeURIComponent(studentInfo.studentID);  // se obtiene el id del estudiante
+            const response = await fetch(`http://localhost:5039/api/submissions/upload/${encodedCourseId}/${encodedStudentId}/${encodedAssignmentId}`,
+                { method: "POST", body: formData }
+            );
+
+            if (!response.ok) {
+                // Manejo específico por código de estado
+                if (response.status > 301) {
+                    throw new Error('Error al cargar el registro de evaluaciones del curso');
+                }
+            }else{
+                //const data = await response.json();
+            }
+                
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            
+        }
+    }
+
 
     // Maneja la eliminación de un archivo ya cargado
     const handleRemoveFile = () => {
@@ -199,19 +244,27 @@ const AssignmentDetailView = ({ onBack }) => {
                                 <h3 className="text-weight-500">Especificación: </h3>
                                 <div className="attachments-list-assignment">
                                     {assignment.attachments.map((attachment) => (
-                                    <Button
+                                    <a 
+                                        href={getFileUrl(assignment.id)}
                                         key={attachment.id}
-                                        variant="outline"
-                                        className="attachment-button-assignment"
-                                        onClick={() => handleAttachmentClick(attachment)}
-                                        >
-                                        <div className="display-flex-center">
-                                            <span className="text-weight-500">{attachment.name}.{attachment.extension}</span>
-                                        </div>
-                                        <div className="display-flex-center">
-                                            <Download className="download-icon-assignment icon-size2" />
-                                        </div>
-                                    </Button>
+                                        download={attachment.name}
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="file-link-assignment"
+                                    >
+                                        <Button
+                                            key={attachment.id}
+                                            variant="outline"
+                                            className="attachment-button-assignment"
+                                            >
+                                            <div className="display-flex-center">
+                                                <span className="text-weight-500">{attachment.name}.{attachment.extension}</span>
+                                            </div>
+                                            <div className="display-flex-center">
+                                                <Download className="download-icon-assignment icon-size2" />
+                                            </div>
+                                        </Button>
+                                    </a>
                                 ))}
                                 </div>
                             </div>
@@ -244,7 +297,7 @@ const AssignmentDetailView = ({ onBack }) => {
                                                 <div>
                                                     <div className="file-name-assignment">{uploadedFile ? uploadedFile.name : `${assignment.submission.name}.${assignment.submission.extension}`}</div>
                                                     <div className="file-meta-assignment">
-                                                        {uploadedFile? `Size: ${(uploadedFile.size / 1024).toFixed(1)} KB}`
+                                                        {uploadedFile? `Size: ${uploadedFile.size}`
                                                         : `Entregado: ${new Date(assignment.dueDate).toLocaleDateString()} ${new Date(assignment.dueDate).toLocaleTimeString()}`}
                                                     </div>
                                                 </div>
@@ -261,7 +314,7 @@ const AssignmentDetailView = ({ onBack }) => {
                                             )}
                                         </div>
                                     </div>
-                                    {uploadedFile && <Button className="submit-button-assignment">Cargar archivo</Button>}
+                                    {uploadedFile && <Button className="submit-button-assignment" onClick={upLoadFileDropped}>Cargar archivo</Button>}
                                 </div>
                             )}
                             <div className="margin-bottom-1rem5 description-section-assignment">
@@ -274,21 +327,27 @@ const AssignmentDetailView = ({ onBack }) => {
                                 <div className="margin-bottom-1rem5 attachments-section-assignment">
                                     <h3 className="text-weight-500">Retroalimentación: </h3>
                                     <div className="attachments-list-assignment">
-                                        {assignment.feedback.map((feedback) => (
+                                        <a 
+                                            href={getFeedBackFileUrl(assignment.feedback.id)} 
+                                            download={assignment.feedback.name}
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            className="file-link-assignment"
+                                        >
                                             <Button
-                                                key={feedback.id}
+                                                key={assignment.feedback.id}
                                                 variant="outline"
                                                 className="attachment-button-assignment"
-                                                onClick={() => handleFeedbackClick(attachment)}
                                                 >
                                                 <div className="display-flex-center">
-                                                    <span className="text-weight-500">{feedback.name}.{feedback.extension}</span>
+                                                    <span className="text-weight-500">{assignment.feedback.name}.{assignment.feedback.extension}</span>
                                                 </div>
                                                 <div className="display-flex-center">
                                                     <Download className="download-icon-assignment icon-size2" />
                                                 </div>
                                             </Button>
-                                        ))}
+                                        </a>
+                                        
                                     </div>
                                 </div>
                             )}
@@ -388,6 +447,11 @@ export default AssignmentDetailView
         "size": 194352,
         "uploadDate": "2025-05-22T00:39:49.643"
     },
-    "feedback": null
+    "feedback": {
+        "id": 1,
+        "name": "Taller_SQL_AW_Consultas",
+        "extension": "pdf",
+        "size": 55335
+    }
 }
 */

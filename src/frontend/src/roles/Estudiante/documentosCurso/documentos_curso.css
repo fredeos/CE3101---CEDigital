@@ -193,3 +193,10 @@
   padding: 2rem 0;
   color: #64748b;
 }
+
+.file-link-documents {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #1171d1;
+}

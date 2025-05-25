@@ -189,14 +189,6 @@
     background-color: #f8fafc;
 }
 
-/*
-.attachment-size {
-    font-size: 0.75rem;
-    color: #64748b;
-    margin-right: 0.5rem;
-}
-*/
-
 .download-icon-assignment {
     color: #64748b;
 }
@@ -276,6 +268,13 @@
     font-size: 0.75rem;
     color: #64748b;
     text-align: justify;
+}
+
+.file-link-assignment {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #1171d1;
 }
 
 .remove-file-button-assignment {

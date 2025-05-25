@@ -17,12 +17,6 @@ const StudentRecord = ({ onBack }) => {
   // se manejan errores
   const [error, setError] = useState(null);
   
-  /*
-  useEffect(() => {
-    console.log(academicRecord);
-  },[academicRecord])
-  */
-
   useEffect(() => {
     setError(null);
     const fetchAcademicRecord = async () => {

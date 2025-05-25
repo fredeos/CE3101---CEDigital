@@ -43,7 +43,6 @@ const FileExplorer = ({ onBack }) => {
                 }
             }else{
                 const data = await response.json();  // se obtiene la respuesta en  formato Json del servidor
-                console.log(data);
                 setFileSystem(data);
             }
             
@@ -86,8 +85,7 @@ const FileExplorer = ({ onBack }) => {
 
     // Para abrir archivos enviados por el api
     const handleFileClick = (file) => {
-    console.log(`Opening file: ${file.fileName}`)
-
+        console.log(`Opening file: ${file.fileName}`)
     }
 
     // Se obtiene el tipo de icono según el tipo de archivo
@@ -109,6 +107,14 @@ const FileExplorer = ({ onBack }) => {
     // Verificar si el archivo es posible verlo con el browser (si está en la lista = true, si no = false)
     const isViewableInBrowser = (fileType) => {
         return ["pdf", "jpg", "jpeg", "png", "gif"].includes(fileType)
+    }
+
+    // Se obtiene la url para descargar el documento que se quiere obtener
+    const getFileUrl = (fileID) => {
+        const currentCourse = AlmacenarInfo.getItem('currentCourse');  // esto es el grupo como tal del curso
+        const encodedCourseId = encodeURIComponent(currentCourse.id);   // se obtiene el id del grupo del curso
+        const encodedFileID = encodeURIComponent(fileID);  // se obtiene el id del estudiante
+        return `http://localhost:5039/api/documents/download/${encodedCourseId}/${encodedFileID}`;
     }
 
     return (
@@ -201,25 +207,41 @@ const FileExplorer = ({ onBack }) => {
                                         <div className="flex items-center">
                                             <span className="file-date-documents"> Subido: {new Date(file.uploadDate).toLocaleDateString()} {new Date(file.uploadDate).toLocaleTimeString()}</span>
                                             {isViewableInBrowser(file.fileType) ? (
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    className="file-action-button-documents"
-                                                    onClick={() => handleFileClick(file)}
-                                                    >
-                                                    <ExternalLink className="h-4 w-4 mr-1" />
-                                                    Abrir
-                                                </Button>
+                                                <a 
+                                                    href={getFileUrl(file.fileID)}
+                                                    key={file.fileID}
+                                                    download={file.fileName}
+                                                    target="_blank" 
+                                                    rel="noopener noreferrer"
+                                                    className="file-link-documents"
+                                                >
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="file-action-button-documents"
+                                                        >
+                                                        <ExternalLink className="h-4 w-4 mr-1" />
+                                                        Abrir
+                                                    </Button>
+                                                </a>
                                             ) : (
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    className="file-action-button-documents"
-                                                    onClick={() => handleFileClick(file)}
-                                                    >
-                                                    <Download className="h-4 w-4 mr-1" />
-                                                    Descargar
-                                                </Button>
+                                                <a 
+                                                    href={getFileUrl(file.fileID)}
+                                                    key={file.fileID}
+                                                    download={file.fileName}
+                                                    target="_blank" 
+                                                    rel="noopener noreferrer"
+                                                    className="file-link-documents"
+                                                >
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="file-action-button-documents"
+                                                        >
+                                                        <Download className="h-4 w-4 mr-1" />
+                                                        Descargar
+                                                    </Button>
+                                                </a>
                                             )}
                                         </div>
                                     </div>

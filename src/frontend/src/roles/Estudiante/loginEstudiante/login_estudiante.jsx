@@ -88,7 +88,7 @@ const Login = () => {
         <div className="login-container">
             <Card className="login-card">
                 <CardHeader className="space-y-1">
-                    <CardTitle className="login-title">University Portal</CardTitle>
+                    <CardTitle className="login-title">CE-Digital</CardTitle>
                     <CardDescription className="login-description">
                         Ingrese sus credenciales para acceder
                     </CardDescription>
@@ -107,23 +107,23 @@ const Login = () => {
                     <form onSubmit={handleSubmit}>
                         <div className="form-grid">
                             <div className="form-field">
-                                <Label htmlFor="email">Student ID / Username</Label>
+                                <Label htmlFor="email">Correo electrónico</Label>
                                 <Input
                                     id="email"
                                     name="email"
-                                    placeholder="Enter your student ID or username"
+                                    placeholder="Ingrese su correo electrónico"
                                     value={formData.email}
                                     onChange={handleChange}
                                     required
                                 />
                             </div>
                             <div className="form-field">
-                                <Label htmlFor="password">Password</Label>
+                                <Label htmlFor="password">Contraseña</Label>
                                 <Input
                                     id="password"
                                     name="password"
                                     type="password"
-                                    placeholder="Enter your password"
+                                    placeholder="Ingrese su contraseña"
                                     value={formData.password}
                                     onChange={handleChange}
                                     required

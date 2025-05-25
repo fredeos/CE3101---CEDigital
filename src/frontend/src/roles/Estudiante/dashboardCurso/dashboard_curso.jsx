@@ -83,7 +83,6 @@ const CursoDashboard = () => {
                             className="option-card"
                             onClick={option.NavLink}
                             >
-                            {/* onClick={() => console.log(`Clicked on ${option.title}`)} */}
                             <CardContent className="card-content">
                                 <div className={`icon-container ${option.colorClass}`}>
                                     <option.icon className="option-icon" />

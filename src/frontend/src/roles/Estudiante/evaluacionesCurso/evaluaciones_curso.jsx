@@ -56,7 +56,6 @@ const AssignmentsView = ({ onBack }) => {
     // Función para manejar el click sobre alguna evaluación en específico y navegar a la siguiente vista (información de la evaluación)
     const handleAssignmentClick = (assignmentId) => {
         AlmacenarInfo.setItem('currentAssignmentID', assignmentId); // se almacena la información del curso que el usuario presionó
-        console.log(AlmacenarInfo.getItem('currentAssignmentID'));  // Se almacena el ID nada mas, que es solo lo necesario
         navigate("/asignacion-curso-estudiantes");
     }
     
