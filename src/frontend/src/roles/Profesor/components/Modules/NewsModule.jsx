@@ -165,11 +165,11 @@ export default function NewsModule({ course, group, professor }) {
                   <div className="news-item-header">
                     <h3 className="news-item-title">{item.title}</h3>
                     <div className="news-item-actions">
-                      <button className="btn-edit" onClick={() => handleEditClick(item)}>
-                        <Edit size={16} />
+                      <button className="btn-edit" onClick={() => handleEditClick(item)} title="Editar">
+                        <Edit size={18} />
                       </button>
-                      <button className="btn-delete" onClick={() => handleDeleteClick(item.id)}>
-                        <Trash2 size={16} />
+                      <button className="btn-delete" onClick={() => handleDeleteClick(item.id)} title="Eliminar">
+                        <Trash2 size={18} />
                       </button>
                     </div>
                   </div>

@@ -159,7 +159,7 @@ export function useAssessmentsData(courseCode, groupId) {
 
     try {
       const response = await fetch(
-        `http://localhost:5039/api/group/${groupId}/assigment/${assignmentId}/add/specification`,
+        `http://localhost:5039/api/specifications/upload/${groupId}/${assignmentId}`,
         { method: "POST", body: formData }
       );
       if (!response.ok) {

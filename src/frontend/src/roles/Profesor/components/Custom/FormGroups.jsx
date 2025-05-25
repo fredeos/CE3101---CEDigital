@@ -2,31 +2,42 @@ import { useState, useEffect } from "react";
 import Modal from "../Modal";
 import { Users, Trash2, User } from "lucide-react";
 import "../../styles/Grupo/FormGroups.css";
+import useAssignmentGroups from "../../hooks/useAssignmentGroups";
 
-export default function FormGroups({
-  isOpen,
-  onClose,
-  students,
-  assignmentId,
-  existingGroups = [],
-}) {
-  const [groups, setGroups] = useState(existingGroups || []);
-  const [unassignedStudents, setUnassignedStudents] = useState([]);
+export default function FormGroups({ isOpen, onClose, students, assignmentId, }) {
+
+  const [groupToDelete, setGroupToDelete] = useState(null);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [selectedStudentIds, setSelectedStudentIds] = useState([]);
 
-  useEffect(() => {
-    setGroups(existingGroups || []);
-  }, [existingGroups, isOpen]);
+  const {
+    groups,
+    loading,
+    error,
+    fetchGroups,
+    createGroup,
+    deleteGroup,
+  } = useAssignmentGroups(assignmentId);
 
+  // Cargar grupos al abrir el modal
   useEffect(() => {
-    const assignedIds = groups.flatMap((group) =>
-      group.members.map((member) => member.id)
-    );
-    setUnassignedStudents(
-      students.filter((student) => !assignedIds.includes(student.id))
-    );
-    setSelectedStudentIds([]);
-  }, [students, groups]);
+    if (isOpen && assignmentId) {
+      fetchGroups();
+    }
+  }, [isOpen, assignmentId, fetchGroups]);
+
+  // Obtener IDs de estudiantes ya asignados
+  const assignedIds = groups.flatMap((group) =>
+    (group.Students || group.students || []).map(
+      (member) => String(member.ID || member.id)
+    )
+  );
+
+  // Estudiantes sin grupo
+  const unassignedStudents = students.filter(
+    (student) => !assignedIds.includes(String(student.id || student.ID))
+  );
+
 
   const handleSelectStudent = (studentId) => {
     setSelectedStudentIds((prev) =>
@@ -36,21 +47,25 @@ export default function FormGroups({
     );
   };
 
-  const handleCreateGroup = () => {
+  const handleCreateGroup = async () => {
     if (!selectedStudentIds.length) return;
-    const nextGroupNumber = groups.length + 1;
-    const newGroup = {
-      name: `Grupo ${nextGroupNumber}`,
-      members: unassignedStudents.filter((s) =>
-        selectedStudentIds.includes(s.id)
-      ),
-    };
-    setGroups((prev) => [...prev, newGroup]);
-    setSelectedStudentIds([]);
+    try {
+      await createGroup({
+        number: groups.length + 1,
+        studentIDs: selectedStudentIds,
+      });
+      setSelectedStudentIds([]);
+    } catch (e) {
+      // Manejo de errores
+    }
   };
 
-  const handleDeleteGroup = (groupIndex) => {
-    setGroups((prev) => prev.filter((_, index) => index !== groupIndex));
+  const handleDeleteGroup = async (groupID) => {
+    try {
+      await deleteGroup(groupID);
+    } catch (e) {
+      // Manejo de errores
+    }
   };
 
   return (
@@ -85,7 +100,7 @@ export default function FormGroups({
           <button
             className="btn-submit"
             onClick={handleCreateGroup}
-            disabled={selectedStudentIds.length === 0}
+            disabled={selectedStudentIds.length === 0 || loading}
           >
             Crear grupo
           </button>
@@ -93,30 +108,36 @@ export default function FormGroups({
 
         <div className="existing-groups-section">
           <h4 className="section-title">Grupos formados</h4>
-          {groups.length === 0 ? (
-            <p className="empty-message">Aún no hay grupos creados.</p>
+          {loading ? (
+            <p className="empty-message">Cargando...</p>
+          ) : groups.length === 0 ? (
+            <p className="empty-message">No hay grupos formados.</p>
+          ) : error ? (
+            <p className="empty-message">{error}</p>
           ) : (
             <div className="groups-list">
-              {groups.map((group, index) => (
-                <div key={index} className="group-card">
+              {groups.map((group) => (
+                <div key={group.groupID} className="group-card">
                   <div className="group-header">
                     <h5 className="group-name">
                       <Users size={16} className="group-icon" />
-                      {group.name}
+                      Grupo {group.number}
                     </h5>
                     <button
                       className="btn-delete-group"
-                      onClick={() => handleDeleteGroup(index)}
+                      onClick={() => {
+                        setGroupToDelete(group.groupID);
+                        setConfirmDeleteOpen(true);
+                      }}
                       title="Eliminar grupo"
                     >
                       <Trash2 size={16} />
                     </button>
                   </div>
                   <ul className="group-members">
-                    {group.members.map((member) => (
-                      <li key={member.id} className="group-member">
-                        <User size={14} className="member-icon" />
-                        {member.name}
+                    {((group.students || [])).map((member) => (
+                      <li key={member.ID || member.id} className="group-member">
+                        {member.fullName}
                       </li>
                     ))}
                   </ul>
@@ -125,6 +146,32 @@ export default function FormGroups({
             </div>
           )}
         </div>
+        <Modal
+          isOpen={confirmDeleteOpen}
+          onClose={() => setConfirmDeleteOpen(false)}
+          title="Confirmar eliminación"
+          actions={
+            <>
+              <button
+                className="btn-cancel"
+                onClick={() => setConfirmDeleteOpen(false)}
+              >
+                Cancelar
+              </button>
+              <button
+                className="btn-danger"
+                onClick={async () => {
+                  await handleDeleteGroup(groupToDelete);
+                  setConfirmDeleteOpen(false);
+                }}
+              >
+                Eliminar
+              </button>
+            </>
+          }
+        >
+          <p>¿Estás seguro de que deseas eliminar este grupo de trabajo?</p>
+        </Modal>
       </div>
     </Modal>
   );

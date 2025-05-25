@@ -1,0 +1,48 @@
+.mi-cuenta-container {
+  background-color: #ffffff;
+  padding: 2rem;
+  margin: 10rem auto;
+  max-width: 500px;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  font-family:'Times New Roman', Times, serif;
+  color: #333;
+}
+
+.mi-cuenta-container h2 {
+  text-align: center;
+  color: #ad0e00;
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+}
+
+.mi-cuenta-container p {
+  font-size: 1rem;
+  margin: 0.8rem 0;
+  padding: 0.8rem 1rem;
+  background-color: #f0f4fa;
+  border-left: 5px solid #ad0e00;
+  border-radius: 8px;
+}
+
+button.volver {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #ad0e00;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  z-index: 1000;
+  transition: background-color 0.3s ease;
+  
+  
+}
+
+button.volver:hover {
+  background-color: #2222;
+}

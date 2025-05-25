@@ -28,7 +28,8 @@ export default function TableAssessments({
                 </thead>
                 <tbody>
                     {assessments.map((assessment) => {
-                        const fileUrl = getSpecificationDownloadUrl(groupId, assessment.id)
+                        // Solo mostrar el enlace si hay archivo cargado (por ejemplo, assessment.fileUrl o assessment.fileName)
+                        const fileUrl = assessment.fileUrl ? getSpecificationDownloadUrl(groupId, assessment.id) : null;
                         return (
                             <tr key={assessment.id}>
                                 <td className="title-cell"><span>{assessment.title}</span></td>
@@ -39,12 +40,14 @@ export default function TableAssessments({
                                 </td>
                                 <td>{assessment.weight}%</td>
                                 <td>
-                                    {fileUrl && (
+                                    {fileUrl ? (
                                         <a href={fileUrl} target="_blank" rel="noopener noreferrer" className="file-link">
                                             <span>
-                                                {assessment.fileName}
+                                                Descargar especificación
                                             </span>
                                         </a>
+                                    ) : (
+                                        <span className="file-link-disabled">Sin archivo</span>
                                     )}
                                 </td>
                                 <td>
@@ -55,15 +58,7 @@ export default function TableAssessments({
                                         <button className="icon-btn delete" onClick={() => handleDeleteClick(assessment)} title="Eliminar">
                                             <Trash2 size={18} />
                                         </button>
-                                        {assessment.isGroupAssessment && (
-                                            <button
-                                                className="icon-btn groups"
-                                                onClick={() => setGroupAssessmentSelected(assessment)}
-                                                title="Formar grupos"
-                                            >
-                                                <Users size={18} />
-                                            </button>
-                                        )}
+
                                         <button
                                             className="icon-btn upload"
                                             onClick={() => {
@@ -74,6 +69,17 @@ export default function TableAssessments({
                                         >
                                             <Upload size={16} />
                                         </button>
+
+                                        {assessment.isGroupAssessment && (
+                                            <button
+                                                className="icon-btn groups"
+                                                onClick={() => setGroupAssessmentSelected(assessment)}
+                                                title="Formar grupos"
+                                            >
+                                                <Users size={18} />
+                                            </button>
+                                        )}
+
                                     </div>
                                 </td>
                             </tr>

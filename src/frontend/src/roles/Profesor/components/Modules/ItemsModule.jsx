@@ -164,7 +164,7 @@ export default function ItemsModule({ course, group }) {
       {/* Advertencia si el total no es 100% */}
       {!isValidTotal && items.length > 0 && (
         <div className="warning-message">
-          <AlertTriangle size={16} />
+          <AlertTriangle size={18} />
           El porcentaje total es {totalPercentage}%. La suma de los rubros debe ser exactamente del 100%.
         </div>
       )}
@@ -175,7 +175,6 @@ export default function ItemsModule({ course, group }) {
           <h3 className="form-title">{editingItem ? "Actualizar rubro" : "Añadir rubro"}</h3>
           {formError && (
             <div className="form-error">
-              <X size={16} />
               {formError}
             </div>
           )}
@@ -206,7 +205,7 @@ export default function ItemsModule({ course, group }) {
                 max="100"
                 required
               />
-              <PercentIcon size={16} className="percentage-icon" />
+              <PercentIcon size={18} className="percentage-icon" />
             </div>
             <div className="input-help-text-items">
               Porcentaje total:{" "}
@@ -255,11 +254,11 @@ export default function ItemsModule({ course, group }) {
                   <div className="item-name">{item.name}</div>
                   <div className="item-percentage">{item.percentage}%</div>
                   <div className="item-actions">
-                    <button className="btn-edit" onClick={() => handleEditClick(item)}>
-                      <Edit size={16} />
+                    <button className="btn-edit" onClick={() => handleEditClick(item)} title="Editar">
+                      <Edit size={18} />
                     </button>
-                    <button className="btn-delete" onClick={() => handleDeleteClick(item)}>
-                      <Trash2 size={16} />
+                    <button className="btn-delete" onClick={() => handleDeleteClick(item)} title="Eliminar">
+                      <Trash2 size={18} />
                     </button>
                   </div>
                 </div>
@@ -271,9 +270,9 @@ export default function ItemsModule({ course, group }) {
                 </div>
                 <div className="items-total-status">
                   {isValidTotal ? (
-                    <Check size={16} className="status-icon valid" />
+                    <Check size={18} className="status-icon valid" />
                   ) : (
-                    <AlertTriangle size={16} className="status-icon invalid" />
+                    <AlertTriangle size={18} className="status-icon invalid" />
                   )}
                 </div>
               </div>

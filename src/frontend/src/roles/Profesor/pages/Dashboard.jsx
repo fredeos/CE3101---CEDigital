@@ -23,9 +23,9 @@ import NewsModule from "../components/Modules/NewsModule"
 import GroupModule from "../components/Modules/GroupModule"
 import ItemsModule from "../components/Modules/ItemsModule"
 import AssignmentsModule from "../components/Modules/AssignmentsModule"
-//import DocumentsModule from "../components/Modules/DocumentModule"
+import DocumentsModule from "../components/Modules/DocumentsModule"
 import SubmissionsModule from "../components/Modules/SubmissionsModule" 
-//import GradesModule from "../components/Modules/GradesModule" 
+import GradesModule from "../components/Modules/GradesModule" 
 
 // Funcion auxiliar para obtener parámetros de la URL
 function useURLParams() {
@@ -160,12 +160,12 @@ export default function ProfessorDashboard() {
         return <ItemsModule course={selectedCourse} group={selectedGroup} />
       case "assessments":
         return <AssignmentsModule course={selectedCourse} group={selectedGroup} />
-      //case "documents":
-      //  return <DocumentsModule /> 
+      case "documents":
+        return <DocumentsModule course={selectedCourse} group={selectedGroup}/> 
       case "submissions":
         return <SubmissionsModule  course={selectedCourse} group={selectedGroup}/> 
-      //case "grades":
-      //  return <GradesModule  />
+      case "grades":
+        return <GradesModule course={selectedCourse} group={selectedGroup}/>
       default:
         return <DefaultModule course={selectedCourse} group={selectedGroup} />
     }

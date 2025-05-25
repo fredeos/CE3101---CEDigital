@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useStudentsData } from "../../hooks/useStudentsData";
 import { generateStudentReport } from "../../../../utils/pdfGenerator";
-import { Download, Search } from "lucide-react";
+import { Download } from "lucide-react";
 import Modal from "../Modal";
 import "../../styles/Grupo/Group.css"
 
@@ -9,7 +9,6 @@ export default function GroupModule({ course, group }) {
   const { students, isLoading, error } = useStudentsData(course?.id, group?.id);
   const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
 
   const handleConfirmDownload = () => {
     if (!course || !group || students.length === 0) return;

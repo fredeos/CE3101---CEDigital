@@ -1,0 +1,180 @@
+/* Student list */
+.grade-student-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Student card */
+.grade-student-header {
+  cursor: pointer;
+  padding-top: 0.5rem;
+}
+
+.grade-student-header:hover {
+  border-radius: 10px;
+  background-color: #f8f9fa;
+}
+
+.grade-student-item {
+  border: 1px solid #e5e7eb;
+  border-radius: 0.375rem;
+  padding: 0.5rem 1rem;
+}
+
+.grade-student-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0;
+  font-size: 1rem;
+  font-weight: normal;
+}
+
+.grade-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.final-grade {
+  font-size: 1rem;
+  color: #2563eb;
+}
+
+.chevron-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #666;
+}
+
+/* Student content */
+.grade-student-content {
+  padding-top: 1rem;
+}
+
+.grade-content-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Sections */
+.grade-section {
+  display: flex;
+  flex-direction: column;
+
+
+}
+
+.grade-section-title {
+  font-weight: 500;
+  font-size: medium;
+  color: #cacaca;
+  margin: 0;
+  border-bottom: 1px solid #c6c8cb;
+  padding-bottom: 0.5rem;
+}
+
+/* Assignment list */
+.grade-assignment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: medium;
+}
+
+.grade-assignment-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+
+.grade-assignment-info {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+}
+
+.grade-assignment-name {
+  font-weight: normal;
+  margin-right: 0.5rem;
+}
+
+.grade-assignment-category {
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.grade-assignment-grade {
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+  flex-direction: row;
+}
+
+.score {
+  font-weight: normal;
+}
+
+.weight {
+  font-size: 0.875rem;
+  color: #666;
+}
+
+/* Category list */
+.category-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: medium;
+}
+
+.category-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.category-name {
+  font-weight: normal;
+  margin-right: 0.5rem;
+}
+
+.category-grade {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.125rem;
+}
+
+/* Final grade section */
+.final-section {
+  padding: 1rem;
+}
+
+.final-grade-display {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background-color: #e3eefb;
+  border-radius: 0.375rem;
+}
+
+.final-label {
+  font-weight: 500;
+  font-size: medium;
+  color: #1a1a1a;
+}
+
+.final-value {
+  font-weight: 500;
+  font-size: medium;
+  color: #2563eb;
+}
