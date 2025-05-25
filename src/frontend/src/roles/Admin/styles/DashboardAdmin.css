@@ -1,0 +1,65 @@
+.dashboard-container {
+  display: flex;
+  height: 100vh;
+  font-family:'Times New Roman', Times, serif;
+}
+
+/* Sidebar */
+.sidebar {
+  background-color: #222222;
+  color: white;
+  width: 240px;
+  padding: 1rem;
+  transition: all 0.3s ease;
+}
+
+.sidebar.collapsed {
+  width: 60px;
+}
+
+.sidebar h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar li {
+  padding: 0.8rem 0;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.sidebar li:hover {
+  background-color: #912400;
+}
+
+.sidebar .logout {
+  margin-top: 2rem;
+  color: #ffc0cb;
+}
+
+.toggle-btn {
+  
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+  cursor: pointer;
+}
+
+/* Main content */
+.dashboard-main {
+  flex: 1;
+  padding: 2rem;
+  background-color: #f0f4f8;
+}
+
+.dashboard-header h1 {
+  margin: 0;
+  color: #333;
+}
