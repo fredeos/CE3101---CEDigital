@@ -1,0 +1,170 @@
+.header-actions {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.dropdown-container {
+  position: relative;
+}
+
+.dropdown-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  border: 1px solid #ddd;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  min-width: 200px;
+  justify-content: space-between;
+  font-size: 0.90rem;
+}
+
+.dropdown-toggle:hover {
+  border-color: #aaa;
+}
+
+.dropdown-icon.open {
+  transform: rotate(180deg);
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.dropdown-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 10px;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.dropdown-item:hover {
+  background: #f5f5f5;
+}
+
+.main-content {
+  width: auto;
+  text-align: left;
+}
+
+.data-table-container {
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid #eeeeee;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+.data-table th {
+  background: #f8f9fa;
+  padding: 12px 15px;
+  text-align: left;
+  font-weight: 500;
+  color: #495057;
+  border-bottom: 2px solid #dee2e6;
+  font-size: 0.875rem;
+}
+
+.data-table td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #dee2e6;
+  vertical-align: middle;
+  font-size: small;
+}
+
+.data-table tr:hover {
+  background: #f8f9fa;
+}
+
+
+.file-link {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #1171d1;
+}
+
+.file-link-disabled {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #888888;
+}
+
+.file-link:hover {
+  text-decoration: underline;
+}
+
+.actions-cell {
+  display: flex;
+  gap: 10px;
+}
+
+.icon-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-btn.edit {
+  color: #1976d2;
+}
+
+.icon-btn.delete {
+  color: #d32f2f;
+}
+
+.icon-btn.groups {
+  color: #4caf50;
+}
+
+.empty-state {
+  padding: 40px;
+  text-align: center;
+  background: white;
+  border-radius: 8px;
+  color: #6c757d;
+}
+
+.success-message {
+  background: #e8f5e9;
+  color: #388e3c;
+  padding: 10px 15px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.delete-modal-content {
+  padding: 1rem;
+  color: #374151;
+}

@@ -1,0 +1,129 @@
+.dashboard-container {
+  min-height: 100vh;
+  background-color: rgb(248 250 252);
+  display: flex;
+  flex-direction: row;
+}
+
+.dashboard-header {
+  background-color: white;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 1rem 1.5rem;
+  font-size: 1.25rem;
+  color: #171717;
+  margin: 0;
+}
+
+.btn-back {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background-color: #171717;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  color: white;
+  cursor: pointer;
+  width: 198px;
+  line-height: 1.25rem;
+}
+
+.btn-back:hover {
+  background-color: #2E2E2E;
+}
+
+.professor-info {
+  display: flex;
+  align-items: center;
+  font-size: 1.25rem;
+  color: white;
+  margin-top: 13.5rem;
+  padding: 0.4rem;
+  gap: 1rem;
+  border: 1px solid #171717;
+  border-radius: 10px;
+  background-color: #171717;
+}
+
+.dashboard-main {
+  flex: 1;
+  height: calc(100vh - 4.5rem);
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-nav {
+  background-color: white;
+  border-right: 1px solid #e5e7eb;
+  padding: 0.9rem;
+}
+
+.nav-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 86px;
+}
+
+.nav-button {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 1.75rem 1.5rem;
+  text-align: left;
+  font-size: 0.875rem;
+  color: #171717;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+}
+
+.nav-button:hover {
+  color: #137400;
+  font-weight: 700;
+}
+
+.nav-button.active {
+  color: #189100;
+  border-left-color: #189100;
+  font-weight: 700;
+}
+
+.dashboard-content {
+  flex: 1;
+  padding: 1.5rem;
+}
+
+.dashboard-module {
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  padding: 1.5rem;
+}
+
+.module-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.module-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #171717;
+  margin: 0;
+}
+
+.btn-back-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.module-default-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #334e5f;
+  margin-top: 20rem;
+}

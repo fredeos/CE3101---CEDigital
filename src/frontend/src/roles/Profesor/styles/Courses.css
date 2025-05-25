@@ -1,0 +1,118 @@
+.course-selection-container {
+  min-height: 100vh;
+  background-color: rgb(248 250 252);
+}
+
+.selection-header {
+  background-color: white;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  border: 1px solid #eeeeee;
+}
+
+.professor-profile {
+  display: flex;
+  align-items: center;
+  font-size: 1.5rem;
+}
+
+.btn-logout {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  border-radius: 10px;
+  color: white;
+  background-color: #171717;
+}
+
+.btn-logout:hover {
+  background-color: #2E2E2E;
+}
+
+.selection-content {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.direct-selection-grid {
+  display: grid;
+  grid-template-rows: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 2.5rem;
+}
+
+.course-card {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #eeeeee;
+}
+
+.course-card-header {
+  padding: 1rem;
+  border-bottom: 1px solid rgb(0, 0, 0);
+  position: relative;
+  font-size: 1.3rem;
+}
+
+.course-groups {
+  padding: 0.5rem;
+  max-height: 300px;
+}
+
+.group-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+  background-color: #eeeeee;
+  border-radius: 10px;
+}
+
+.group-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;  
+  font-size: 1rem;
+  color: rgb(0, 0, 0);
+}
+
+.btn-select-group {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  background-color: #171717;
+  border-radius: 10px;
+  color: white;
+  cursor: pointer;
+}
+
+.btn-select-group:hover {
+  background-color: #2E2E2E;
+}
+
+.no-groups {
+  padding: 1rem 1.5rem;
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+@media (max-width: 768px) {
+  .selection-header {
+    padding: 1rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .direct-selection-grid {
+    grid-template-columns: 1fr;
+  }
+}
