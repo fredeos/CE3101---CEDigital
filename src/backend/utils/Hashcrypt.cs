@@ -1,9 +1,10 @@
 using System.Text;
 using System.Security.Cryptography;
 using System.IO;
+using MongoDB.Bson;
 
 
-namespace backend.services.encryption {
+namespace backend.utils {
     public class Hashcrypt {
         private static byte[] key = Encoding.UTF8.GetBytes("1234567890123456"); // 16 bytes = 128 bit
         private static byte[] iv  = Encoding.UTF8.GetBytes("abcdefghijklmnop"); // 16 bytes = AES block size

@@ -8,28 +8,28 @@ namespace backend.models{
         [BsonId]
         private ObjectId object_id {get; set;}
         
-        [BsonElement("StudentID")]  // Carnet (PK)
+        [BsonElement("id")]  // Carnet (PK)
         required public int StudentID {get; set;}
 
-        [BsonElement("IDCard")]  // Cédula
+        [BsonElement("ssn")]  // Cédula
         required public int IDCard {get; set;}
 
-        [BsonElement("FirstName")] // Nombre
+        [BsonElement("Fname")] // Nombre
         required public string FirstName {get; set;}   
 
-        [BsonElement("FirstLastName")]    // Apellido1
+        [BsonElement("Lname1")]    // Apellido1
         required public string FirstLastName {get; set;}  
 
-        [BsonElement("SecondLastName")]   
+        [BsonElement("Lname2")]   
         required public string SecondLastName {get; set;} // Apellido2
 
-        [BsonElement("Email")]
+        [BsonElement("email")]
         required public string Email {get; set;}    // Correo electronico
 
-        [BsonElement("PhoneNumber")]    
-        required public int PhoneNumber {get; set;}  // Telefóno
+        [BsonElement("phone_num")]    
+        required public string PhoneNumber {get; set;}  // Telefóno
 
-        [BsonElement("Password")]
+        [BsonElement("password")]
         required public string Password {get; set;}    // Contraseña
 
     }

@@ -4,6 +4,6 @@ namespace backend.models{
     public class StudentSolution{
         required public int StudentID {get; set;} // PK relación con Estudiante
 
-        required public int AssignmentEvaluationID {get; set;}   // PK relación con AsignaciónEvaluación
+        required public int AssignmentSubmissionID {get; set;}   // PK relación con EntregaEvaluación
     }
 }

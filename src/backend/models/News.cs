@@ -8,11 +8,12 @@ namespace backend.models{
 
         required public int GroupID {get; set;}  // FK relación con Grupo
 
-        public string? Title {get; set;}
+        required public string Title {get; set;}
 
         required public string Message {get; set;}
 
         public DateTime PublicationDate {get; set;}
+        
 
     }
 }

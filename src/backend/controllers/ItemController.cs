@@ -7,8 +7,8 @@ namespace backend.controllers {
 
     [ApiController]
     [Route("items")]
-    public class ItemController(ShopDBService db_ap) : ControllerBase {
-        private readonly ShopDBService db = db_ap;
+    public class ItemController(CEDigitalService db_ap) : ControllerBase {
+        private readonly CEDigitalService db = db_ap;
         
         [HttpGet("find/{id}")]
         public ActionResult<Item> GetItem(int id){
@@ -19,7 +19,7 @@ namespace backend.controllers {
             SELECT {attributes} 
             FROM {tablename}
             WHERE I.ID = {id};"; 
-            var results = db.sql_db.SELECT<Item>(query);
+            var results = db.sql_db!.SELECT<Item>(query);
             if (results == null || results.Count == 0){
                 return NotFound();
             }
@@ -35,7 +35,7 @@ namespace backend.controllers {
             INSERT INTO {tablename} ({attributes})
             OUTPUT INSERTED.ID as {nameof(Item.id)}, INSERTED.item_name as {nameof(Item.name)}, INSERTED.price as {nameof(Item.price)}, INSERTED.on_stock as {nameof(Item.stock)}
             VALUES (@{nameof(Item.name)}, @{nameof(Item.price)}, @{nameof(Item.stock)});";
-            var result = db.sql_db.INSERT<Item>(query, item);
+            var result = db.sql_db!.INSERT<Item>(query, item);
             if (result == null){
                 return BadRequest("Error inserting item into the database");
             }
@@ -56,7 +56,7 @@ namespace backend.controllers {
             WHERE {condition};";
 
             // Realizar la consulta a la base
-            var results = db.sql_db.UPDATE<Item>(query, item);
+            var results = db.sql_db!.UPDATE<Item>(query, item);
             return AcceptedAtAction(nameof(ModifyItem), new { id = id }, results);
         }
 
@@ -71,7 +71,7 @@ namespace backend.controllers {
             OUTPUT {retrieval}
             WHERE {condition};";
 
-            var results = db.sql_db.DELETE<Item>(query);
+            var results = db.sql_db!.DELETE<Item>(query);
             return AcceptedAtAction(nameof(RemoveItem), new { id = id }, results);
         }
     }
